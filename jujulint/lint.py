@@ -33,11 +33,12 @@ import yaml
 from attr import attrib, attrs
 from dateutil import relativedelta
 
+import jujulint.checks.hyper_converged as hyper_converged
 import jujulint.util as utils
-from jujulint.check_spaces import Relation, find_space_mismatches
+from jujulint.checks.relations import RelationError, RelationsRulesBootStrap
+from jujulint.checks.spaces import Relation, find_space_mismatches
 from jujulint.logging import Logger
 from jujulint.model_input import input_handler
-from jujulint.relations import RelationError, RelationsRulesBootStrap
 
 VALID_CONFIG_CHECKS = ("isset", "eq", "neq", "gte", "search")
 VALID_LOG_LEVEL = {
@@ -757,6 +758,33 @@ class Linter:
                     }
                 )
 
+    def check_hyper_converged(self, input_file):
+        """Check hyper converged deployments.
+
+        :param input_file: mapped content of the input file.
+        :type input_file: Union[JujuBundleFile, JujuStatusFile]
+        """
+        hyper_converged_warning = hyper_converged.check_hyper_converged(input_file)
+
+        if hyper_converged_warning:
+            for machine in hyper_converged_warning:
+                for lxd in hyper_converged_warning[machine]:
+                    self.message_handler(
+                        {
+                            "id": "hyper-converged-masakari",
+                            "tags": ["hyper-converged", "masakari"],
+                            "message": (
+                                "Deployment has Masakari and the machine: '{}' "
+                                "has nova/osd and the lxd: '{}' with those services {}"
+                            ).format(
+                                machine,
+                                lxd,
+                                sorted(list(hyper_converged_warning[machine][lxd])),
+                            ),
+                        },
+                        log_level=logging.WARNING,
+                    )
+
     def check_charms_ops_mandatory(self, charm):
         """
         Check if a mandatory ops charms is present in the model.
@@ -1352,6 +1380,7 @@ class Linter:
 
             self.check_subs(parsed_yaml["machines"])
             self.check_relations(input_file)
+            self.check_hyper_converged(input_file)
             self.check_charms()
 
             if "relations" in parsed_yaml:

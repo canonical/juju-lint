@@ -242,16 +242,30 @@ def rules_files():
 
 
 @pytest.fixture
-def input_files(parsed_yaml_status, parsed_yaml_bundle):
+def input_files(
+    parsed_yaml_status,
+    parsed_yaml_bundle,
+    parsed_hyper_converged_yaml_status,
+    parsed_hyper_converged_yaml_bundle,
+):
     return {
         "juju-status": JujuStatusFile(
             applications_data=parsed_yaml_status["applications"],
             machines_data=parsed_yaml_status["machines"],
         ),
+        "juju-status-hyper-converged": JujuStatusFile(
+            applications_data=parsed_hyper_converged_yaml_status["applications"],
+            machines_data=parsed_hyper_converged_yaml_status["machines"],
+        ),
         "juju-bundle": JujuBundleFile(
             applications_data=parsed_yaml_bundle["applications"],
             machines_data=parsed_yaml_bundle["machines"],
             relations_data=parsed_yaml_bundle["relations"],
+        ),
+        "juju-bundle-parsed-hyper-converged": JujuBundleFile(
+            applications_data=parsed_hyper_converged_yaml_bundle["applications"],
+            machines_data=parsed_hyper_converged_yaml_bundle["machines"],
+            relations_data=parsed_hyper_converged_yaml_bundle["relations"],
         ),
     }
 
@@ -474,5 +488,327 @@ def parsed_yaml_bundle():
                 "elasticsearch:nrpe-external-master",
                 "nrpe-host:nrpe-external-master",
             ],
+        ],
+    }
+
+
+@pytest.fixture
+def parsed_hyper_converged_yaml_status():
+    """Representation of a hyper converged model with masakari."""
+    return {
+        "machines": {
+            "0": {
+                "juju-status": {"current": "started"},
+                "machine-status": {"current": "running"},
+                "modification-status": {
+                    "current": "idle",
+                },
+                "containers": {
+                    "0/lxd/0": {
+                        "juju-status": {"current": "started"},
+                        "machine-status": {"current": "running"},
+                        "modification-status": {"current": "applied"},
+                        "constraints": "arch=amd64 spaces=",
+                        "hardware": "availability-zone=nova",
+                    },
+                    "0/lxd/1": {
+                        "juju-status": {"current": "started"},
+                        "machine-status": {"current": "running"},
+                        "modification-status": {"current": "applied"},
+                        "constraints": "arch=amd64 spaces=",
+                        "hardware": "availability-zone=nova",
+                    },
+                },
+                "constraints": "arch=amd64 mem=4096M",
+                "hardware": "arch=amd64 cores=2 mem=4096M root-disk=40960M availability-zone=nova",
+            },
+            "1": {
+                "juju-status": {"current": "started"},
+                "machine-status": {"current": "running"},
+                "modification-status": {"current": "idle"},
+                "constraints": "arch=amd64 mem=4096M",
+                "hardware": "arch=amd64 cores=2 mem=4096M root-disk=40960M availability-zone=nova",
+            },
+            "2": {
+                "juju-status": {"current": "started"},
+                "machine-status": {"current": "running"},
+                "modification-status": {"current": "idle"},
+                "constraints": "arch=amd64 mem=4096M",
+                "hardware": "arch=amd64 cores=2 mem=4096M root-disk=40960M availability-zone=nova",
+            },
+            "3": {
+                "juju-status": {"current": "started"},
+                "machine-status": {"current": "running"},
+                "modification-status": {"current": "idle"},
+                "constraints": "arch=amd64",
+                "hardware": "arch=amd64 cores=1 mem=2048M root-disk=20480M availability-zone=nova",
+            },
+        },
+        "applications": {
+            "ceilometer": {
+                "charm": "ceilometer",
+                "charm-name": "ceilometer",
+                "application-status": {"current": "active"},
+                "relations": {"cluster": ["ceilometer"]},
+                "units": {
+                    "ceilometer/0": {
+                        "workload-status": {"current": "active"},
+                        "juju-status": {"current": "idle"},
+                        "machine": "0/lxd/0",
+                    }
+                },
+                "endpoint-bindings": {
+                    "": "alpha",
+                    "admin": "alpha",
+                    "amqp": "alpha",
+                    "amqp-listener": "alpha",
+                    "ceilometer-service": "alpha",
+                    "certificates": "alpha",
+                    "cluster": "alpha",
+                    "event-service": "alpha",
+                    "ha": "alpha",
+                    "identity-credentials": "alpha",
+                    "identity-notifications": "alpha",
+                    "identity-service": "alpha",
+                    "internal": "alpha",
+                    "metric-service": "alpha",
+                    "nrpe-external-master": "alpha",
+                    "public": "alpha",
+                    "shared-db": "alpha",
+                },
+            },
+            "ceph-mon": {
+                "charm": "ceph-mon",
+                "charm-name": "ceph-mon",
+                "application-status": {"current": "active"},
+                "relations": {
+                    "client": ["nova-compute"],
+                    "mon": ["ceph-mon"],
+                    "osd": ["ceph-osd"],
+                },
+                "units": {
+                    "ceph-mon/0": {
+                        "workload-status": {"current": "idle"},
+                        "juju-status": {"current": "idle"},
+                        "machine": "0",
+                    },
+                    "ceph-mon/1": {
+                        "workload-status": {"current": "idle"},
+                        "juju-status": {"current": "idle"},
+                        "machine": "1",
+                    },
+                    "ceph-mon/2": {
+                        "workload-status": {"current": "idle"},
+                        "juju-status": {"current": "idle"},
+                        "machine": "2",
+                    },
+                },
+                "endpoint-bindings": {
+                    "": "alpha",
+                    "admin": "alpha",
+                    "bootstrap-source": "alpha",
+                    "client": "alpha",
+                    "cluster": "alpha",
+                    "dashboard": "alpha",
+                    "mds": "alpha",
+                    "mon": "alpha",
+                    "nrpe-external-master": "alpha",
+                    "osd": "alpha",
+                    "prometheus": "alpha",
+                    "public": "alpha",
+                    "radosgw": "alpha",
+                    "rbd-mirror": "alpha",
+                },
+            },
+            "ceph-osd": {
+                "charm": "ceph-osd",
+                "charm-name": "ceph-osd",
+                "application-status": {"current": "active"},
+                "relations": {"mon": ["ceph-mon"]},
+                "units": {
+                    "ceph-osd/0": {
+                        "workload-status": {"current": "idle"},
+                        "juju-status": {"current": "idle"},
+                        "machine": "0",
+                    },
+                    "ceph-osd/1": {
+                        "workload-status": {"current": "idle"},
+                        "juju-status": {"current": "idle"},
+                        "machine": "1",
+                    },
+                    "ceph-osd/2": {
+                        "workload-status": {"current": "idle"},
+                        "juju-status": {"current": "idle"},
+                        "machine": "2",
+                    },
+                },
+                "endpoint-bindings": {
+                    "": "alpha",
+                    "cluster": "alpha",
+                    "mon": "alpha",
+                    "nrpe-external-master": "alpha",
+                    "public": "alpha",
+                    "secrets-storage": "alpha",
+                },
+            },
+            "heat": {
+                "charm": "heat",
+                "series": "focal",
+                "charm-name": "heat",
+                "application-status": {"current": "active"},
+                "relations": {"cluster": ["heat"]},
+                "units": {
+                    "heat/0": {
+                        "workload-status": {"current": "idle"},
+                        "juju-status": {"current": "idle"},
+                        "machine": "0/lxd/1",
+                    }
+                },
+                "endpoint-bindings": {
+                    "": "alpha",
+                    "admin": "alpha",
+                    "amqp": "alpha",
+                    "certificates": "alpha",
+                    "cluster": "alpha",
+                    "ha": "alpha",
+                    "heat-plugin-subordinate": "alpha",
+                    "identity-service": "alpha",
+                    "internal": "alpha",
+                    "nrpe-external-master": "alpha",
+                    "public": "alpha",
+                    "shared-db": "alpha",
+                },
+            },
+            "masakari": {
+                "charm": "masakari",
+                "charm-name": "masakari",
+                "application-status": {"current": "active"},
+                "relations": {"cluster": ["masakari"]},
+                "units": {
+                    "masakari/0": {
+                        "workload-status": {"current": "idle"},
+                        "juju-status": {"current": "idle"},
+                        "machine": "3",
+                    }
+                },
+                "endpoint-bindings": {
+                    "": "alpha",
+                    "admin": "alpha",
+                    "amqp": "alpha",
+                    "certificates": "alpha",
+                    "cluster": "alpha",
+                    "ha": "alpha",
+                    "identity-service": "alpha",
+                    "internal": "alpha",
+                    "public": "alpha",
+                    "shared-db": "alpha",
+                },
+            },
+            "nova-compute": {
+                "charm": "nova-compute",
+                "charm-name": "nova-compute",
+                "application-status": {"current": "active"},
+                "relations": {"ceph": ["ceph-mon"], "compute-peer": ["nova-compute"]},
+                "units": {
+                    "nova-compute/0": {
+                        "workload-status": {"current": "idle"},
+                        "juju-status": {"current": "idle"},
+                        "machine": "0",
+                    },
+                    "nova-compute/1": {
+                        "workload-status": {"current": "idle"},
+                        "juju-status": {"current": "idle"},
+                        "machine": "1",
+                    },
+                    "nova-compute/2": {
+                        "workload-status": {"current": "idle"},
+                        "juju-status": {"current": "idle"},
+                        "machine": "2",
+                    },
+                },
+                "endpoint-bindings": {
+                    "": "alpha",
+                    "amqp": "alpha",
+                    "ceph": "alpha",
+                    "ceph-access": "alpha",
+                    "cloud-compute": "alpha",
+                    "cloud-credentials": "alpha",
+                    "compute-peer": "alpha",
+                    "ephemeral-backend": "alpha",
+                    "image-service": "alpha",
+                    "internal": "alpha",
+                    "ironic-api": "alpha",
+                    "lxd": "alpha",
+                    "migration": "alpha",
+                    "neutron-plugin": "alpha",
+                    "nova-ceilometer": "alpha",
+                    "nrpe-external-master": "alpha",
+                    "secrets-storage": "alpha",
+                },
+            },
+        },
+    }
+
+
+@pytest.fixture
+def parsed_hyper_converged_yaml_bundle():
+    """Representation of a hyper converged model with masakari."""
+    return {
+        "series": "focal",
+        "applications": {
+            "ceilometer": {
+                "charm": "ceilometer",
+                "num_units": 1,
+                "to": ["lxd:0"],
+                "constraints": "arch=amd64",
+            },
+            "ceph-mon": {
+                "charm": "ceph-mon",
+                "num_units": 3,
+                "to": ["0", "1", "2"],
+                "constraints": "arch=amd64",
+            },
+            "ceph-osd": {
+                "charm": "ceph-osd",
+                "num_units": 3,
+                "to": ["0", "1", "2"],
+                "constraints": "arch=amd64 mem=4096",
+                "storage": {
+                    "bluestore-db": "loop,0,1024",
+                    "bluestore-wal": "loop,0,1024",
+                    "osd-devices": "loop,0,1024",
+                    "osd-journals": "loop,0,1024",
+                },
+            },
+            "heat": {
+                "charm": "heat",
+                "resources": {"policyd-override": 0},
+                "num_units": 1,
+                "to": ["lxd:0"],
+                "constraints": "arch=amd64",
+            },
+            "masakari": {
+                "charm": "masakari",
+                "num_units": 1,
+                "to": ["3"],
+                "constraints": "arch=amd64",
+            },
+            "nova-compute": {
+                "charm": "nova-compute",
+                "num_units": 3,
+                "to": ["0", "1", "2"],
+                "constraints": "arch=amd64",
+                "storage": {"ephemeral-device": "loop,0,10240"},
+            },
+        },
+        "machines": {
+            "0": {"constraints": "arch=amd64 mem=4096"},
+            "1": {"constraints": "arch=amd64 mem=4096"},
+            "2": {"constraints": "arch=amd64 mem=4096"},
+            "3": {"constraints": "arch=amd64"},
+        },
+        "relations": [
+            ["ceph-mon:client", "nova-compute:ceph"],
+            ["ceph-mon:osd", "ceph-osd:mon"],
         ],
     }

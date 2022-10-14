@@ -2,7 +2,7 @@
 """Test the relations module."""
 import pytest
 
-from jujulint import relations
+from jujulint.checks import relations
 
 CHARM_TO_APP = {"nrpe-host", "nrpe-container"}
 CHARM = "nrpe"
@@ -352,7 +352,7 @@ def test_relations_raise_not_implemented(input_files, mocker):
     """Ensure that a new class that not implement mandatory methods raises error."""
     logger_mock = mocker.patch.object(relations, "LOGGER")
     mocker.patch(
-        "jujulint.relations.RelationRule.relation_exist_check",
+        "jujulint.checks.relations.RelationRule.relation_exist_check",
         side_effect=NotImplementedError(),
     )
     input_file = input_files["juju-status"]

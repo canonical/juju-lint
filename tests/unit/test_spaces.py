@@ -1,9 +1,9 @@
-"""Tests for check_spaces.py module."""
+"""Tests for spaces.py module."""
 from unittest.mock import call
 
 import pytest
 
-from jujulint import check_spaces
+from jujulint.checks import spaces
 
 
 def test_relation_init():
@@ -11,7 +11,7 @@ def test_relation_init():
     ep_1 = "Endpoint 1"
     ep_2 = "Endpoint 2"
 
-    relation = check_spaces.Relation(ep_1, ep_2)
+    relation = spaces.Relation(ep_1, ep_2)
 
     assert relation.endpoint1 == ep_1
     assert relation.endpoint2 == ep_2
@@ -23,7 +23,7 @@ def test_relation_str():
     ep_2 = "Endpoint 2"
     expected_str = "Relation({} - {})".format(ep_1, ep_2)
 
-    relation = check_spaces.Relation(ep_1, ep_2)
+    relation = spaces.Relation(ep_1, ep_2)
 
     assert str(relation) == expected_str
 
@@ -63,8 +63,8 @@ def test_relation_str():
 )
 def test_relation_eq(rel_1_ep_1, rel_1_ep_2, rel_2_ep_1, rel_2_ep_2, expected_result):
     """Test equality operator of Relation class. Only return true if both endpoints match."""
-    relation_1 = check_spaces.Relation(rel_1_ep_1, rel_1_ep_2)
-    relation_2 = check_spaces.Relation(rel_2_ep_1, rel_2_ep_2)
+    relation_1 = spaces.Relation(rel_1_ep_1, rel_1_ep_2)
+    relation_2 = spaces.Relation(rel_2_ep_1, rel_2_ep_2)
 
     assert (relation_1 == relation_2) == expected_result
 
@@ -74,7 +74,7 @@ def test_relation_endpoints_prop():
     ep_1 = "Endpoint 1"
     ep_2 = "Endpoint 2"
 
-    relation = check_spaces.Relation(ep_1, ep_2)
+    relation = spaces.Relation(ep_1, ep_2)
 
     assert relation.endpoints == [ep_1, ep_2]
 
@@ -105,7 +105,7 @@ def test_space_mismatch_init(input_order, output_order):
     This test also verifies that spaces in SpaceMismatch instance are ordered
     alphabetically based on the endpoint name.
     """
-    mismatch_instance = check_spaces.SpaceMismatch(*input_order)
+    mismatch_instance = spaces.SpaceMismatch(*input_order)
 
     # Assert that endpoints are alphabetically reordered
     assert mismatch_instance.endpoint1 == output_order[0]
@@ -124,7 +124,7 @@ def test_space_mismatch_str():
         ep_1, space_1, ep_2, space_2
     )
 
-    mismatch_instance = check_spaces.SpaceMismatch(ep_1, space_1, ep_2, space_2)
+    mismatch_instance = spaces.SpaceMismatch(ep_1, space_1, ep_2, space_2)
 
     assert str(mismatch_instance) == expected_str
 
@@ -136,9 +136,9 @@ def test_space_mismatch_relation_prop():
     space_1 = "Space 1"
     space_2 = "Space 2"
 
-    expected_relation = check_spaces.Relation(ep_1, ep_2)
+    expected_relation = spaces.Relation(ep_1, ep_2)
 
-    mismatch_instance = check_spaces.SpaceMismatch(ep_1, space_1, ep_2, space_2)
+    mismatch_instance = spaces.SpaceMismatch(ep_1, space_1, ep_2, space_2)
 
     assert mismatch_instance.relation == expected_relation
 
@@ -156,9 +156,9 @@ def test_space_mismatch_get_charm_relation():
 
     app_map = {app_1: charm_1, app_2: charm_2}
 
-    expected_relation = check_spaces.Relation("ubuntu:endpoint_1", "nrpe:endpoint_2")
+    expected_relation = spaces.Relation("ubuntu:endpoint_1", "nrpe:endpoint_2")
 
-    mismatch_instance = check_spaces.SpaceMismatch(ep_1, space_1, ep_2, space_2)
+    mismatch_instance = spaces.SpaceMismatch(ep_1, space_1, ep_2, space_2)
 
     assert mismatch_instance.get_charm_relation(app_map) == expected_relation
 
@@ -173,32 +173,28 @@ def test_find_space_mismatches(use_cmr, mocker):
     space_2 = "space 2"
     app_endpoint_1 = app_1 + ":endpoint"
     app_endpoint_2 = app_2 + ":endpoint"
-    relation = check_spaces.Relation(
-        app_endpoint_1, "XModel" if use_cmr else app_endpoint_2
-    )
+    relation = spaces.Relation(app_endpoint_1, "XModel" if use_cmr else app_endpoint_2)
     app_list = [app_1, app_2]
     app_spaces = {app_1: {space_1: "foo"}, app_2: {space_2: "bar"}}
 
     app_list_mock = mocker.patch.object(
-        check_spaces, "get_juju_applications", return_value=app_list
+        spaces, "get_juju_applications", return_value=app_list
     )
     app_spaces_mock = mocker.patch.object(
-        check_spaces, "get_application_spaces", return_value=app_spaces
+        spaces, "get_application_spaces", return_value=app_spaces
     )
     rel_list_mock = mocker.patch.object(
-        check_spaces, "get_application_relations", return_value=[relation]
+        spaces, "get_application_relations", return_value=[relation]
     )
     rel_space_mock = mocker.patch.object(
-        check_spaces, "get_relation_space", side_effect=[space_1, space_2]
+        spaces, "get_relation_space", side_effect=[space_1, space_2]
     )
 
     expected_mismatch = [
-        check_spaces.SpaceMismatch(
-            relation.endpoint1, space_1, relation.endpoint2, space_2
-        )
+        spaces.SpaceMismatch(relation.endpoint1, space_1, relation.endpoint2, space_2)
     ]
 
-    mismatch = check_spaces.find_space_mismatches(sample_yaml, True)
+    mismatch = spaces.find_space_mismatches(sample_yaml, True)
     result_pairs = zip(expected_mismatch, mismatch)
 
     app_list_mock.assert_called_once_with(sample_yaml)
@@ -224,7 +220,7 @@ def test_get_juju_applications():
 
     expected_apps = [app_1, app_2]
 
-    apps = check_spaces.get_juju_applications(sample_yaml)
+    apps = spaces.get_juju_applications(sample_yaml)
 
     assert apps == expected_apps
 
@@ -235,7 +231,7 @@ def test_get_application_spaces(mocker):
     This test also verifies that default binding to space "alpha" is added to applications
     that do not specify any bindings.
     """
-    logger_mock = mocker.patch.object(check_spaces, "LOGGER")
+    logger_mock = mocker.patch.object(spaces, "LOGGER")
     default_binding = ""
     default_space = "custom_default_space"
     public_binding = "public"
@@ -269,7 +265,7 @@ def test_get_application_spaces(mocker):
         app_list[2]: {default_binding: "alpha"},
     }
 
-    app_spaces = check_spaces.get_application_spaces(app_list, sample_yaml)
+    app_spaces = spaces.get_application_spaces(app_list, sample_yaml)
 
     # Verify that all the bindings for properly defined app were returned
     # Verify that default binding was added to app that did not have any bindings defined
@@ -298,11 +294,11 @@ def test_get_application_relations():
     }
 
     expected_relations = [
-        check_spaces.Relation("ubuntu:juju-info", "nrpe:general-info"),
-        check_spaces.Relation("vault:shared-db", "mysql-innodb-cluster:shared-db"),
+        spaces.Relation("ubuntu:juju-info", "nrpe:general-info"),
+        spaces.Relation("vault:shared-db", "mysql-innodb-cluster:shared-db"),
     ]
 
-    relations = check_spaces.get_application_relations(sample_yaml)
+    relations = spaces.get_application_relations(sample_yaml)
 
     assert relations == expected_relations
 
@@ -323,21 +319,21 @@ def test_get_relation_space(use_explicit_binding):
     else:
         expected_space = default_space
 
-    space = check_spaces.get_relation_space(endpoint, app_spaces)
+    space = spaces.get_relation_space(endpoint, app_spaces)
 
     assert space == expected_space
 
 
 def test_get_relation_space_cmr(mocker):
     """Test getting space for cross model relation."""
-    logger_mock = mocker.patch.object(check_spaces, "LOGGER")
+    logger_mock = mocker.patch.object(spaces, "LOGGER")
     app_name = "ubuntu"
     interface = "juju_info"
     endpoint = app_name + ":" + interface
 
     app_spaces = {}
 
-    space = check_spaces.get_relation_space(endpoint, app_spaces)
+    space = spaces.get_relation_space(endpoint, app_spaces)
 
     assert space == "XModel"
     logger_mock.warning.assert_called_once_with(

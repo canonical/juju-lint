@@ -25,6 +25,7 @@ class BaseFile:
     app_to_charm: Dict = field(default_factory=dict)
     charm_to_app: defaultdict[set] = field(default_factory=lambda: defaultdict(set))
     apps_to_machines: defaultdict[set] = field(default_factory=lambda: defaultdict(set))
+    machines_to_apps: defaultdict[set] = field(default_factory=lambda: defaultdict(set))
 
     def __post_init__(self):
         """Dunder method to map file after instantiating."""
@@ -124,6 +125,20 @@ class BaseFile:
             else set()
         )
 
+    def filter_machines_by_charm(self, charm: str) -> Set:
+        """Filter machines that has a specific charm.
+
+        :param charm: Charm name.
+        :type charm: str
+        :return: Machines that contains the charm.
+        :rtype: Set
+        """
+        charm_machines = set()
+        charm_apps = self.charm_to_app[charm]
+        for charm_app in charm_apps:
+            charm_machines.update(self.apps_to_machines[charm_app])
+        return charm_machines
+
     def map_machines(self):
         """Map machines method to be implemented.
 
@@ -158,6 +173,17 @@ class BaseFile:
         """
         raise NotImplementedError(f"{self.__class__.__name__} missing: sorted_machines")
 
+    def filter_lxd_on_machine(self, machine: str):
+        """Lxd containers on a machine.
+
+        :param machine: machine id.
+        :type machine: str
+        :raises NotImplementedError: Raise if not implemented on child classes.
+        """
+        raise NotImplementedError(
+            f"{self.__class__.__name__} missing: filter_lxd_on_machine"
+        )
+
 
 @dataclass
 class JujuStatusFile(BaseFile):
@@ -176,9 +202,12 @@ class JujuStatusFile(BaseFile):
             for unit in units:
                 machine = units[unit].get("machine")
                 self.apps_to_machines[app].add(machine)
+                self.machines_to_apps[machine].add(app)
                 subordinates = units[unit].get("subordinates", {})
                 for sub in subordinates:
-                    self.apps_to_machines[sub.split("/")[0]].add(machine)
+                    sub_name = sub.split("/")[0]
+                    self.apps_to_machines[sub_name].add(machine)
+                    self.machines_to_apps[machine].add(sub_name)
 
     @staticmethod
     def sorted_machines(machine: str) -> Tuple[int, str, int]:
@@ -218,6 +247,20 @@ class JujuStatusFile(BaseFile):
             apps_related.update(relations.get(endpoint, []))
         return apps_related
 
+    def filter_lxd_on_machine(self, machine: str) -> Set:
+        """Lxd containers on a machine.
+
+        :param machine: machine id.
+        :type machine: str
+        :return: lxd containers in the machine.
+        :rtype: Set
+        """
+        return {
+            lxd_machine
+            for lxd_machine in self.machines
+            if "lxd" in lxd_machine and lxd_machine.split("/")[0] == machine
+        }
+
 
 @dataclass
 class JujuBundleFile(BaseFile):
@@ -241,18 +284,26 @@ class JujuBundleFile(BaseFile):
         for app in self.applications_data:
             machines = self.applications_data[app].get("to", [])
             self.apps_to_machines[app].update(machines)
+            for machine in machines:
+                self.machines_to_apps[machine].add(app)
         # NOTE(gabrielcocenza) subordinates won't have the 'to' field because
         # they are deployed thru relations.
         subordinates = {
             sub for sub, machines in self.apps_to_machines.items() if machines == set()
         }
         for relation in self.relations_data:
-            app_1, endpoint_1, app_2, endpoint_2 = self.split_relation(relation)
+            app_1, _, app_2, _ = self.split_relation(relation)
             # update with the machines of the application that the subordinate charm relate.
             if app_1 in subordinates:
-                self.apps_to_machines[app_1].update(self.apps_to_machines[app_2])
+                sub_machines = self.apps_to_machines[app_2]
+                self.apps_to_machines[app_1].update(sub_machines)
+                for sub_machine in sub_machines:
+                    self.machines_to_apps[sub_machine].add(app_1)
             elif app_2 in subordinates:
+                sub_machines = self.apps_to_machines[app_1]
                 self.apps_to_machines[app_2].update(self.apps_to_machines[app_1])
+                for sub_machine in sub_machines:
+                    self.machines_to_apps[sub_machine].add(app_2)
 
     @staticmethod
     def sorted_machines(machine: str) -> Tuple[int, str]:
@@ -302,6 +353,20 @@ class JujuBundleFile(BaseFile):
                 elif app_2_ep_2 == app_ep:
                     apps_related.add(app_1_ep_1.split(":")[0])
         return apps_related
+
+    def filter_lxd_on_machine(self, machine: str) -> Set:
+        """Lxd containers on a machine.
+
+        :param machine: machine id.
+        :type machine: str
+        :return: lxd containers in the machine.
+        :rtype: Set
+        """
+        return {
+            lxd_machine
+            for lxd_machine in self.machines
+            if "lxd" in lxd_machine and lxd_machine.split(":")[1] == machine
+        }
 
 
 def input_handler(
