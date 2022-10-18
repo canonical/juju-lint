@@ -65,3 +65,10 @@ relations base check: &relations-base-check
 
   - charm: ubuntu-advantage
     ubiquitous: true
+
+# relating filebeat to elasticsearch:client causes unnecessary extra logging
+# See LP#1971645
+  - charm: elasticsearch
+    not-exist: [
+      ["elasticsearch:client", "filebeat:elasticsearch"]
+    ]
