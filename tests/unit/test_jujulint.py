@@ -7,7 +7,8 @@ from unittest import mock
 import pytest
 import yaml
 
-from jujulint import check_spaces, lint, relations
+from jujulint import lint
+from jujulint.checks import relations, spaces
 from jujulint.lint import VALID_LOG_LEVEL
 
 
@@ -1424,7 +1425,7 @@ applications:
         This warning should be triggerred if some applications have bindings and some
         dont.
         """
-        logger_mock = mocker.patch.object(check_spaces, "LOGGER")
+        logger_mock = mocker.patch.object(spaces, "LOGGER")
 
         app_without_binding = "prometheus-app"
         bundle = {
@@ -1458,7 +1459,7 @@ applications:
         mentioned explicitly will be bound to this default space.
         Juju lint should raise warning if bundles do not define default space.
         """
-        logger_mock = mocker.patch.object(check_spaces, "LOGGER")
+        logger_mock = mocker.patch.object(spaces, "LOGGER")
         app_without_default_space = "telegraf-app"
 
         bundle = {
@@ -1490,7 +1491,7 @@ applications:
 
     def test_check_spaces_multi_model_warning(self, linter, mocker):
         """Test that check_spaces shows warning if some application are from another model."""
-        logger_mock = mocker.patch.object(check_spaces, "LOGGER")
+        logger_mock = mocker.patch.object(spaces, "LOGGER")
 
         app_another_model = "prometheus-app"
         bundle = {
@@ -1745,3 +1746,60 @@ applications:
             logger_mock.assert_has_calls(
                 [mocker.call(expected_message, level=logging.ERROR)]
             )
+
+    @pytest.mark.parametrize(
+        "input_file_type",
+        ["juju-status-hyper-converged", "juju-bundle-parsed-hyper-converged"],
+    )
+    def test_check_hyper_converged(self, linter, input_files, mocker, input_file_type):
+        """Test check_hyper_converged."""
+        input_file = input_files[input_file_type]
+        mock_message_handler = mocker.patch("jujulint.lint.Linter.message_handler")
+        msg = (
+            "Deployment has Masakari and the machine: '{}' "
+            "has nova/osd and the lxd: '{}' with those services {}"
+        )
+        expected_output = [
+            mocker.call(
+                {
+                    "id": "hyper-converged-masakari",
+                    "tags": ["hyper-converged", "masakari"],
+                    "message": msg.format(
+                        "0",
+                        "lxd:0",
+                        ["ceilometer", "heat"],
+                    ),
+                },
+                log_level=logging.WARNING,
+            )
+        ]
+        if "juju-status" in input_file_type:
+            expected_output = [
+                mocker.call(
+                    {
+                        "id": "hyper-converged-masakari",
+                        "tags": ["hyper-converged", "masakari"],
+                        "message": msg.format(
+                            "0",
+                            "0/lxd/0",
+                            ["ceilometer"],
+                        ),
+                    },
+                    log_level=logging.WARNING,
+                ),
+                mocker.call(
+                    {
+                        "id": "hyper-converged-masakari",
+                        "tags": ["hyper-converged", "masakari"],
+                        "message": msg.format(
+                            "0",
+                            "0/lxd/1",
+                            ["heat"],
+                        ),
+                    },
+                    log_level=logging.WARNING,
+                ),
+            ]
+
+        linter.check_hyper_converged(input_file)
+        mock_message_handler.assert_has_calls(expected_output, any_order=True)

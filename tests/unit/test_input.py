@@ -51,12 +51,28 @@ def test_file_inputs(input_files, input_file_type):
                 "keystone": {"lxd:1"},
             },
         },
+        "machines_to_apps": {
+            "juju-status": {
+                "0": {"nrpe-host", "elasticsearch"},
+                "1": {"ubuntu", "nrpe-host"},
+                "1/lxd/0": {"nrpe-container", "keystone"},
+            },
+            "juju-bundle": {
+                "0": {"nrpe-host", "elasticsearch"},
+                "1": {"ubuntu", "nrpe-host"},
+                "lxd:1": {"nrpe-container", "keystone"},
+            },
+        },
     }
     assert input_file.applications == expected_output["applications"]
     assert input_file.machines == expected_output["machines"][input_file_type]
     assert (
         input_file.apps_to_machines
         == expected_output["apps_to_machines"][input_file_type]
+    )
+    assert (
+        input_file.machines_to_apps
+        == expected_output["machines_to_apps"][input_file_type]
     )
     assert input_file.charms == expected_output["charms"]
     assert input_file.app_to_charm == expected_output["app_to_charm"]
@@ -207,6 +223,48 @@ def test_input_handler(parsed_yaml, expected_output, request):
     )
 
 
+@pytest.mark.parametrize("input_file_type", ["juju-status", "juju-bundle"])
+def test_filter_machines_by_charm(input_files, input_file_type):
+    """Test filter_machines_by_charm method."""
+    input_file = input_files[input_file_type]
+    if input_file_type == "juju-status":
+        expected_output = {
+            "nrpe": {"0", "1", "1/lxd/0"},
+            "keystone": {"1/lxd/0"},
+            "ubuntu": {"1"},
+            "elasticsearch": {"0"},
+        }
+    else:
+        expected_output = {
+            "nrpe": {"0", "1", "lxd:1"},
+            "keystone": {"lxd:1"},
+            "ubuntu": {"1"},
+            "elasticsearch": {"0"},
+        }
+    for charm in input_file.charms:
+        assert input_file.filter_machines_by_charm(charm) == expected_output[charm]
+
+
+@pytest.mark.parametrize("input_file_type", ["juju-status", "juju-bundle"])
+def test_filter_lxd_on_machine(input_files, input_file_type):
+    """Test filter_lxd_on_machine method."""
+    input_file = input_files[input_file_type]
+    if input_file_type == "juju-status":
+        expected_output = {
+            "0": set(),
+            "1": {"1/lxd/0"},
+            "1/lxd/0": set(),
+        }
+    else:
+        expected_output = {
+            "0": set(),
+            "1": {"lxd:1"},
+            "lxd:1": set(),
+        }
+    for machine in input_file.machines:
+        assert input_file.filter_lxd_on_machine(machine) == expected_output[machine]
+
+
 def test_raise_not_implemented_methods(parsed_yaml_status):
     # declare a new input class
     @dataclass
@@ -231,3 +289,6 @@ def test_raise_not_implemented_methods(parsed_yaml_status):
 
     with pytest.raises(NotImplementedError):
         new_input.sorted_machines("0")
+
+    with pytest.raises(NotImplementedError):
+        new_input.filter_lxd_on_machine("0")
