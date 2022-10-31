@@ -1717,6 +1717,32 @@ applications:
             assert path_mtu["log-level"] == "warning"
             assert path_mtu["custom-message"]
 
+    def test_worker_multiplier_rules(self, linter, rules_files):
+        """Test that API charms set worker-multiplier."""
+        charms = [
+            "keystone",
+            "neutron-api",
+            "glance",
+            "nova-compute",
+            "nova-cloud-controller",
+            "cinder",
+            "octavia",
+            "placement",
+        ]
+        for rule in [rules_file for rules_file in rules_files if "fcb" in rules_file]:
+            for charm in charms:
+                linter.filename = rule
+                linter.read_rules()
+                worker_multiplier = linter.lint_rules["openstack config"][charm][
+                    "worker-multiplier"
+                ]
+                assert worker_multiplier["neq"] == ""
+                assert worker_multiplier["log-level"] == "warning"
+                assert (
+                    worker_multiplier["custom-message"]
+                    == "Default 4 workers is too low for production clouds."
+                )
+
     @pytest.mark.parametrize(
         "message, log_level, error",
         [

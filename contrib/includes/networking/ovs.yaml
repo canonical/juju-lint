@@ -7,6 +7,11 @@ openstack config networking: &openstack-config-networking
           Usable MTU for a tenant network is less than 1500.
       global-physnet-mtu:
         eq: 9000
+      worker-multiplier:
+        neq: ""
+        log-level: warning
+        custom-message:
+          Default 4 workers is too low for production clouds.
 
 openstack mandatory charms networking: &openstack-mandatory-charms-networking
   - neutron-openvswitch
