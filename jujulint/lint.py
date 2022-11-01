@@ -61,10 +61,21 @@ ConfigOperator = collections.namedtuple(
 def helper_operator_eq_check(check_value, actual_value):
     """Perform the actual equality check for the eq/neq rules."""
     match = False
-    try:
-        match = re.match(re.compile(str(check_value)), str(actual_value))
-    except re.error:
+
+    # An empty string regex matches any string. Therefore
+    # we are handling the empty string as a special case for now
+    # as a workaround.
+    # The overloaded regex matching behavior will be removed in a
+    # future version.
+    #
+    # See LP #1993735
+    if check_value == "":
         match = check_value == actual_value
+    else:
+        try:
+            match = re.match(re.compile(str(check_value)), str(actual_value))
+        except re.error:
+            match = check_value == actual_value
 
     return match
 
@@ -126,6 +137,11 @@ class Linter:
 
         # collect errors only for non-text output (e.g. json)
         self.collect_errors = True if self.output_format != "text" else False
+        self.logger.warn(
+            "Regex autodetection feature of the eq operator is deprecated. "
+            "It will only check for equality in the future. "
+            "Please use the search operator for regex checks."
+        )
 
     def read_rules(self):
         """Read and parse rules from YAML, optionally processing provided overrides."""

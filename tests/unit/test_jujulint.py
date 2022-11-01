@@ -1546,6 +1546,8 @@ applications:
             (True, "same", "different"),
             (False, "same", "same"),
             (False, "same", "different"),
+            (True, "", "foo"),
+            (False, "", "foo"),
         ],
     )
     def test_helper_operator_check(
