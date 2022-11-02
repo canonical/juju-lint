@@ -1540,25 +1540,22 @@ applications:
         logger_mock.warn.assert_called_once_with(expected_msg)
 
     @pytest.mark.parametrize(
-        "regex_error, check_value, actual_value",
+        "expected_result, check_value, actual_value",
         [
             (True, "same", "same"),
-            (True, "same", "different"),
-            (False, "same", "same"),
             (False, "same", "different"),
+            (False, "same", "Same"),
+            (True, "[sS]ame", "Same"),
+            (True, "[same", "[same"),
+            (False, "", "foo"),
+            (True, "", ""),
         ],
     )
     def test_helper_operator_check(
-        self, regex_error, check_value, actual_value, mocker
+        self, expected_result, check_value, actual_value, mocker
     ):
         """Test comparing values using "helper_operator_check()" function."""
-        if regex_error:
-            mocker.patch.object(lint.re, "match", side_effect=lint.re.error(""))
-
-        expected_result = check_value == actual_value
-
         result = lint.helper_operator_eq_check(check_value, actual_value)
-
         assert bool(result) == expected_result
 
     @pytest.mark.parametrize(
