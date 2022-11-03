@@ -47,6 +47,12 @@ openstack config:
  sysconfig:
   governor:
    eq: "performance"
+  isolcpus:
+   eq: ""
+   custom-message:
+     isolcpus is deprecated as mentioned in the linux kernel documentation.
+     You are advised to use cpu-affinity-range to achieve similar feature.
+   log-level: warning
  ovn-central:
   ovsdb-server-election-timer:
    gte: 4
