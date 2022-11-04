@@ -14,11 +14,21 @@ openstack config base: &openstack-config-base
   glance:
     ceph-osd-replication-count:
       eq: 3
+    worker-multiplier:
+      neq: ""
+      log-level: warning
+      custom-message:
+        Default 4 workers is too low for production clouds.
   nova-compute:
     cpu-model:
       neq: ""
     ceph-osd-replication-count:
       eq: 3
+    worker-multiplier:
+      neq: ""
+      log-level: warning
+      custom-message:
+        Default 4 workers is too low for production clouds.
   rabbitmq-server:
     cluster-partition-handling:
       eq: "pause_minority"
@@ -27,6 +37,11 @@ openstack config base: &openstack-config-base
   keystone:
     token-expiration:
       gte: 86400
+    worker-multiplier:
+      neq: ""
+      log-level: warning
+      custom-message:
+        Default 4 workers is too low for production clouds.
   sysconfig:
     governor:
       eq: "performance"
@@ -36,7 +51,30 @@ openstack config base: &openstack-config-base
         isolcpus is deprecated as mentioned in the linux kernel documentation.
         You are advised to use cpu-affinity-range to achieve similar feature.
       log-level: warning
-
+  nova-cloud-controller:
+    worker-multiplier:
+      neq: ""
+      log-level: warning
+      custom-message:
+        Default 4 workers is too low for production clouds.
+  cinder:
+    worker-multiplier:
+      neq: ""
+      log-level: warning
+      custom-message:
+        Default 4 workers is too low for production clouds.
+  octavia:
+    worker-multiplier:
+      neq: ""
+      log-level: warning
+      custom-message:
+        Default 4 workers is too low for production clouds.
+  placement:
+    worker-multiplier:
+      neq: ""
+      log-level: warning
+      custom-message:
+        Default 4 workers is too low for production clouds.
 
 openstack config:
   << : [ *openstack-config-base, *openstack-config-networking, *openstack-config-database ]
