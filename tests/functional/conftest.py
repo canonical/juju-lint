@@ -20,10 +20,10 @@ def pytest_configure(config):
 def install_package():
     """Install the package to the system and cleanup afterwards.
 
-    Depending on the environment variable JUJULINT_TEST_SNAP,
+    Depending on the environment variable TEST_SNAP,
     it will install the snap or the python package.
     """
-    jujulint_test_snap = os.environ.get("JUJULINT_TEST_SNAP", None)
+    jujulint_test_snap = os.environ.get("TEST_SNAP", None)
     if jujulint_test_snap:
         logging.info(f"Installing {jujulint_test_snap}")
         assert os.path.isfile(jujulint_test_snap)
@@ -63,7 +63,7 @@ def basedir():
     This will ease testing the rules files that we ship
     with the juju-lint snap.
     """
-    if os.environ.get("JUJULINT_TEST_SNAP", None):
+    if os.environ.get("TEST_SNAP", None):
         basedir = "/snap/juju-lint/current/"
     else:
         basedir = os.getcwd()
