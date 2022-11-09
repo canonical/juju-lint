@@ -1,3 +1,9 @@
+# This is a template `Makefile` file for snaps
+# This file is managed by bootstack-charms-spec and should not be modified
+# within individual snap repos. https://launchpad.net/bootstack-charms-spec
+
+PYTHON := /usr/bin/python3
+
 PROJECTPATH=$(dir $(realpath ${MAKEFILE_LIST}))
 SNAP_NAME=$(shell cat ${PROJECTPATH}/snap/snapcraft.yaml | grep -E '^name:' | awk '{print $$2}')
 SNAP_FILE=${PROJECTPATH}/${SNAP_NAME}.snap
@@ -41,7 +47,7 @@ clean:
 	@echo "Cleaning snap"
 	@snapcraft clean --use-lxd
 	@echo "Cleaning existing snap builds"
-	@find . -name "*.snap" -delete
+	@rm -rf ${SNAP_FILE}
 
 dev-environment:
 	@echo "Creating virtualenv and installing pre-commit"
@@ -49,7 +55,7 @@ dev-environment:
 
 functional: build
 	@echo "Executing functional tests using built snap"
-	@JUJULINT_TEST_SNAP=${SNAP_FILE} tox -e func -- ${FUNC_ARGS}
+	@TEST_SNAP=${SNAP_FILE} tox -e func -- ${FUNC_ARGS}
 
 pre-commit:
 	@tox -e pre-commit
