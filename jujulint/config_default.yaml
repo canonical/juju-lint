@@ -21,8 +21,13 @@
 #   sudo: 'juju-user'
 
 logging:
-  level: INFO
+  loglevel: INFO
   file: jujulint.log
 
 rules:
   file: lint-rules.yaml
+
+output:
+  folder:
+
+format: text
