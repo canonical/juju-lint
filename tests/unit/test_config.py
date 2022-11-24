@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Test correct reading of the all config files."""
 
+import os
 from unittest.mock import mock_open, patch
 
 import yaml
@@ -30,18 +31,27 @@ def test_config_file():
 
     format: json
     """
+    expected_config = yaml.safe_load(mock_file_config)
 
-    # create a mock open function that only intercepts calls to the config file
+    # confuse only reads a config file in .config, if it exists. We have to mock the os.isfile call
+    # and create a mock open function that only intercepts calls to the config file
     builtin_open = open
+    builtin_isfile = os.path.isfile
     config_file = f"{Config().config_dir()}/config.yaml"
+
+    def side_effect(filename):
+        if filename == config_file:
+            return True
+        else:
+            return builtin_isfile(filename)
 
     def my_mock_open(*args, **kwargs):
         if args[0] == config_file:
             return mock_open(read_data=mock_file_config)(*args, **kwargs)
         return builtin_open(*args, **kwargs)
 
-    expected_config = yaml.safe_load(mock_file_config)
-    with patch("builtins.open", my_mock_open):
+    with patch("builtins.open", my_mock_open), patch("os.path.isfile") as mock_isfile:
+        mock_isfile.side_effect = side_effect
         config = Config()
         # you cannot do config.get(), so we iterate over the toplevel keys
         for key in expected_config.keys():
