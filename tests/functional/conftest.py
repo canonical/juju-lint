@@ -25,6 +25,9 @@ def install_package():
     """
     jujulint_test_snap = os.environ.get("TEST_SNAP", None)
     if jujulint_test_snap:
+        # change directory to not import from local modules and force using the snap package
+        cwd = os.getcwd()
+        os.chdir("/tmp")
         logging.info(f"Installing {jujulint_test_snap}")
         assert os.path.isfile(jujulint_test_snap)
         assert (
@@ -49,6 +52,8 @@ def install_package():
     yield jujulint_test_snap
 
     if jujulint_test_snap:
+        # return to the previous working directory
+        os.chdir(cwd)
         logging.info("Removing snap package juju-lint")
         check_call("sudo snap remove juju-lint".split())
     else:

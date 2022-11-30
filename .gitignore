@@ -5,6 +5,7 @@
 juju_lint.egg-info/
 dist/
 tests/report/
+build/
 
 # python artefacts
 __pycache__

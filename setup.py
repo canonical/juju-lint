@@ -42,7 +42,7 @@ setuptools.setup(
         "Intended Audience :: System Administrators",
     ],
     python_requires=">=3.7",
-    packages=["jujulint"],
+    packages=setuptools.find_packages(include=("jujulint*")),
     entry_points={"console_scripts": ["juju-lint=jujulint.cli:main"]},
     setup_requires=["setuptools_scm"],
 )
