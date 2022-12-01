@@ -60,9 +60,9 @@ However for development purposes, the testing infrastructure also allows for ins
 and running tests against it.
 In order to invoke:
 - development smoke suite, which deselects tests running against a live lxd cloud
-  - `$ tox -e func-smoke`
+  - `$ tox -e func -- -m smoke -v`
 - development full suite, which runs all the functional tests
-  - `$ tox -e func-dev`
+  - `$ tox -e func`
 
 
 ## Canonical Contributor Agreement
