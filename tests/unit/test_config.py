@@ -30,8 +30,13 @@ format: json
 
 
 def patch_user_config(mocker):
-    # confuse only reads a config file in .config, if it exists. We have to mock the os.isfile call
-    # and create a mock open function that only intercepts calls to the config file
+    """Patch calls to ~/.config/juju-ling/config.yaml.
+
+    The confuse package reads the config file in .config, if it exists. We have
+    to mock the os.isfile call and create a mock open function that only
+    intercepts calls to that file.
+    """
+
     def my_mock_open(*args, **kwargs):
         if args[0] == config_file:
             return mocker.mock_open(read_data=mock_file_config)(*args, **kwargs)
