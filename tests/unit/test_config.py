@@ -30,7 +30,7 @@ format: json
 
 
 def patch_user_config(mocker):
-    """Patch calls to ~/.config/juju-ling/config.yaml.
+    """Patch calls to ~/.config/juju-lint/config.yaml.
 
     The confuse package reads the config file in .config, if it exists. We have
     to mock the os.isfile call and create a mock open function that only
@@ -50,7 +50,6 @@ def patch_user_config(mocker):
 
     mocker.patch("os.path.isfile", side_effect=side_effect)
     mocker.patch("builtins.open", my_mock_open)
-    return mocker
 
 
 def test_config_file(mocker):
@@ -75,7 +74,7 @@ def test_default_config(mocker):
         "format": "text",
     }
 
-    # Don't use the .config/juju-ling/config.yaml!
+    # Don't use the .config/juju-lint/config.yaml!
     def side_effect(filename):
         if filename == config_file:
             return False
