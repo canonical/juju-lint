@@ -37,7 +37,6 @@ class Config(Configuration):
             "-l",
             "--log-level",
             type=str,
-            default="info",
             nargs="?",
             help="The default log level, valid options are info, warn, error or debug",
             dest="logging.loglevel",
@@ -46,7 +45,6 @@ class Config(Configuration):
             "-d",
             "--output-dir",
             type=str,
-            default="",
             metavar="DIR",
             help=(
                 "Dump gathered cloud state data into %(metavar)s. "
@@ -67,7 +65,6 @@ class Config(Configuration):
         self.parser.add_argument(
             "-c",
             "--config",
-            default="lint-rules.yaml",
             help="File to read lint rules from. Defaults to `lint-rules.yaml`",
             dest="rules.file",
         )
@@ -99,7 +96,6 @@ class Config(Configuration):
         self.parser.add_argument(
             "--logfile",
             "-L",
-            default=None,
             help="File to log to in addition to stdout",
             dest="logging.file",
         )
@@ -107,7 +103,6 @@ class Config(Configuration):
             "--format",
             "-F",
             choices=["text", "json"],
-            default="text",
             help="Format for output",
         )
 
