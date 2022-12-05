@@ -45,4 +45,5 @@ setuptools.setup(
     packages=setuptools.find_packages(include=("jujulint*")),
     entry_points={"console_scripts": ["juju-lint=jujulint.cli:main"]},
     setup_requires=["setuptools_scm"],
+    include_package_data=True,
 )
