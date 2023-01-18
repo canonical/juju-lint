@@ -12,6 +12,8 @@ config:
   netlinks:
    neq: ""
    suffixes: [host, physical]
+  swap:
+   eq: ""
  landscape-client:
   disable-unattended-upgrades:
    eq: true
