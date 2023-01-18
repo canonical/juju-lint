@@ -69,6 +69,8 @@ config:
    neq: ""
   netlinks:
    neq: ""
+  swap:
+   eq: ""
  landscape-client:
   disable-unattended-upgrades:
    eq: true
