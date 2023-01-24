@@ -34,7 +34,17 @@ skip_glob = '''
 )/
 '''
 
-[tool.coverage]
-run.source = ["jujulint"]
-report.fail_under = 100
-report.show_missing = true
+[tool.coverage.run]
+relative_files = true
+source = ["jujulint"]
+omit = ["tests/**", "docs/**", "lib/**", "snap/**", "build/**", "setup.py"]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+
+[tool.coverage.html]
+directory = "report"
+
+[tool.coverage.xml]
+output = "report/coverage.xml"
