@@ -33,3 +33,8 @@ skip_glob = '''
     | report
 )/
 '''
+
+[tool.coverage]
+run.source = ["jujulint"]
+report.fail_under = 100
+report.show_missing = true
