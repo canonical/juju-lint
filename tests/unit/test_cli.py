@@ -48,7 +48,7 @@ def test_cli_init(output_format_value, mocker):
 
     assert cli_instance.logger.logger.level == WARN
     assert cli_instance.output_format == output_format_value
-    assert cli_instance.lint_rules == rules_file_value
+    assert cli_instance.lint_rules == [rules_file_value]
 
     if output_format_value != "text":
         logging_mock.disable.assert_called_once_with(level=logging_mock.CRITICAL)
@@ -80,7 +80,7 @@ def test_cli_ini_version(version, mocker):
     assert cli_instance.version == expected_version
 
 
-@pytest.mark.parametrize("rules_path", ["absolute", "relative", None])
+@pytest.mark.parametrize("rules_path", ["absolute", "relative", "url", None])
 def test_cli_init_rules_path(rules_path, mocker):
     """Test different methods of loading rules file on Cli init.
 
@@ -109,16 +109,18 @@ def test_cli_init_rules_path(rules_path, mocker):
         mocker.patch.object(cli.os.path, "isfile", return_value=True)
     elif rules_path == "relative":
         mocker.patch.object(cli.os.path, "isfile", side_effect=[False, True])
+    elif rules_path == "url":
+        mocker.patch.object(cli, "is_url", return_value=True)
     else:
         mocker.patch.object(cli.os.path, "isfile", return_value=False)
 
     cli_instance = cli.Cli()
 
-    if rules_path == "absolute":
-        assert cli_instance.lint_rules == file_path
+    if rules_path == "absolute" or rules_path == "url":
+        assert cli_instance.lint_rules == [file_path]
         exit_mock.assert_not_called()
     elif rules_path == "relative":
-        assert cli_instance.lint_rules == "{}/{}".format(config_dir, file_path)
+        assert cli_instance.lint_rules == ["{}/{}".format(config_dir, file_path)]
         exit_mock.assert_not_called()
     else:
         exit_mock.assert_called_once_with(1)

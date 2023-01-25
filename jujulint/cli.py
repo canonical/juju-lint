@@ -30,6 +30,7 @@ from jujulint.config import Config
 from jujulint.lint import Linter
 from jujulint.logging import Logger
 from jujulint.openstack import OpenStack
+from jujulint.util import is_url
 
 
 class Cli:
@@ -55,16 +56,9 @@ class Cli:
         except pkg_resources.DistributionNotFound:
             self.version = "unknown"
 
-        rules_file = self.config["rules"]["file"].get()
-        # handle absolute path provided
-        if os.path.isfile(rules_file):
-            self.lint_rules = rules_file
-        elif os.path.isfile("{}/{}".format(self.config.config_dir(), rules_file)):
-            # default to relative path
-            self.lint_rules = "{}/{}".format(self.config.config_dir(), rules_file)
-        else:
-            self.logger.error("Cloud not locate rules file {}".format(rules_file))
-            sys.exit(1)
+        self.lint_rules = self.validate_rules_files(
+            rules_args=self.config["rules"]["file"].get()
+        )
 
     @property
     def cloud_type(self):
@@ -89,6 +83,25 @@ class Cli:
         if "manual-file" in self.config:
             manual_file = self.config["manual-file"].get()
         return manual_file
+
+    def validate_rules_files(self, rules_args):
+        """Validate the given rules file arguments."""
+        if isinstance(rules_args, str):
+            rules_args = [rules_args]
+        for i, rules_file in enumerate(rules_args):
+            if is_url(rules_file):
+                continue
+            elif os.path.isfile(rules_file):
+                # handle absolute path provided
+                continue
+            elif os.path.isfile("{}/{}".format(self.config.config_dir(), rules_file)):
+                # default to relative path
+                rules_args[i] = "{}/{}".format(self.config.config_dir(), rules_file)
+            else:
+                self.logger.error("Cloud not locate rules file {}".format(rules_file))
+                sys.exit(1)
+
+        return rules_args
 
     def startup_message(self):
         """Print startup message to log."""

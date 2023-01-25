@@ -19,7 +19,9 @@
 """Utility library for all helpful functions this project uses."""
 
 import argparse
+import collections
 import re
+from urllib.parse import urlparse
 
 from jujulint.logging import Logger
 
@@ -43,6 +45,22 @@ def flatten_list(lumpy_list):
         else:
             flat_list.extend(flatten_list(item))
     return flat_list
+
+
+def deep_update(d, u):
+    """Deep update a dictionary with another dictionary."""
+    for k, v in u.items():
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = deep_update(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
+
+
+def is_url(string):
+    """Determine if a string is a url."""
+    result = urlparse(string)
+    return result.scheme and result.netloc
 
 
 def is_container(machine):

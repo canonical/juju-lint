@@ -26,6 +26,7 @@ import pprint
 import re
 import traceback
 from datetime import datetime, timezone
+from urllib.request import urlopen
 
 import attr
 import dateutil.parser
@@ -144,31 +145,37 @@ class Linter:
 
     def read_rules(self):
         """Read and parse rules from YAML, optionally processing provided overrides."""
-        if os.path.isfile(self.filename):
-            with open(self.filename, "r") as rules_file:
-                raw_rules_txt = rules_file.read()
+        for rules_file in self.filename:
+            if utils.is_url(rules_file):
+                with urlopen(rules_file) as response:
+                    raw_rules_txt = response.read().decode()
+            elif os.path.isfile(rules_file):
+                with open(rules_file, "r") as f:
+                    raw_rules_txt = f.read()
+            else:
+                self.logger.error("Rules file {} does not exist.".format(self.filename))
+                return False
 
-            self.lint_rules = self._process_includes_in_rules(raw_rules_txt)
-
-            if self.overrides:
-                for override in self.overrides.split("#"):
-                    (name, where) = override.split(":")
-                    self._log_with_header(
-                        "Overriding {} with {}".format(name, where), level=logging.INFO
-                    )
-                    self.lint_rules["subordinates"][name] = dict(where=where)
+            lint_rules = self._process_includes_in_rules(raw_rules_txt, rules_file)
 
             # Flatten all entries (to account for nesting due to YAML anchors (templating)
-            self.lint_rules = {
-                k: utils.flatten_list(v) for k, v in self.lint_rules.items()
-            }
+            lint_rules = {k: utils.flatten_list(v) for k, v in lint_rules.items()}
 
+            # Update the current rules with the new ones
+            self.lint_rules = utils.deep_update(self.lint_rules, lint_rules)
             self._log_with_header(
                 "Lint Rules: {}".format(pprint.pformat(self.lint_rules))
             )
-            return True
-        self.logger.error("Rules file {} does not exist.".format(self.filename))
-        return False
+
+        if self.overrides:
+            for override in self.overrides.split("#"):
+                (name, where) = override.split(":")
+                self._log_with_header(
+                    "Overriding {} with {}".format(name, where), level=logging.INFO
+                )
+                self.lint_rules["subordinates"][name] = dict(where=where)
+
+        return True
 
     def process_subordinates(self, app_d, app_name):
         """Iterate over subordinates and run subordinate checks."""
@@ -1454,7 +1461,7 @@ class Linter:
         if self.collect_errors and log_level == logging.ERROR:
             self.collect(message)
 
-    def _process_includes_in_rules(self, yaml_txt):
+    def _process_includes_in_rules(self, yaml_txt, filename):
         """
         Process any includes in the rules file.
 
@@ -1475,7 +1482,7 @@ class Linter:
                     )
                     continue
 
-                include_path = os.path.join(os.path.dirname(self.filename), rel_path)
+                include_path = os.path.join(os.path.dirname(filename), rel_path)
 
                 if os.path.isfile(include_path):
                     with open(include_path, "r") as f:

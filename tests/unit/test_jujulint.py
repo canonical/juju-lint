@@ -2,6 +2,7 @@
 """Tests for jujulint."""
 import logging
 from datetime import datetime, timezone
+from textwrap import dedent
 from unittest import mock
 
 import pytest
@@ -1217,16 +1218,55 @@ applications:
         rules_path = tmp_path / "rules.yaml"
         rules_path.write_text('---\nkey:\n "value"')
 
-        linter.filename = str(rules_path)
+        linter.lint_rules = {}
+        linter.filename = [str(rules_path)]
         result = linter.read_rules()
         assert linter.lint_rules == {"key": "value"}
+        assert result
+
+    def test_read_rules_url(self, linter, mocker):
+        """Test that rules YAML coming from urlopen works as expected."""
+        rules_content = b'---\nkey:\n "value"'
+        mock_urlopen = mocker.patch.object(lint, "urlopen")
+        mock_urlopen.return_value.__enter__.return_value.read.return_value = (
+            rules_content
+        )
+        linter.lint_rules = {}
+        linter.filename = ["https://rules.yaml"]
+        result = linter.read_rules()
+        assert linter.lint_rules == {"key": "value"}
+        assert result
+
+    def test_read_rules_multiple_files_update(self, tmp_path, linter, mocker):
+        """Test if successive rules file contents update the repeated fields."""
+        rules_one_content = dedent(
+            """
+                key_one: "foo"
+                key_two: "bar"
+            """
+        )
+        rules_two_content = dedent(
+            """
+                key_one: "baz"
+            """
+        ).encode()  # urlopen will eventually yield a bytes object
+        rules_one_path = tmp_path / "rules.yaml"
+        rules_one_path.write_text(rules_one_content)
+        mock_urlopen = mocker.patch.object(lint, "urlopen")
+        mock_urlopen.return_value.__enter__.return_value.read.return_value = (
+            rules_two_content
+        )
+        linter.lint_rules = {}
+        linter.filename = [str(rules_one_path), "https://rules.yaml"]
+        result = linter.read_rules()
+        assert linter.lint_rules == {"key_one": "baz", "key_two": "bar"}
         assert result
 
     def test_snap_rules_files(self, rules_files, linter):
         """Ensure that all standard rules in the snap is loading correctly."""
         for rule_file in rules_files:
             try:
-                linter.filename = rule_file
+                linter.filename = [rule_file]
                 linter.read_rules()
             except yaml.YAMLError:
                 pytest.fail(f"File: {rule_file} not loading")
@@ -1234,7 +1274,7 @@ applications:
     def test_wrong_rule_file_raise_error(self, rules_files, linter, mocker):
         """Test that bad formatted rules raise YAMLError."""
         rules_file = rules_files[0]
-        linter.filename = rules_file
+        linter.filename = [rules_file]
         mocker.patch(
             "jujulint.lint.Linter._process_includes_in_rules",
             side_effect=yaml.YAMLError,
@@ -1250,7 +1290,8 @@ applications:
         rules_path = tmp_path / "rules.yaml"
         rules_path.write_text('---\n!include include.yaml\nkey:\n "value"')
 
-        linter.filename = str(rules_path)
+        linter.lint_rules = {}
+        linter.filename = [str(rules_path)]
         result = linter.read_rules()
         assert linter.lint_rules == {"key": "value", "key-inc": "value2"}
         assert result
@@ -1262,7 +1303,8 @@ applications:
 
         linter.overrides = "override_1:value_1#override_2:value_2"
 
-        linter.filename = str(rules_path)
+        linter.lint_rules = {}
+        linter.filename = [str(rules_path)]
         linter.read_rules()
         assert linter.lint_rules == {
             "key": "value",
@@ -1706,7 +1748,8 @@ applications:
     def test_path_mtu_for_ovs_ovn_rules(self, linter, rules_files):
         """Test that ovs and ovn rules set right value of path-mtu."""
         for rule in [rules_file for rules_file in rules_files if "fcb" in rules_file]:
-            linter.filename = rule
+            linter.lint_rules = {}
+            linter.filename = [rule]
             linter.read_rules()
             path_mtu = linter.lint_rules["openstack config"]["neutron-api"]["path-mtu"]
             if "ovs" in rule:
@@ -1731,7 +1774,8 @@ applications:
         ]
         for rule in [rules_file for rules_file in rules_files if "fcb" in rules_file]:
             for charm in charms:
-                linter.filename = rule
+                linter.lint_rules = {}
+                linter.filename = [rule]
                 linter.read_rules()
                 worker_multiplier = linter.lint_rules["openstack config"][charm][
                     "worker-multiplier"
