@@ -3,12 +3,14 @@
 
 import os
 import sys
+from unittest.mock import patch
 
 import yaml
 
 from jujulint.config import Config
 
-config_file = f"{Config().config_dir()}/config.yaml"
+with patch.object(sys, "argv", ["juju-lint"]):
+    config_file = f"{Config().config_dir()}/config.yaml"
 builtin_open = open
 builtin_isfile = os.path.isfile
 
@@ -52,6 +54,7 @@ def patch_user_config(mocker):
     mocker.patch("builtins.open", my_mock_open)
 
 
+@patch.object(sys, "argv", ["juju-lint"])
 def test_config_file(mocker):
     """Tests if the config entries set in the .config/juju-lint/config.yaml are correctly applied.
 
@@ -65,6 +68,7 @@ def test_config_file(mocker):
         assert config[key].get() == expected_config[key]
 
 
+@patch.object(sys, "argv", ["juju-lint"])
 def test_default_config(mocker):
     """Tests if the default values are correctly read from config_default.yaml."""
     default_config = {
@@ -96,7 +100,8 @@ def test_parser_options(mocker):
         "output": {"folder": "cli/folder"},
         "format": "json",
     }
-    test_args = sys.argv + [
+    test_args = [
+        "juju-lint",
         "-F",
         cli_config["format"],
         "-l",
