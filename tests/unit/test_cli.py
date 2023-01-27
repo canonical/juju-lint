@@ -247,6 +247,30 @@ def test_cli_audit_file(cli_instance, mocker):
     linter_object.lint_yaml_file.assert_called_once_with(filename)
 
 
+def test_cli_audit_file_exits_when_read_rule_fails(cli_instance, mocker):
+    """Test method audit_file() from Cli class terminates when cannot read rules."""
+    filename = "/tmp/bundle.yaml"
+    rules = ["/tmp/rules.yaml"]
+    cloud_type = "openstack"
+    output_format = "text"
+    linter_object = MagicMock()
+    linter_object.read_rules.return_value = False
+
+    mock_linter = mocker.patch.object(cli, "Linter", return_value=linter_object)
+    cli_instance.rules_files = rules
+    cli_instance.output_format = output_format
+
+    with pytest.raises(SystemExit) as mock_exception:
+        cli_instance.audit_file(filename, cloud_type)
+
+    assert mock_exception.value.code == 1
+    mock_linter.assert_called_once_with(
+        filename, rules, cloud_type=cloud_type, output_format=output_format
+    )
+    linter_object.read_rules.assert_called_once()
+    linter_object.lint_yaml_file.assert_not_called()
+
+
 def test_cli_audit_all(cli_instance, mocker):
     """Test audit_all() method from Cli class."""
     audit_mock = mocker.patch.object(cli_instance, "audit")

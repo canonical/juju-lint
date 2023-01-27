@@ -147,7 +147,8 @@ class Cli:
             cloud_type=cloud_type,
             output_format=self.output_format,
         )
-        linter.read_rules()
+        if not linter.read_rules():
+            Logger.fubar("Error while reading the rules. Exiting...")
         self.logger.info("[{}] Linting manual file...".format(filename))
         linter.lint_yaml_file(filename)
 

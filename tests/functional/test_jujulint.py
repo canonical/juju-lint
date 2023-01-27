@@ -50,7 +50,9 @@ def test_bad_url_among_the_rules_file_args_causes_crash(arg, manual_file, reques
         stderr=PIPE,
     )
     assert not process.returncode == 0
-    assert "urlopen error" in process.stderr
+    assert "Failed to fetch url" in process.stderr
+    assert "Error while reading the rules. Exiting..." in process.stderr
+    assert "Linting manual file" not in process.stderr
 
 
 @pytest.mark.smoke

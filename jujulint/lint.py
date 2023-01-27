@@ -26,6 +26,7 @@ import pprint
 import re
 import traceback
 from datetime import datetime, timezone
+from urllib.error import URLError
 from urllib.request import urlopen
 
 import attr
@@ -147,8 +148,12 @@ class Linter:
         """Read and parse rules from YAML, optionally processing provided overrides."""
         for rules_file in self.rules_files:
             if utils.is_url(rules_file):
-                with urlopen(rules_file) as response:
-                    raw_rules_txt = response.read().decode()
+                try:
+                    with urlopen(rules_file) as response:
+                        raw_rules_txt = response.read().decode()
+                except URLError:
+                    self.logger.error("Failed to fetch url: {}".format(rules_file))
+                    return False
             elif os.path.isfile(rules_file):
                 with open(rules_file, "r") as f:
                     raw_rules_txt = f.read()
