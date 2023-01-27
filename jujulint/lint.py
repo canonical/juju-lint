@@ -107,7 +107,7 @@ class Linter:
     def __init__(
         self,
         name,
-        filename,
+        rules_files,
         controller_name="manual",
         model_name="manual",
         overrides=None,
@@ -118,7 +118,7 @@ class Linter:
         self.logger = Logger()
         self.lint_rules = {}
         self.model = ModelInfo()
-        self.filename = filename
+        self.rules_files = rules_files
         self.overrides = overrides
         self.cloud_name = name
         self.cloud_type = cloud_type
@@ -131,7 +131,7 @@ class Linter:
             "name": name,
             "controller": controller_name,
             "model": model_name,
-            "rules": filename,
+            "rules": rules_files,
             "errors": [],
         }
 
@@ -145,7 +145,7 @@ class Linter:
 
     def read_rules(self):
         """Read and parse rules from YAML, optionally processing provided overrides."""
-        for rules_file in self.filename:
+        for rules_file in self.rules_files:
             if utils.is_url(rules_file):
                 with urlopen(rules_file) as response:
                     raw_rules_txt = response.read().decode()
@@ -153,7 +153,7 @@ class Linter:
                 with open(rules_file, "r") as f:
                     raw_rules_txt = f.read()
             else:
-                self.logger.error("Rules file {} does not exist.".format(self.filename))
+                self.logger.error("Rules file {} does not exist.".format(rules_file))
                 return False
 
             lint_rules = self._process_includes_in_rules(raw_rules_txt, rules_file)
@@ -163,10 +163,8 @@ class Linter:
 
             # Update the current rules with the new ones
             self.lint_rules = utils.deep_update(self.lint_rules, lint_rules)
-            self._log_with_header(
-                "Lint Rules: {}".format(pprint.pformat(self.lint_rules))
-            )
 
+        self._log_with_header("Lint Rules: {}".format(pprint.pformat(self.lint_rules)))
         if self.overrides:
             for override in self.overrides.split("#"):
                 (name, where) = override.split(":")

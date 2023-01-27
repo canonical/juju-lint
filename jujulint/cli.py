@@ -56,9 +56,7 @@ class Cli:
         except pkg_resources.DistributionNotFound:
             self.version = "unknown"
 
-        self.lint_rules = self.validate_rules_files(
-            rules_args=self.config["rules"]["file"].get()
-        )
+        self.rules_files = self.validate_rules_file_args()
 
     @property
     def cloud_type(self):
@@ -84,24 +82,43 @@ class Cli:
             manual_file = self.config["manual-file"].get()
         return manual_file
 
-    def validate_rules_files(self, rules_args):
-        """Validate the given rules file arguments."""
-        if isinstance(rules_args, str):
-            rules_args = [rules_args]
-        for i, rules_file in enumerate(rules_args):
-            if is_url(rules_file):
-                continue
-            elif os.path.isfile(rules_file):
-                # handle absolute path provided
-                continue
-            elif os.path.isfile("{}/{}".format(self.config.config_dir(), rules_file)):
-                # default to relative path
-                rules_args[i] = "{}/{}".format(self.config.config_dir(), rules_file)
+    def validate_rules_file_args(self):
+        """Validate the given rules file arguments.
+
+        :return: a list of validated and slightly adjusted
+                 paths/urls to the rules files.
+        :rtype: list
+        """
+        rules_file_args = self.config["rules"]["file"].get()
+        validated_rules_file_args = []
+
+        # This is for backwards compatibility.
+        # The rules.file field used to be a string. Now it is a list,
+        # therefore we need to accomodate for that.
+        if isinstance(rules_file_args, str):
+            rules_file_args = [rules_file_args]
+
+        for i, arg in enumerate(rules_file_args):
+            # does not say anything about accessibility of the resource
+            # pointed to by the url. we are just checking if the url
+            # is well formed.
+            if is_url(arg):
+                validated_rules_file_args.append(arg)
+
+            # absolute path provided
+            elif os.path.isfile(arg):
+                validated_rules_file_args.append(arg)
+
+            # default to relative path
+            elif os.path.isfile("{}/{}".format(self.config.config_dir(), arg)):
+                validated_rules_file_args.append(
+                    "{}/{}".format(self.config.config_dir(), arg)
+                )
             else:
-                self.logger.error("Cloud not locate rules file {}".format(rules_file))
+                self.logger.error("Cloud not locate rules file {}".format(arg))
                 sys.exit(1)
 
-        return rules_args
+        return validated_rules_file_args
 
     def startup_message(self):
         """Print startup message to log."""
@@ -111,14 +128,14 @@ class Cli:
                 "\t* Config directory: {}\n"
                 "\t* Cloud type: {}\n"
                 "\t* Manual file: {}\n"
-                "\t* Rules file: {}\n"
+                "\t* Rules files: {}\n"
                 "\t* Log level: {}\n"
             ).format(
                 self.version,
                 self.config.config_dir(),
                 self.cloud_type or "Unknown",
                 self.manual_file or False,
-                self.lint_rules,
+                self.rules_files,
                 self.config["logging"]["loglevel"].get(),
             )
         )
@@ -132,7 +149,7 @@ class Cli:
         self.logger.debug("Starting audit of file {}".format(filename))
         linter = Linter(
             filename,
-            self.lint_rules,
+            self.rules_files,
             cloud_type=cloud_type,
             output_format=self.output_format,
         )
@@ -173,7 +190,7 @@ class Cli:
                 access_method=access_method,
                 ssh_host=ssh_host,
                 sudo_user=sudo_user,
-                lint_rules=self.lint_rules,
+                lint_rules=self.rules_files,
             )
         # refresh information
         result = cloud_instance.refresh()

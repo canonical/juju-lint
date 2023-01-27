@@ -102,7 +102,7 @@ def rules_file_url(httpserver):
                 max-connections:
                     gte: 99999
         """
-    ).strip()
+    )
     httpserver.expect_request(endpoint).respond_with_data(
         response_data=rules_file_content
     )

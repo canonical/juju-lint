@@ -48,7 +48,7 @@ def test_cli_init(output_format_value, mocker):
 
     assert cli_instance.logger.logger.level == WARN
     assert cli_instance.output_format == output_format_value
-    assert cli_instance.lint_rules == [rules_file_value]
+    assert cli_instance.rules_files == [rules_file_value]
 
     if output_format_value != "text":
         logging_mock.disable.assert_called_once_with(level=logging_mock.CRITICAL)
@@ -117,10 +117,10 @@ def test_cli_init_rules_path(rules_path, mocker):
     cli_instance = cli.Cli()
 
     if rules_path == "absolute" or rules_path == "url":
-        assert cli_instance.lint_rules == [file_path]
+        assert cli_instance.rules_files == [file_path]
         exit_mock.assert_not_called()
     elif rules_path == "relative":
-        assert cli_instance.lint_rules == ["{}/{}".format(config_dir, file_path)]
+        assert cli_instance.rules_files == ["{}/{}".format(config_dir, file_path)]
         exit_mock.assert_not_called()
     else:
         exit_mock.assert_called_once_with(1)
@@ -169,7 +169,7 @@ def test_cli_startup_message(cli_instance, cloud_type_value, manual_file_value, 
     """Test output of a startup message."""
     version = "1.0"
     config_dir = "/tmp/"
-    lint_rules = "some rules"
+    rules_files = ["rules.yaml"]
 
     log_level_value = "debug"
     log_level = MagicMock()
@@ -194,20 +194,20 @@ def test_cli_startup_message(cli_instance, cloud_type_value, manual_file_value, 
 
     expected_msg = (
         "juju-lint version {} starting...\n\t* Config directory: {}\n"
-        "\t* Cloud type: {}\n\t* Manual file: {}\n\t* Rules file: {}\n"
+        "\t* Cloud type: {}\n\t* Manual file: {}\n\t* Rules files: {}\n"
         "\t* Log level: {}\n"
     ).format(
         version,
         config_dir,
         cloud_type_value or "Unknown",
         manual_file_value or False,
-        lint_rules,
+        rules_files,
         log_level_value,
     )
 
     cli_instance.version = version
     cli_instance.config = config
-    cli_instance.lint_rules = lint_rules
+    cli_instance.rules_files = rules_files
     log_mock = mocker.patch.object(cli_instance, "logger")
 
     assert cli_instance.cloud_type == cloud_type_value
@@ -229,13 +229,13 @@ def test_cli_usage(cli_instance):
 def test_cli_audit_file(cli_instance, mocker):
     """Test method audit_file() from Cli class."""
     filename = "/tmp/bundle.yaml"
-    rules = "/tmp/rules.yaml"
+    rules = ["/tmp/rules.yaml"]
     cloud_type = "openstack"
     output_format = "text"
     linter_object = MagicMock()
 
     mock_linter = mocker.patch.object(cli, "Linter", return_value=linter_object)
-    cli_instance.lint_rules = rules
+    cli_instance.rules_files = rules
     cli_instance.output_format = output_format
 
     cli_instance.audit_file(filename, cloud_type)
@@ -278,7 +278,7 @@ def test_cli_audit_all(cli_instance, mocker):
 def test_cli_audit(cli_instance, success, mocker):
     """Test audit() method from Cli class."""
     cloud_name = "test cloud"
-    lint_rules = "rules.yaml"
+    rules_files = ["rules.yaml"]
     cloud_data = {
         "access": "ssh",
         "sudo": "root",
@@ -305,7 +305,7 @@ def test_cli_audit(cli_instance, success, mocker):
     cli_instance.logger = mock_logger
 
     cli_instance.config = config_data
-    cli_instance.lint_rules = lint_rules
+    cli_instance.rules_files = rules_files
 
     # assert cli_instance.config["clouds"]
     cli_instance.audit(cloud_name=cloud_name)
@@ -315,7 +315,7 @@ def test_cli_audit(cli_instance, success, mocker):
         access_method=cloud_data["access"],
         ssh_host=cloud_data["host"],
         sudo_user=cloud_data["sudo"],
-        lint_rules=lint_rules,
+        lint_rules=rules_files,
     )
 
     if success:

@@ -1219,7 +1219,7 @@ applications:
         rules_path.write_text('---\nkey:\n "value"')
 
         linter.lint_rules = {}
-        linter.filename = [str(rules_path)]
+        linter.rules_files = [str(rules_path)]
         result = linter.read_rules()
         assert linter.lint_rules == {"key": "value"}
         assert result
@@ -1232,7 +1232,7 @@ applications:
             rules_content
         )
         linter.lint_rules = {}
-        linter.filename = ["https://rules.yaml"]
+        linter.rules_files = ["https://rules.yaml"]
         result = linter.read_rules()
         assert linter.lint_rules == {"key": "value"}
         assert result
@@ -1257,24 +1257,24 @@ applications:
             rules_two_content
         )
         linter.lint_rules = {}
-        linter.filename = [str(rules_one_path), "https://rules.yaml"]
+        linter.rules_files = [str(rules_one_path), "https://rules.yaml"]
         result = linter.read_rules()
         assert linter.lint_rules == {"key_one": "baz", "key_two": "bar"}
         assert result
 
     def test_snap_rules_files(self, rules_files, linter):
         """Ensure that all standard rules in the snap is loading correctly."""
-        for rule_file in rules_files:
+        for rules_file in rules_files:
             try:
-                linter.filename = [rule_file]
+                linter.rules_files = [rules_file]
                 linter.read_rules()
             except yaml.YAMLError:
-                pytest.fail(f"File: {rule_file} not loading")
+                pytest.fail(f"File: {rules_file} not loading")
 
     def test_wrong_rule_file_raise_error(self, rules_files, linter, mocker):
         """Test that bad formatted rules raise YAMLError."""
         rules_file = rules_files[0]
-        linter.filename = [rules_file]
+        linter.rules_files = [rules_file]
         mocker.patch(
             "jujulint.lint.Linter._process_includes_in_rules",
             side_effect=yaml.YAMLError,
@@ -1291,7 +1291,7 @@ applications:
         rules_path.write_text('---\n!include include.yaml\nkey:\n "value"')
 
         linter.lint_rules = {}
-        linter.filename = [str(rules_path)]
+        linter.rules_files = [str(rules_path)]
         result = linter.read_rules()
         assert linter.lint_rules == {"key": "value", "key-inc": "value2"}
         assert result
@@ -1304,7 +1304,7 @@ applications:
         linter.overrides = "override_1:value_1#override_2:value_2"
 
         linter.lint_rules = {}
-        linter.filename = [str(rules_path)]
+        linter.rules_files = [str(rules_path)]
         linter.read_rules()
         assert linter.lint_rules == {
             "key": "value",
@@ -1316,17 +1316,17 @@ applications:
 
     def test_read_rules_fail(self, linter, mocker):
         """Test handling of a read_rules() failure."""
-        rule_file = "rules.yaml"
+        rules_files = ["rules.yaml"]
         mocker.patch.object(lint.os.path, "isfile", return_value=False)
         logger_mock = mock.MagicMock()
         linter.logger = logger_mock
-        linter.filename = rule_file
+        linter.rules_files = rules_files
 
         result = linter.read_rules()
 
         assert not result
         logger_mock.error.assert_called_once_with(
-            "Rules file {} does not exist.".format(rule_file)
+            "Rules file {} does not exist.".format(rules_files[0])
         )
 
     check_spaces_example_bundle = {
@@ -1749,7 +1749,7 @@ applications:
         """Test that ovs and ovn rules set right value of path-mtu."""
         for rule in [rules_file for rules_file in rules_files if "fcb" in rules_file]:
             linter.lint_rules = {}
-            linter.filename = [rule]
+            linter.rules_files = [rule]
             linter.read_rules()
             path_mtu = linter.lint_rules["openstack config"]["neutron-api"]["path-mtu"]
             if "ovs" in rule:
@@ -1775,7 +1775,7 @@ applications:
         for rule in [rules_file for rules_file in rules_files if "fcb" in rules_file]:
             for charm in charms:
                 linter.lint_rules = {}
-                linter.filename = [rule]
+                linter.rules_files = [rule]
                 linter.read_rules()
                 worker_multiplier = linter.lint_rules["openstack config"][charm][
                     "worker-multiplier"
