@@ -35,11 +35,17 @@ def test_json_output(rules_file, manual_file):
 
 
 @pytest.mark.smoke
-def test_only_bad_url_causes_crash(manual_file):
-    """Test that a bad url causes a crash."""
+@pytest.mark.parametrize("arg", ["", "rules_file"])
+def test_bad_url_among_the_rules_file_args_causes_crash(arg, manual_file, request):
+    """Test that a bad url in the arguments causes a crash."""
     bad_url = "foo://bad.url"
+    cmdline_arg = bad_url
+    if arg:
+        rules_file = request.getfixturevalue(arg)
+        cmdline_arg += f",{rules_file}"
+
     process = run(
-        f"juju-lint -c {bad_url} {manual_file}".split(),
+        f"juju-lint -c {cmdline_arg} {manual_file}".split(),
         universal_newlines=True,
         stderr=PIPE,
     )
@@ -48,20 +54,8 @@ def test_only_bad_url_causes_crash(manual_file):
 
 
 @pytest.mark.smoke
-def test_bad_url_with_valid_rules_file_causes_crash(rules_file, manual_file):
-    """Test that a bad url with a valid rules file causes a crash."""
-    bad_url = "foo://bad.url"
-    process = run(
-        f"juju-lint -c {rules_file} -c {bad_url} {manual_file}".split(),
-        universal_newlines=True,
-        stderr=PIPE,
-    )
-    assert not process.returncode == 0
-    assert "urlopen error" in process.stderr
-
-
-@pytest.mark.smoke
-def test_url(rules_file, rules_file_url, manual_file):
+def test_multiple_rules_files_update_rules(rules_file, rules_file_url, manual_file):
+    """Test that multiple rules files actually update the rules."""
     error_string = "Application mysql-innodb-cluster has config for 'max-connections' which is less than"
     process = run(
         f"juju-lint -c {rules_file} {manual_file}".split(),
@@ -72,7 +66,7 @@ def test_url(rules_file, rules_file_url, manual_file):
     assert error_string not in process.stderr
 
     process = run(
-        f"juju-lint -c {rules_file} -c {rules_file_url} {manual_file}".split(),
+        f"juju-lint -c {rules_file},{rules_file_url} {manual_file}".split(),
         universal_newlines=True,
         stderr=PIPE,
     )

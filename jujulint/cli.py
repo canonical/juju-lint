@@ -89,14 +89,8 @@ class Cli:
                  paths/urls to the rules files.
         :rtype: list
         """
-        rules_file_args = self.config["rules"]["file"].get()
+        rules_file_args = self.config["rules"]["file"].get().split(",")
         validated_rules_file_args = []
-
-        # This is for backwards compatibility.
-        # The rules.file field used to be a string. Now it is a list,
-        # therefore we need to accomodate for that.
-        if isinstance(rules_file_args, str):
-            rules_file_args = [rules_file_args]
 
         for i, arg in enumerate(rules_file_args):
             # does not say anything about accessibility of the resource

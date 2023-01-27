@@ -117,7 +117,5 @@ def test_parser_options(mocker):
     mocker.patch.object(sys, "argv", test_args)
     patch_user_config(mocker)
     config = Config()
-    for key in ["format", "logging", "output"]:
+    for key in cli_config.keys():
         assert config[key].get() == cli_config[key]
-
-    assert config["rules"]["file"].get() == [cli_config["rules"]["file"]]

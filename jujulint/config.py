@@ -65,10 +65,11 @@ class Config(Configuration):
         self.parser.add_argument(
             "-c",
             "--config",
-            action="append",
             help=(
                 "File to read lint rules from. Defaults to `lint-rules.yaml`. "
-                "This argument can be specified multiple times. "
+                "Also supports urls and comma separated multiple files. "
+                "Note that if multiple files given, rules will be merged and existing "
+                "rules will be overriden."
             ),
             dest="rules.file",
         )
