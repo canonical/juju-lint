@@ -89,10 +89,14 @@ class Cli:
                  paths/urls to the rules files.
         :rtype: list
         """
-        rules_file_args = self.config["rules"]["file"].get().split(",")
+        rules_file_args = [
+            rules_file.strip()
+            for rules_file in self.config["rules"]["file"].get().split(",")
+            if rules_file.strip()
+        ]
         validated_rules_file_args = []
 
-        for i, arg in enumerate(rules_file_args):
+        for arg in rules_file_args:
             # does not say anything about accessibility of the resource
             # pointed to by the url. we are just checking if the url
             # is well formed.

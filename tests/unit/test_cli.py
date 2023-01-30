@@ -126,6 +126,35 @@ def test_cli_init_rules_path(rules_path, mocker):
         exit_mock.assert_called_once_with(1)
 
 
+@pytest.mark.parametrize(
+    "rules_file_value",
+    (
+        "/rule1.yaml, /rule2.yaml",
+        ",,,/rule1.yaml,/rule2.yaml",
+        "/rule1.yaml,/rule2.yaml,,,",
+        " /rule1.yaml,, /rule2.yaml ",
+        "/rule1.yaml,,,,,/rule2.yaml",
+    ),
+)
+def test_cli_init_rules_file_comma_separated_values(rules_file_value, mocker):
+    """Test that comma separated rules file values handle commas and spaces well."""
+    rules_file = MagicMock()
+    rules_file.get.return_value = rules_file_value
+
+    config = {
+        "logging": {"loglevel": MagicMock()},
+        "format": MagicMock(),
+        "rules": {"file": rules_file},
+    }
+
+    mocker.patch.object(cli, "Config", return_value=config)
+    mocker.patch.object(cli.os.path, "isfile", return_value=True)
+
+    cli_instance = cli.Cli()
+
+    assert cli_instance.rules_files == ["/rule1.yaml", "/rule2.yaml"]
+
+
 @pytest.mark.parametrize("is_cloud_set", [True, False])
 def test_cli_cloud_type(cli_instance, is_cloud_set):
     """Test cloud_type() property of Cli class."""
