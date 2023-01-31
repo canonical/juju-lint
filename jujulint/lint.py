@@ -149,7 +149,7 @@ class Linter:
         for rules_file in self.rules_files:
             if utils.is_url(rules_file):
                 try:
-                    with urlopen(rules_file) as response:
+                    with urlopen(rules_file, timeout=10) as response:
                         raw_rules_txt = response.read().decode()
                 except (HTTPError, URLError) as error:
                     self.logger.error(
