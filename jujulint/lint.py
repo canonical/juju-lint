@@ -180,7 +180,6 @@ class Linter:
             # Update the current rules with the new ones
             self.lint_rules = utils.deep_update(self.lint_rules, lint_rules)
 
-        self._log_with_header("Lint Rules: {}".format(pprint.pformat(self.lint_rules)))
         if self.overrides:
             for override in self.overrides.split("#"):
                 (name, where) = override.split(":")
@@ -189,6 +188,7 @@ class Linter:
                 )
                 self.lint_rules["subordinates"][name] = dict(where=where)
 
+        self._log_with_header("Lint Rules: {}".format(pprint.pformat(self.lint_rules)))
         return True
 
     def process_subordinates(self, app_d, app_name):
