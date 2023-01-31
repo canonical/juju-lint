@@ -30,6 +30,7 @@ from jujulint.config import Config
 from jujulint.lint import Linter
 from jujulint.logging import Logger
 from jujulint.openstack import OpenStack
+from jujulint.util import is_url
 
 
 class Cli:
@@ -55,16 +56,7 @@ class Cli:
         except pkg_resources.DistributionNotFound:
             self.version = "unknown"
 
-        rules_file = self.config["rules"]["file"].get()
-        # handle absolute path provided
-        if os.path.isfile(rules_file):
-            self.lint_rules = rules_file
-        elif os.path.isfile("{}/{}".format(self.config.config_dir(), rules_file)):
-            # default to relative path
-            self.lint_rules = "{}/{}".format(self.config.config_dir(), rules_file)
-        else:
-            self.logger.error("Cloud not locate rules file {}".format(rules_file))
-            sys.exit(1)
+        self.rules_files = self.validate_rules_file_args()
 
     @property
     def cloud_type(self):
@@ -90,6 +82,42 @@ class Cli:
             manual_file = self.config["manual-file"].get()
         return manual_file
 
+    def validate_rules_file_args(self):
+        """Validate the given rules file arguments.
+
+        :return: a list of validated and slightly adjusted
+                 paths/urls to the rules files.
+        :rtype: list
+        """
+        rules_file_args = [
+            rules_file.strip()
+            for rules_file in self.config["rules"]["file"].get().split(",")
+            if rules_file.strip()
+        ]
+        validated_rules_file_args = []
+
+        for arg in rules_file_args:
+            # does not say anything about accessibility of the resource
+            # pointed to by the url. we are just checking if the url
+            # is well formed.
+            if is_url(arg):
+                validated_rules_file_args.append(arg)
+
+            # absolute path provided
+            elif os.path.isfile(arg):
+                validated_rules_file_args.append(arg)
+
+            # default to relative path
+            elif os.path.isfile("{}/{}".format(self.config.config_dir(), arg)):
+                validated_rules_file_args.append(
+                    "{}/{}".format(self.config.config_dir(), arg)
+                )
+            else:
+                self.logger.error("Cloud not locate rules file {}".format(arg))
+                sys.exit(1)
+
+        return validated_rules_file_args
+
     def startup_message(self):
         """Print startup message to log."""
         self.logger.info(
@@ -98,14 +126,14 @@ class Cli:
                 "\t* Config directory: {}\n"
                 "\t* Cloud type: {}\n"
                 "\t* Manual file: {}\n"
-                "\t* Rules file: {}\n"
+                "\t* Rules files: {}\n"
                 "\t* Log level: {}\n"
             ).format(
                 self.version,
                 self.config.config_dir(),
                 self.cloud_type or "Unknown",
                 self.manual_file or False,
-                self.lint_rules,
+                self.rules_files,
                 self.config["logging"]["loglevel"].get(),
             )
         )
@@ -119,11 +147,12 @@ class Cli:
         self.logger.debug("Starting audit of file {}".format(filename))
         linter = Linter(
             filename,
-            self.lint_rules,
+            self.rules_files,
             cloud_type=cloud_type,
             output_format=self.output_format,
         )
-        linter.read_rules()
+        if not linter.read_rules():
+            Logger.fubar("Error while reading the rules. Exiting...")
         self.logger.info("[{}] Linting manual file...".format(filename))
         linter.lint_yaml_file(filename)
 
@@ -160,7 +189,7 @@ class Cli:
                 access_method=access_method,
                 ssh_host=ssh_host,
                 sudo_user=sudo_user,
-                lint_rules=self.lint_rules,
+                lint_rules=self.rules_files,
             )
         # refresh information
         result = cloud_instance.refresh()

@@ -19,7 +19,10 @@
 """Utility library for all helpful functions this project uses."""
 
 import argparse
+import collections
 import re
+from copy import deepcopy
+from urllib.parse import urlparse
 
 from jujulint.logging import Logger
 
@@ -43,6 +46,28 @@ def flatten_list(lumpy_list):
         else:
             flat_list.extend(flatten_list(item))
     return flat_list
+
+
+def deep_update(existing, new):
+    """Deep update an existing dictionary with new dictionary."""
+    result = deepcopy(existing)
+
+    def _deep_update_inplace(_existing, _new):
+        """Perform an in-place recursive deep update of two dictionaries."""
+        for key, val in _new.items():
+            if isinstance(val, collections.abc.Mapping):
+                _existing[key] = _deep_update_inplace(_existing.get(key, {}), val)
+            else:
+                _existing[key] = val
+        return _existing
+
+    return _deep_update_inplace(result, new)
+
+
+def is_url(string):
+    """Determine if a string is a url."""
+    result = urlparse(string)
+    return result.scheme and result.netloc
 
 
 def is_container(machine):

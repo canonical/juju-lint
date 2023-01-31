@@ -1,7 +1,7 @@
 """Functional tests for juju-lint."""
 import json
 import socket
-from subprocess import check_call, check_output
+from subprocess import PIPE, check_call, check_output, run
 
 import pytest
 
@@ -32,6 +32,48 @@ def test_json_output(rules_file, manual_file):
             f"juju-lint --format json -c {rules_file} {manual_file}".split()
         ).decode()
     )
+
+
+@pytest.mark.smoke
+@pytest.mark.parametrize("arg", ["", "rules_file"])
+def test_bad_url_among_the_rules_file_args_causes_crash(arg, manual_file, request):
+    """Test that a bad url in the arguments causes a crash."""
+    bad_url = "foo://bad.url"
+    cmdline_arg = bad_url
+    if arg:
+        rules_file = request.getfixturevalue(arg)
+        cmdline_arg += f",{rules_file}"
+
+    process = run(
+        f"juju-lint -c {cmdline_arg} {manual_file}".split(),
+        universal_newlines=True,
+        stderr=PIPE,
+    )
+    assert not process.returncode == 0
+    assert "Failed to fetch url" in process.stderr
+    assert "Error while reading the rules. Exiting..." in process.stderr
+    assert "Linting manual file" not in process.stderr
+
+
+@pytest.mark.smoke
+def test_multiple_rules_files_update_rules(rules_file, rules_file_url, manual_file):
+    """Test that multiple rules files actually update the rules."""
+    error_string = "Application mysql-innodb-cluster has config for 'max-connections' which is less than"
+    process = run(
+        f"juju-lint -c {rules_file} {manual_file}".split(),
+        universal_newlines=True,
+        stderr=PIPE,
+    )
+    assert process.returncode == 0
+    assert error_string not in process.stderr
+
+    process = run(
+        f"juju-lint -c {rules_file},{rules_file_url} {manual_file}".split(),
+        universal_newlines=True,
+        stderr=PIPE,
+    )
+    assert process.returncode == 0
+    assert error_string in process.stderr
 
 
 @pytest.mark.cloud

@@ -82,6 +82,40 @@ def rules_file(basedir):
 
 
 @pytest.fixture
+def rules_file_url(httpserver):
+    """Return a http url for a rules file.
+
+    This fixture will make use of the pytest-httpserver
+    plugin and fire up a HTTP server locally for the juju-lint
+    application to call urlopen() against. It also temporarily
+    makes necessary changes to bypass the proxy if necessary.
+    """
+    saved_no_proxy = os.environ.get("no_proxy", "")
+    if "localhost" not in saved_no_proxy.split(","):
+        os.environ["no_proxy"] = saved_no_proxy + ",localhost"
+
+    endpoint = "/rules.yaml"
+    rules_file_content = dedent(
+        """
+        openstack config:
+            mysql-innodb-cluster:
+                max-connections:
+                    gte: 99999
+        """
+    )
+    httpserver.expect_request(endpoint).respond_with_data(
+        response_data=rules_file_content
+    )
+
+    yield httpserver.url_for(endpoint)
+
+    if saved_no_proxy:
+        os.environ["no_proxy"] = saved_no_proxy
+    else:
+        del os.environ["no_proxy"]
+
+
+@pytest.fixture
 def manual_file():
     """Return the bundle file for testing."""
     return os.path.join(
