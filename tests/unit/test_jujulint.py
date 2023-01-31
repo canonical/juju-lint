@@ -1272,6 +1272,16 @@ applications:
         assert linter.lint_rules == {}
         assert result is False
 
+    def test_read_rules_timeout_exception(self, linter, mocker):
+        """Test read_rules() handles timeout exceptions."""
+        mock_urlopen = mocker.patch.object(lint, "urlopen")
+        mock_urlopen.side_effect = TimeoutError("")
+        linter.lint_rules = {}
+        linter.rules_files = ["https://rules.yaml"]
+        result = linter.read_rules()
+        assert linter.lint_rules == {}
+        assert result is False
+
     def test_snap_rules_files(self, rules_files, linter):
         """Ensure that all standard rules in the snap is loading correctly."""
         for rules_file in rules_files:

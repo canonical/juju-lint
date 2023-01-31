@@ -26,7 +26,7 @@ import pprint
 import re
 import traceback
 from datetime import datetime, timezone
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 
 import attr
@@ -151,8 +151,19 @@ class Linter:
                 try:
                     with urlopen(rules_file) as response:
                         raw_rules_txt = response.read().decode()
-                except URLError:
-                    self.logger.error("Failed to fetch url: {}".format(rules_file))
+                except (HTTPError, URLError) as error:
+                    self.logger.error(
+                        "Failed to fetch url: {} reason: {}".format(
+                            rules_file, error.reason
+                        )
+                    )
+                    return False
+                except TimeoutError:
+                    self.logger.error(
+                        "Failed to fetch url: {} reason: TimeoutError".format(
+                            rules_file
+                        )
+                    )
                     return False
             elif os.path.isfile(rules_file):
                 with open(rules_file, "r") as f:
