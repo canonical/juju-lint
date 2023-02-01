@@ -1075,6 +1075,34 @@ applications:
                 errors[0]["actual_value"] == "[[/, queue1, 10, 20], [\\*, \\*, 10, 20]]"
             )
 
+    @pytest.mark.parametrize(
+        "block_device, show_error",
+        [("/dev/vga", True), ("/dev/sda", True), ("/dev/foo", False)],
+    )
+    def test_config_search_ephemeral_device(
+        self, linter, juju_status, block_device, show_error
+    ):
+        """Test the config ephemeral-device regex pattern."""
+        custom_msg = (
+            "dev/sdX or/dev/vgX should not be used as ephemeral-devices. See lp#1999263"
+        )
+        linter.lint_rules["config"] = {
+            "ubuntu": {
+                "fake_opt": {
+                    "search": "^((?!/dev/vg|/dev/sd).)*$",
+                    "custom-message": custom_msg,
+                }
+            }
+        }
+        juju_status["applications"]["ubuntu"]["options"] = {"fake_opt": block_device}
+        linter.do_lint(juju_status)
+        errors = linter.output_collector["errors"]
+        if show_error:
+            assert len(errors) == 1
+            assert errors[0]["message"] == custom_msg
+        else:
+            assert len(errors) == 0
+
     def test_config_search_missing(self, linter, mocker):
         """Test the config search method logs warning if the config option is missing."""
         app_name = "ubuntu"
