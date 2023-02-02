@@ -29,6 +29,10 @@ openstack config base: &openstack-config-base
       log-level: warning
       custom-message:
         Default 4 workers is too low for production clouds.
+    ephemeral-device:
+      search: "^((?!/dev/vg|/dev/sd).)*$"
+      custom-message:
+        dev/sdX or/dev/vgX should not be used as ephemeral-devices. See lp#1999263
   rabbitmq-server:
     cluster-partition-handling:
       eq: "pause_minority"

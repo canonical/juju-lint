@@ -1397,7 +1397,6 @@ class Linter:
         input_file = input_handler(parsed_yaml, applications)
 
         if applications in parsed_yaml:
-
             # Build a list of deployed charms and mapping of charms <-> applications
             self.map_charms(parsed_yaml[applications])
 
