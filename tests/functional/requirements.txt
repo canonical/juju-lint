@@ -1,3 +1,5 @@
 pytest
 pytest-operator
 pytest-httpserver
+# pin juju library to maintain compatibility with Juju controller < 3.0
+juju < 3.0
