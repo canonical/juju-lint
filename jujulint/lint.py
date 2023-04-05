@@ -208,8 +208,10 @@ class Linter:
             for sub in subordinates:
                 if sub in self.model.subs_on_machines[machine]:
                     charm = self.model.app_to_charm[sub]
-                    allow_multiple = self.lint_rules["subordinates"][charm].get(
-                        "allow-multiple"
+                    allow_multiple = (
+                        self.lint_rules["subordinates"][charm].get("allow-multiple")
+                        if charm in self.lint_rules["subordinates"]
+                        else None
                     )
                     if not allow_multiple:
                         self.model.duelling_subs.setdefault(sub, set())
@@ -615,7 +617,10 @@ class Linter:
             self.model.missing_subs.setdefault(required_sub, set())
             self.model.extraneous_subs.setdefault(required_sub, set())
             self._log_with_header("Checking for sub {}".format(required_sub))
-            where = self.lint_rules["subordinates"][required_sub]["where"]
+            where = self.lint_rules["subordinates"][required_sub].get("where")
+            if where is None:
+                self._log_with_header("Where not defined. Skipping")
+                continue
             for machine in self.model.subs_on_machines:
                 self._log_with_header("Checking on {}".format(machine))
                 present_subs = self.model.subs_on_machines[machine]
