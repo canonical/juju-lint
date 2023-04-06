@@ -209,9 +209,9 @@ class Linter:
                 if sub in self.model.subs_on_machines[machine]:
                     charm = self.model.app_to_charm[sub]
                     allow_multiple = (
-                        self.lint_rules["subordinates"][charm].get("allow-multiple")
-                        if charm in self.lint_rules["subordinates"]
-                        else None
+                        self.lint_rules["subordinates"]
+                        .get(charm, {})
+                        .get("allow-multiple", False)
                     )
                     if not allow_multiple:
                         self.model.duelling_subs.setdefault(sub, set())
@@ -619,7 +619,9 @@ class Linter:
             self._log_with_header("Checking for sub {}".format(required_sub))
             where = self.lint_rules["subordinates"][required_sub].get("where")
             if where is None:
-                self._log_with_header("Where not defined. Skipping")
+                self._log_with_header(
+                    "Where clause not defined. Skipping placement checks."
+                )
                 continue
             for machine in self.model.subs_on_machines:
                 self._log_with_header("Checking on {}".format(machine))
