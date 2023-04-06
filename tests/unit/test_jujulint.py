@@ -371,7 +371,6 @@ applications:
     def test_subordinate_missing_where_clause(self, linter, juju_status):
         """Test that a missing where clause means we don't care about placement."""
         linter.lint_rules["subordinates"]["ntp"].pop("where")
-        linter.lint_rules["subordinates"]["nrpe"] = {}
 
         # Another ubuntu application that does not have the ntp subordinate
         juju_status["applications"]["ubuntu2"] = {
