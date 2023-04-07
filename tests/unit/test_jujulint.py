@@ -368,6 +368,30 @@ applications:
         assert errors[0]["principals"] == "ubuntu"
         assert errors[0]["subordinate"] == "ntp"
 
+    def test_subordinate_missing_where_clause(self, linter, juju_status):
+        """Test that a missing where clause means we don't care about placement."""
+        linter.lint_rules["subordinates"]["ntp"].pop("where")
+
+        # Another ubuntu application that does not have the ntp subordinate
+        juju_status["applications"]["ubuntu2"] = {
+            "application-status": {"current": "active"},
+            "charm": "cs:ubuntu-18",
+            "charm-name": "ubuntu",
+            "relations": {},
+            "units": {
+                "ubuntu2/0": {
+                    "juju-status": {"current": "idle"},
+                    "machine": "1",
+                    "subordinates": {},
+                    "workload-status": {"current": "active"},
+                }
+            },
+        }
+        linter.do_lint(juju_status)
+
+        errors = linter.output_collector["errors"]
+        assert not errors
+
     def test_subordinate_extraneous(self, linter, juju_status):
         """Test that extraneous subordinate charms are detected."""
         # this check triggers on subordinates on containers that should only
@@ -454,6 +478,45 @@ applications:
         # Since we allow duplicates there should be no errors
         errors = linter.output_collector["errors"]
         assert not errors
+
+    def test_subordinate_optional_duplicates_produce_error(self, linter, juju_status):
+        """Test optional subordinates produce error when duplicate units exist on machine."""
+        template_status = {
+            "juju-status": {"current": "idle"},
+            "workload-status": {"current": "active"},
+        }
+
+        # Make ntp an optional sub.
+        # Meaning: still exists in "known charms" but not defined in "subordinates"
+        linter.lint_rules["subordinates"].pop("ntp")
+
+        # Add a second ubuntu app to the same machine with ntp subordinate
+        juju_status["applications"]["ubuntu2"] = {
+            "application-status": {"current": "active"},
+            "charm": "cs:ubuntu-18",
+            "charm-name": "ubuntu",
+            "relations": {"juju-info": ["ntp"]},
+            "units": {
+                "ubuntu2/0": {
+                    "juju-status": {"current": "idle"},
+                    "machine": "0",
+                    "subordinates": {"ntp/1": template_status},
+                    "workload-status": {"current": "active"},
+                }
+            },
+        }
+
+        # Reflect subordinate relations in the ntp side of the juju status
+        juju_status["applications"]["ntp"]["relations"]["juju-info"].append("ubuntu2")
+        juju_status["applications"]["ntp"]["subordinate-to"].append("ubuntu2")
+
+        linter.do_lint(juju_status)
+
+        errors = linter.output_collector["errors"]
+        assert len(errors) == 1
+        assert errors[0]["id"] == "subordinate-duplicate"
+        assert errors[0]["machines"] == "0"
+        assert errors[0]["subordinate"] == "ntp"
 
     def test_ops_subordinate_metal_only1(self, linter, juju_status):
         """

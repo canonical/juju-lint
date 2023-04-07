@@ -45,6 +45,8 @@ subordinates:
   where: all
  local-users:
   where: all or nothing
+ rsyslog-forwarder-ha:
+  allow-multiple: true
 
 # openstack and k8s should check nrpe relations. See LP#1965762
 relations base check: &relations-base-check
