@@ -1,0 +1,1797 @@
+series: focal
+applications:
+  ceph-mon:
+    charm: ceph-mon
+    channel: quincy/stable
+    revision: 162
+    series: jammy
+    resources:
+      alert-rules: 1
+    num_units: 1
+    to:
+    - "21"
+    options:
+      auth-supported: cephx
+      balancer-mode: null
+      ceph-cluster-network: null
+      ceph-public-network: null
+      config-flags: null
+      customize-failure-domain: false
+      default-rbd-features: null
+      disable-pg-max-object-skew: false
+      expected-osd-count: 3
+      fsid: null
+      harden: null
+      key: null
+      loglevel: 1
+      monitor-count: 1
+      monitor-data-available-critical: 5
+      monitor-data-available-warning: 30
+      monitor-hosts: null
+      monitor-secret: AQCXrnZQwI7KGBAAiPofmKEXKxu5bUzoYLVkbQ==
+      nagios_additional_checks: ""
+      nagios_additional_checks_critical: false
+      nagios_check_num_osds: false
+      nagios_context: juju
+      nagios_degraded_thresh: 0.1
+      nagios_misplaced_thresh: 0.1
+      nagios_raise_nodeepscrub: true
+      nagios_recovery_rate: "100"
+      nagios_servicegroups: ""
+      no-bootstrap: false
+      permit-insecure-cmr: false
+      pg-autotune: auto
+      pgs-per-osd: 100
+      prefer-ipv6: false
+      source: yoga
+      sysctl: '{ kernel.pid_max : 2097152, vm.max_map_count : 524288, kernel.threads-max:
+        2097152 }'
+      use-direct-io: true
+      use-syslog: false
+    constraints: arch=amd64 mem=2048
+  ceph-osd:
+    charm: ceph-osd
+    channel: quincy/stable
+    revision: 559
+    series: jammy
+    num_units: 3
+    to:
+    - "22"
+    - "23"
+    - "24"
+    options:
+      aa-profile-mode: disable
+      autotune: false
+      availability_zone: null
+      bdev-enable-discard: auto
+      bluestore: true
+      bluestore-block-db-size: 0
+      bluestore-block-wal-size: 0
+      bluestore-compression-algorithm: lz4
+      bluestore-compression-max-blob-size: null
+      bluestore-compression-max-blob-size-hdd: null
+      bluestore-compression-max-blob-size-ssd: null
+      bluestore-compression-min-blob-size: null
+      bluestore-compression-min-blob-size-hdd: null
+      bluestore-compression-min-blob-size-ssd: null
+      bluestore-compression-mode: null
+      bluestore-compression-required-ratio: null
+      bluestore-db: null
+      bluestore-wal: null
+      ceph-cluster-network: null
+      ceph-public-network: null
+      config-flags: '{"osd": {"osd memory target": 1073741824}}'
+      crush-initial-weight: null
+      customize-failure-domain: false
+      ephemeral-unmount: null
+      harden: null
+      ignore-device-errors: false
+      key: null
+      loglevel: 1
+      max-sectors-kb: 1048576
+      nagios_context: juju
+      nagios_servicegroups: ""
+      osd-devices: ""
+      osd-encrypt: false
+      osd-encrypt-keymanager: ceph
+      osd-format: xfs
+      osd-journal: null
+      osd-journal-size: 1024
+      osd-max-backfills: null
+      osd-recovery-max-active: null
+      prefer-ipv6: false
+      source: yoga
+      sysctl: '{ kernel.pid_max : 2097152, vm.max_map_count : 524288, kernel.threads-max:
+        2097152 }'
+      use-direct-io: true
+      use-syslog: false
+    constraints: arch=amd64 mem=2048
+    storage:
+      bluestore-db: loop,1024M
+      bluestore-wal: loop,1024M
+      cache-devices: loop,10240M
+      osd-devices: cinder,1,10240M
+      osd-journals: loop,1024M
+  cinder:
+    charm: cinder
+    channel: yoga/stable
+    revision: 618
+    series: jammy
+    resources:
+      policyd-override: 0
+    num_units: 1
+    to:
+    - "0"
+    options:
+      action-managed-upgrade: false
+      api-listening-port: 8776
+      block-device: ""
+      ceph-osd-replication-count: 3
+      config-flags: null
+      database: cinder
+      database-user: cinder
+      debug: true
+      default-volume-type: null
+      dns-ha: false
+      enabled-services: all
+      ephemeral-unmount: ""
+      glance-api-version: 2
+      ha-bindiface: eth0
+      ha-mcastport: 5454
+      haproxy-client-timeout: null
+      haproxy-connect-timeout: null
+      haproxy-queue-timeout: null
+      haproxy-server-timeout: null
+      harden: null
+      image-volume-cache-enabled: false
+      image-volume-cache-max-count: 0
+      image-volume-cache-max-size-gb: 0
+      nagios_context: juju
+      nagios_servicegroups: ""
+      notification-topics: null
+      openstack-origin: yoga
+      os-admin-hostname: null
+      os-admin-network: null
+      os-internal-hostname: null
+      os-internal-network: null
+      os-public-hostname: null
+      os-public-network: null
+      overwrite: "false"
+      prefer-ipv6: false
+      rabbit-user: cinder
+      rabbit-vhost: openstack
+      region: RegionOne
+      remove-missing: false
+      remove-missing-force: false
+      restrict-ceph-pools: false
+      scheduler-default-filters: null
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      use-internal-endpoints: false
+      use-policyd-override: false
+      use-syslog: false
+      verbose: true
+      vip: null
+      vip_cidr: 24
+      vip_iface: eth0
+      volume-group: cinder-volumes
+      volume-usage-audit-period: month
+      worker-multiplier: null
+    constraints: mem=2048
+    storage:
+      block-devices: loop,10240M
+  cinder-ceph:
+    charm: cinder-ceph
+    channel: yoga/stable
+    revision: 510
+    series: jammy
+    options:
+      backend-availability-zone: null
+      bluestore-compression-algorithm: null
+      bluestore-compression-max-blob-size: null
+      bluestore-compression-max-blob-size-hdd: null
+      bluestore-compression-max-blob-size-ssd: null
+      bluestore-compression-min-blob-size: null
+      bluestore-compression-min-blob-size-hdd: null
+      bluestore-compression-min-blob-size-ssd: null
+      bluestore-compression-mode: null
+      bluestore-compression-required-ratio: null
+      ceph-osd-replication-count: 3
+      ceph-pool-weight: 40
+      ec-profile-crush-locality: null
+      ec-profile-device-class: null
+      ec-profile-durability-estimator: null
+      ec-profile-helper-chunks: null
+      ec-profile-k: 1
+      ec-profile-locality: null
+      ec-profile-m: 2
+      ec-profile-name: null
+      ec-profile-plugin: jerasure
+      ec-profile-scalar-mds: null
+      ec-profile-technique: null
+      ec-rbd-metadata-pool: null
+      pool-type: replicated
+      rbd-flatten-volume-from-snapshot: false
+      rbd-mirroring-mode: pool
+      rbd-pool-name: null
+      restrict-ceph-pools: false
+      use-syslog: false
+      volume-backend-name: null
+  cinder-mysql-router:
+    charm: mysql-router
+    channel: 8.0/edge
+    revision: 61
+    series: jammy
+    options:
+      auth_cache_refresh_interval: 2
+      auth_cache_ttl: -1
+      base-port: 3306
+      debug: false
+      max_connections: 1024
+      source: distro
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      ttl: 0.5
+      use-syslog: false
+  elasticsearch:
+    charm: elasticsearch
+    channel: latest/stable
+    revision: 67
+    num_units: 1
+    to:
+    - "1"
+    options:
+      apt-key-url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+      apt-repository: deb https://artifacts.elastic.co/packages/6.x/apt stable main
+      auto-create-index: "true"
+      cluster-name: elasticsearch
+      es-heap-size: 4
+      firewall_enabled: false
+      gpg-key: ""
+      gpg-key-id: D88E42B4
+      nagios_context: juju
+      nagios_servicegroups: ""
+    constraints: mem=8192
+  filebeat:
+    charm: filebeat
+    channel: latest/stable
+    revision: 50
+    series: jammy
+    options:
+      exclude_files: '["/filebeat.*", ".*gz$"]'
+      exclude_lines: '[]'
+      extra_inputs: ""
+      extra_packages: ""
+      fields: ""
+      harvester_buffer_size: 16384
+      install_keys: D88E42B4
+      install_sources: deb https://artifacts.elastic.co/packages/6.x/apt stable main
+      kafka_hosts: ""
+      kafka_topic: '%{[type]}'
+      kafka_topics: ""
+      kafka_version: ""
+      kube_logs: false
+      log_level: info
+      logging_to_syslog: true
+      logpath: |
+        /var/log/syslog /var/log/*.log /var/log/*/*.log
+      logstash_hosts: ""
+      logstash_ssl_cert: ""
+      logstash_ssl_key: ""
+      max_bytes: 10485760
+      package_status: install
+  glance:
+    charm: glance
+    channel: yoga/stable
+    revision: 562
+    series: jammy
+    resources:
+      policyd-override: 0
+    num_units: 1
+    to:
+    - "2"
+    options:
+      action-managed-upgrade: false
+      api-config-flags: null
+      bluestore-compression-algorithm: null
+      bluestore-compression-max-blob-size: null
+      bluestore-compression-max-blob-size-hdd: null
+      bluestore-compression-max-blob-size-ssd: null
+      bluestore-compression-min-blob-size: null
+      bluestore-compression-min-blob-size-hdd: null
+      bluestore-compression-min-blob-size-ssd: null
+      bluestore-compression-mode: null
+      bluestore-compression-required-ratio: null
+      ceph-osd-replication-count: 3
+      ceph-pool-weight: 5
+      cinder-http-retries: 3
+      cinder-state-transition-timeout: 30
+      cinder-volume-types: null
+      container-formats: null
+      database: glance
+      database-user: glance
+      debug: true
+      disk-formats: ami,ari,aki,vhd,vmdk,raw,qcow2,vdi,iso,root-tar
+      dns-ha: false
+      ec-profile-crush-locality: null
+      ec-profile-device-class: null
+      ec-profile-durability-estimator: null
+      ec-profile-helper-chunks: null
+      ec-profile-k: 1
+      ec-profile-locality: null
+      ec-profile-m: 2
+      ec-profile-name: null
+      ec-profile-plugin: jerasure
+      ec-profile-scalar-mds: null
+      ec-profile-technique: null
+      ec-rbd-metadata-pool: null
+      expose-image-locations: true
+      filesystem-store-datadir: /var/lib/glance/images/
+      ha-bindiface: eth0
+      ha-mcastport: 5444
+      haproxy-client-timeout: null
+      haproxy-connect-timeout: null
+      haproxy-queue-timeout: null
+      haproxy-server-timeout: null
+      harden: null
+      image-conversion: false
+      image-size-cap: 1TB
+      nagios_context: juju
+      nagios_servicegroups: ""
+      openstack-origin: yoga
+      os-admin-hostname: null
+      os-admin-network: null
+      os-internal-hostname: null
+      os-internal-network: null
+      os-public-hostname: null
+      os-public-network: null
+      pool-type: replicated
+      prefer-ipv6: false
+      rabbit-user: glance
+      rabbit-vhost: openstack
+      rbd-pool-name: null
+      region: RegionOne
+      registry-config-flags: null
+      restrict-ceph-pools: false
+      restrict-image-location-operations: false
+      s3-store-access-key: null
+      s3-store-bucket: null
+      s3-store-host: null
+      s3-store-secret-key: null
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      use-internal-endpoints: false
+      use-policyd-override: false
+      use-syslog: false
+      verbose: true
+      vip: null
+      vip_cidr: 24
+      vip_iface: eth0
+      worker-multiplier: null
+    constraints: mem=1024
+  glance-mysql-router:
+    charm: mysql-router
+    channel: 8.0/edge
+    revision: 61
+    series: jammy
+    options:
+      auth_cache_refresh_interval: 2
+      auth_cache_ttl: -1
+      base-port: 3306
+      debug: false
+      max_connections: 1024
+      source: distro
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      ttl: 0.5
+      use-syslog: false
+  grafana:
+    charm: grafana
+    channel: stable
+    revision: 66
+    num_units: 1
+    to:
+    - "3"
+    options:
+      admin_password: admin
+      allow_embedding: false
+      anonymous: false
+      anonymous_role: Viewer
+      app_mode: production
+      auth-proxy: false
+      dashboards_backup_dir: /srv/backups
+      dashboards_backup_schedule: ""
+      datasources: ""
+      debug: false
+      default_dashboards: ""
+      external_network: ext_net
+      google_analytics_ua_id: ""
+      http_proxy: ""
+      install_file: ""
+      install_keys: |
+        - |
+            -----BEGIN PGP PUBLIC KEY BLOCK-----
+
+            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
+            =lSMJ
+            -----END PGP PUBLIC KEY BLOCK-----
+      install_method: snap
+      install_plugins: ""
+      install_sources: |
+        - 'deb https://packages.grafana.com/oss/deb stable main'
+      instance_name: ""
+      ldap_auth: false
+      ldap_base_dn: ""
+      ldap_config_flags: ""
+      ldap_password: ""
+      ldap_server: ""
+      ldap_server_ca: null
+      ldap_user: ""
+      nagios_context: juju
+      nagios_servicegroups: juju
+      port: "3000"
+      root_url: '%(protocol)s://%(domain)s:%(http_port)s/'
+      site_name: ""
+      smtp_auth: ""
+      smtp_from_address: admin@grafana.localhost
+      smtp_host: ""
+      smtp_skip_cert_verification: false
+      snap_channel: stable
+      snapd_refresh: ""
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+    constraints: mem=1024
+  graylog:
+    charm: graylog
+    channel: latest/stable
+    revision: 70
+    series: jammy
+    resources:
+      core: 0
+      graylog: 0
+    num_units: 1
+    to:
+    - "4"
+    options:
+      beats_port: 5044
+      channel: 3/stable
+      elasticsearch_cluster_name: ""
+      email_auth_password: ""
+      email_auth_username: ""
+      email_enabled: false
+      email_from: graylog@example.com
+      email_hostname: mail.example.com
+      email_port: 587
+      email_ssl_enabled: false
+      email_subject_prefix: '[graylog]'
+      email_tls_enabled: false
+      email_use_auth: false
+      email_web_url: https://graylog.example.com
+      gelf_port: 12201
+      index_replicas: 1
+      index_retention_count: 7
+      index_rotation_msg_count: 20000000
+      index_rotation_period: P7D
+      index_rotation_size: 10737418240
+      index_rotation_strategy: size
+      index_shards: 4
+      jvm_heap_size: 1G
+      ldap_auth: false
+      ldap_default_graylog_roles: Reader
+      ldap_password: ""
+      ldap_server_ip: ""
+      ldap_server_port: "636"
+      ldap_tls_verify_certificates: true
+      ldap_use_tls: true
+      ldap_user: ""
+      ldap_user_full_name_attribute: fullName
+      ldap_user_name_attribute: uid
+      ldap_user_search_base: ""
+      ldap_user_search_pattern: (&(uid={0})(class=inetOrgPerson))
+      ldap_user_unique_id_attribute: cn
+      log_inputs: ""
+      max_check_attempts: ""
+      nagios_context: juju
+      nagios_servicegroups: ""
+      nagios_uncommitted_crit: 2048
+      nagios_uncommitted_warn: 1024
+      rest_transport_uri: http://0.0.0.0:9001/api/
+      site_name: ""
+      snapd_refresh: ""
+      web_endpoint_uri: ""
+      web_listen_uri: http://0.0.0.0:9000/
+    constraints: mem=2048
+  heat:
+    charm: heat
+    channel: yoga/stable
+    revision: 520
+    series: jammy
+    resources:
+      policyd-override: 0
+    num_units: 1
+    to:
+    - "5"
+    options:
+      action-managed-upgrade: false
+      config-flags: null
+      database: heat
+      database-user: heat
+      debug: true
+      dns-ha: false
+      encryption-key: ""
+      ha-bindiface: eth0
+      ha-mcastport: 5959
+      haproxy-client-timeout: null
+      haproxy-connect-timeout: null
+      haproxy-queue-timeout: null
+      haproxy-server-timeout: null
+      harden: null
+      instance-user: null
+      max-stacks-per-tenant: null
+      nagios_context: juju
+      nagios_servicegroups: ""
+      openstack-origin: yoga
+      os-admin-hostname: null
+      os-admin-network: null
+      os-internal-hostname: null
+      os-internal-network: null
+      os-public-hostname: null
+      os-public-network: null
+      prefer-ipv6: false
+      rabbit-user: heat
+      rabbit-vhost: openstack
+      region: RegionOne
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      ttl: 3600000
+      use-internal-endpoints: false
+      use-policyd-override: false
+      use-syslog: false
+      verbose: true
+      vip: null
+      vip_cidr: 24
+      vip_iface: eth0
+      worker-multiplier: null
+    constraints: mem=1024
+  heat-mysql-router:
+    charm: mysql-router
+    channel: 8.0/edge
+    revision: 61
+    series: jammy
+    options:
+      auth_cache_refresh_interval: 2
+      auth_cache_ttl: -1
+      base-port: 3306
+      debug: false
+      max_connections: 1024
+      source: distro
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      ttl: 0.5
+      use-syslog: false
+  keystone:
+    charm: keystone
+    channel: yoga/stable
+    revision: 639
+    series: jammy
+    resources:
+      policyd-override: 0
+    num_units: 3
+    to:
+    - "6"
+    - "7"
+    - "8"
+    options:
+      action-managed-upgrade: false
+      admin-password: openstack
+      admin-port: 35357
+      admin-role: Admin
+      admin-user: admin
+      assignment-backend: sql
+      catalog-cache-expiration: 60
+      database: keystone
+      database-user: keystone
+      debug: true
+      default-authorization-ttl: 0
+      dns-ha: false
+      dogpile-cache-expiration: 600
+      ec2-auth-ttl: 15
+      fernet-max-active-keys: 3
+      ha-bindiface: eth0
+      ha-mcastport: 5434
+      haproxy-client-timeout: null
+      haproxy-connect-timeout: null
+      haproxy-queue-timeout: null
+      haproxy-server-timeout: null
+      harden: null
+      identity-backend: sql
+      keystone-admin-role: Admin
+      keystone-service-admin-role: KeystoneServiceAdmin
+      ldap-config-flags: None
+      ldap-password: None
+      ldap-readonly: true
+      ldap-server: None
+      ldap-suffix: None
+      ldap-user: None
+      log-level: WARNING
+      nagios_context: juju
+      nagios_servicegroups: ""
+      openstack-origin: yoga
+      os-admin-hostname: null
+      os-admin-network: null
+      os-internal-hostname: null
+      os-internal-network: null
+      os-public-hostname: null
+      os-public-network: null
+      password-security-compliance: null
+      prefer-ipv6: false
+      preferred-api-version: null
+      region: RegionOne
+      service-admin-prefix: null
+      service-port: 5000
+      service-tenant: services
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      token-expiration: 3600
+      token-provider: null
+      use-policyd-override: false
+      use-syslog: false
+      verbose: true
+      vip: 10.5.100.0
+      vip_cidr: 24
+      vip_iface: eth0
+      worker-multiplier: null
+    constraints: mem=1024
+  keystone-hacluster:
+    charm: hacluster
+    channel: 2.4/stable
+    revision: 120
+    series: jammy
+    options:
+      cluster_count: 3
+      cluster_recheck_interval: 60
+      corosync_bindiface: null
+      corosync_key: 64RxJNcCkwo8EJYBsaacitUvbQp5AW4YolJi5/2urYZYp2jfLxY+3IUCOaAUJHPle4Yqfy+WBXO0I/6ASSAjj9jaiHVNaxmVhhjcmyBqy2vtPf+m+0VxVjUXlkTyYsODwobeDdO3SIkbIABGfjLTu29yqPTsfbvSYr6skRb9ne0=
+      corosync_mcastaddr: 226.94.1.1
+      corosync_mcastport: null
+      corosync_transport: unicast
+      debug: false
+      failed_actions_alert_type: ignore
+      failed_actions_threshold: 0
+      failure_timeout: 180
+      maas_credentials: null
+      maas_source: ppa:maas/stable
+      maas_source_key: null
+      maas_url: null
+      maintenance-mode: false
+      monitor_host: null
+      monitor_interval: 5s
+      nagios_context: juju
+      nagios_servicegroups: ""
+      netmtu: null
+      no_quorum_policy: stop
+      pacemaker_key: null
+      prefer-ipv6: false
+      res_failcount_crit: 10
+      res_failcount_warn: 3
+      service_start_timeout: 180
+      service_stop_timeout: 600
+      stonith_enabled: "False"
+  keystone-mysql-router:
+    charm: mysql-router
+    channel: 8.0/edge
+    revision: 61
+    series: jammy
+    options:
+      auth_cache_refresh_interval: 2
+      auth_cache_ttl: -1
+      base-port: 3306
+      debug: false
+      max_connections: 1024
+      source: distro
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      ttl: 0.5
+      use-syslog: false
+  mongodb:
+    charm: mongodb
+    channel: latest/stable
+    revision: 82
+    num_units: 1
+    to:
+    - "9"
+    options:
+      arbiter: disabled
+      auth: false
+      autoresync: false
+      backup_copies_kept: 7
+      backup_directory: /home/ubuntu/backups
+      backups_enabled: true
+      bind_ip: 0.0.0.0
+      config_server_dbpath: /mnt/var/lib/mongodb/configsvr
+      config_server_logpath: /mnt/var/log/mongodb/configsvr.log
+      config_server_port: 27019
+      cpu: false
+      dbpath: /var/lib/mongodb
+      diaglog: 0
+      extra_config_options: none
+      extra_daemon_options: none
+      journal: true
+      key: ""
+      logappend: true
+      logpath: /var/log/mongodb/mongodb.log
+      logrotate-frequency: daily
+      logrotate-maxsize: 500M
+      logrotate-rotate: 5
+      master: self
+      mongos_logpath: /mnt/var/log/mongodb/mongos.log
+      mongos_port: 27021
+      nagios_context: juju
+      nagios_servicegroups: ""
+      noprealloc: false
+      noscripting: false
+      notablescan: false
+      nssize: default
+      objcheck: false
+      oplogSize: default
+      package: mongodb-server
+      percona-mode: false
+      port: 27017
+      quota: false
+      quotafiles: 8
+      replicaset: myset
+      replicaset_master: auto
+      source: None
+      verbose: false
+      volume-dev-regexp: /dev/vd[b-z]
+      volume-ephemeral-storage: true
+      volume-map: ""
+      web_admin_ui: true
+    constraints: mem=1024
+  mysql:
+    charm: mysql-innodb-cluster
+    channel: 8.0/stable
+    revision: 43
+    series: jammy
+    resources:
+      mysql-shell: 0
+    num_units: 3
+    to:
+    - "10"
+    - "11"
+    - "12"
+    options:
+      auto-rejoin-tries: "1000"
+      binlogs-expire-days: 10
+      binlogs-max-size: 100M
+      binlogs-path: /var/log/mysql/mysql-bin.log
+      cluster-name: jujuCluster
+      enable-binlogs: false
+      expel-timeout: 20
+      innodb-buffer-pool-size: 8G
+      innodb-change-buffering: all
+      innodb-file-per-table: true
+      innodb-io-capacity: 200
+      max-connections: 20000
+      os-db-router-hostname: null
+      prefer-ipv6: false
+      snapd_refresh: ""
+      source: distro
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      table-open-cache: 2048
+      tuning-level: fast
+      wait-timeout: 3600
+    constraints: mem=4096
+  neutron-api:
+    charm: neutron-api
+    channel: yoga/stable
+    revision: 547
+    series: jammy
+    resources:
+      policyd-override: 0
+    num_units: 1
+    to:
+    - "13"
+    options:
+      action-managed-upgrade: false
+      allow-automatic-dhcp-failover: true
+      allow-automatic-l3agent-failover: false
+      calico-origin: null
+      config-flags: null
+      database: neutron
+      database-user: neutron
+      debug: true
+      default-tenant-network-type: vxlan
+      dhcp-agents-per-network: 1
+      dhcp-load-type: networks
+      dns-domain: openstack-yoga-jammy.stsstack.qa.1ss.
+      dns-ha: false
+      enable-dvr: false
+      enable-firewall-group-logging: false
+      enable-fwaas: true
+      enable-hardware-offload: false
+      enable-igmp-snooping: false
+      enable-l3ha: false
+      enable-ml2-dns: true
+      enable-ml2-port-security: true
+      enable-network-segment-range: false
+      enable-port-forwarding: false
+      enable-qos: false
+      enable-security-group-logging: false
+      enable-sriov: false
+      enable-vlan-trunking: false
+      extra-key: null
+      extra-source: null
+      flat-network-providers: physnet1
+      global-physnet-mtu: 8958
+      ha-bindiface: eth0
+      ha-mcastport: 5424
+      haproxy-client-timeout: null
+      haproxy-connect-timeout: null
+      haproxy-queue-timeout: null
+      haproxy-server-timeout: null
+      harden: null
+      ipv4-ptr-zone-prefix-size: 24
+      ipv6-ptr-zone-prefix-size: 64
+      l2-population: true
+      manage-neutron-plugin-legacy-mode: true
+      max-l3-agents-per-router: 2
+      mem-password: null
+      mem-username: null
+      midonet-origin: midonet-2015.06
+      min-l3-agents-per-router: 2
+      nagios_context: juju
+      nagios_servicegroups: ""
+      network-device-mtu: null
+      neutron-external-network: ext_net
+      neutron-plugin: ovs
+      neutron-security-groups: true
+      nsx-controllers: null
+      nsx-l3-uuid: null
+      nsx-password: admin
+      nsx-tz-uuid: null
+      nsx-username: admin
+      nuage-packages: nuage-openstack-neutron nuagenetlib
+      openstack-origin: yoga
+      os-admin-hostname: null
+      os-admin-network: null
+      os-internal-hostname: null
+      os-internal-network: null
+      os-public-hostname: null
+      os-public-network: null
+      overlay-network-type: vxlan gre
+      path-mtu: 1550
+      physical-network-mtus: physnet1:1500
+      plumgrid-password: plumgrid
+      plumgrid-username: plumgrid
+      plumgrid-virtual-ip: null
+      polling-interval: 2
+      prefer-ipv6: false
+      quota-floatingip: 50
+      quota-health-monitors: -1
+      quota-member: -1
+      quota-network: 10
+      quota-pool: 10
+      quota-port: 50
+      quota-router: 10
+      quota-security-group: 10
+      quota-security-group-rule: 100
+      quota-subnet: 10
+      quota-vip: 10
+      rabbit-user: neutron
+      rabbit-vhost: openstack
+      region: RegionOne
+      report-interval: 30
+      reverse-dns-lookup: false
+      router-scheduler-driver: neutron.scheduler.l3_agent_scheduler.AZLeastRoutersScheduler
+      rpc-response-timeout: 60
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      supported-pci-vendor-devs: null
+      uplink-status-propagation: false
+      use-internal-endpoints: false
+      use-policyd-override: false
+      use-syslog: false
+      verbose: true
+      vip: null
+      vip_cidr: 24
+      vip_iface: eth0
+      vlan-ranges: physnet1:1000:2000
+      vni-ranges: 1001:2000
+      vsd-auth: csproot:csproot
+      vsd-auth-resource: /me
+      vsd-auth-ssl: true
+      vsd-base-uri: /nuage/api/v3_0
+      vsd-cms-id: null
+      vsd-cms-name: null
+      vsd-netpart-name: juju-enterprise
+      vsd-organization: csp
+      vsd-server: null
+      worker-multiplier: null
+    constraints: mem=2048
+  neutron-api-mysql-router:
+    charm: mysql-router
+    channel: 8.0/edge
+    revision: 61
+    series: jammy
+    options:
+      auth_cache_refresh_interval: 2
+      auth_cache_ttl: -1
+      base-port: 3306
+      debug: false
+      max_connections: 1024
+      source: distro
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      ttl: 0.5
+      use-syslog: false
+  neutron-gateway:
+    charm: neutron-gateway
+    channel: yoga/stable
+    revision: 520
+    series: jammy
+    num_units: 1
+    to:
+    - "14"
+    options:
+      aa-profile-mode: disable
+      action-managed-upgrade: false
+      bridge-mappings: physnet1:br-data
+      customize-failure-domain: false
+      data-port: null
+      debug: true
+      default-availability-zone: nova
+      disable-neutron-lbaas: false
+      dns-servers: "0"
+      dnsmasq-flags: null
+      enable-auto-restarts: true
+      enable-isolated-metadata: true
+      enable-l3-agent: true
+      enable-metadata-network: false
+      ext-port: null
+      external-network-id: null
+      firewall-driver: null
+      firewall-group-log-burst-limit: 25
+      firewall-group-log-output-base: null
+      firewall-group-log-rate-limit: null
+      flat-network-providers: null
+      ha-bindiface: eth0
+      ha-legacy-mode: false
+      ha-mcastport: 5409
+      harden: null
+      instance-mtu: null
+      ipfix-target: null
+      keepalived-healthcheck-interval: 0
+      kernel-modules: nf_conntrack
+      nagios_context: juju
+      nagios_servicegroups: ""
+      nova-rabbit-user: nova
+      nova-rabbit-vhost: openstack
+      openstack-origin: yoga
+      os-data-network: null
+      ovs-use-veth: null
+      ovsdb-timeout: null
+      plugin: ovs
+      rabbit-user: neutron
+      rabbit-vhost: openstack
+      run-internal-router: all
+      sysctl: |
+        { net.ipv4.neigh.default.gc_thresh1 : 128,
+          net.ipv4.neigh.default.gc_thresh2 : 28672,
+          net.ipv4.neigh.default.gc_thresh3 : 32768,
+          net.ipv6.neigh.default.gc_thresh1 : 128,
+          net.ipv6.neigh.default.gc_thresh2 : 28672,
+          net.ipv6.neigh.default.gc_thresh3 : 32768,
+          net.nf_conntrack_max : 1000000,
+          net.netfilter.nf_conntrack_buckets : 204800,
+          net.netfilter.nf_conntrack_max : 1000000 }
+      use-syslog: false
+      vendor-data: null
+      vendor-data-url: null
+      verbose: true
+      vlan-ranges: physnet1:1000:2000
+      worker-multiplier: null
+    constraints: mem=4096
+  neutron-openvswitch:
+    charm: neutron-openvswitch
+    channel: yoga/stable
+    revision: 531
+    series: jammy
+    options:
+      bridge-mappings: physnet1:br-data
+      data-port: null
+      debug: true
+      disable-mlockall: null
+      disable-security-groups: false
+      dns-servers: "0"
+      dnsmasq-flags: null
+      dpdk-bond-config: :balance-tcp:active:fast
+      dpdk-bond-mappings: null
+      dpdk-driver: null
+      dpdk-socket-cores: 1
+      dpdk-socket-memory: 1024
+      enable-auto-restarts: true
+      enable-dpdk: false
+      enable-hardware-offload: false
+      enable-local-dhcp-and-metadata: true
+      enable-sriov: false
+      ext-port: null
+      firewall-driver: openvswitch
+      firewall-group-log-burst-limit: 25
+      firewall-group-log-output-base: null
+      firewall-group-log-rate-limit: null
+      flat-network-providers: null
+      instance-mtu: null
+      ipfix-target: null
+      keepalived-healthcheck-interval: 0
+      networking-tools-source: ppa:openstack-charmers/networking-tools
+      of-inactivity-probe: 10
+      os-data-network: ""
+      ovs-use-veth: null
+      prevent-arp-spoofing: true
+      rabbit-user: neutron
+      rabbit-vhost: openstack
+      security-group-log-burst-limit: 25
+      security-group-log-output-base: null
+      security-group-log-rate-limit: null
+      sriov-device-mappings: null
+      sriov-numvfs: auto
+      sysctl: |
+        { net.ipv4.neigh.default.gc_thresh1 : 128,
+          net.ipv4.neigh.default.gc_thresh2 : 28672,
+          net.ipv4.neigh.default.gc_thresh3 : 32768,
+          net.ipv6.neigh.default.gc_thresh1 : 128,
+          net.ipv6.neigh.default.gc_thresh2 : 28672,
+          net.ipv6.neigh.default.gc_thresh3 : 32768,
+          net.nf_conntrack_max : 1000000,
+          net.netfilter.nf_conntrack_buckets : 204800,
+          net.netfilter.nf_conntrack_max : 1000000 }
+      use-dvr-snat: false
+      use-syslog: false
+      verbose: true
+      vlan-ranges: physnet1:1000:2000
+      worker-multiplier: null
+  nova-cloud-controller:
+    charm: nova-cloud-controller
+    channel: yoga/stable
+    revision: 656
+    series: jammy
+    resources:
+      policyd-override: 0
+    num_units: 1
+    to:
+    - "15"
+    options:
+      action-managed-upgrade: false
+      allow-resize-to-same-host: false
+      api-rate-limit-rules: null
+      bridge-interface: br100
+      bridge-ip: 11.0.0.1
+      bridge-netmask: 255.255.255.0
+      cache-known-hosts: true
+      config-flags: null
+      console-access-port: null
+      console-access-protocol: null
+      console-keymap: en-us
+      console-proxy-ip: local
+      console-ssl-cert: null
+      console-ssl-key: null
+      cpu-allocation-ratio: 2
+      cross-az-attach: true
+      database: nova
+      database-user: nova
+      debug: true
+      disable-aws-compat: false
+      disk-allocation-ratio: 1
+      dns-ha: false
+      enable-isolated-aggregate-filtering: false
+      enable-new-services: true
+      enable-serial-console: false
+      ha-bindiface: eth0
+      ha-mcastport: 5404
+      haproxy-client-timeout: null
+      haproxy-connect-timeout: null
+      haproxy-queue-timeout: null
+      haproxy-server-timeout: null
+      harden: null
+      limit-tenants-to-placement-aggregate: false
+      max-local-block-devices: null
+      nagios_context: juju
+      nagios_servicegroups: ""
+      network-manager: Neutron
+      neutron-external-network: ext_net
+      notification-format: unversioned
+      nova-alchemy-flags: null
+      openstack-origin: yoga
+      os-admin-hostname: null
+      os-admin-network: null
+      os-internal-hostname: null
+      os-internal-network: null
+      os-public-hostname: null
+      os-public-network: null
+      pci-alias: null
+      placement-aggregate-required-for-tenants: false
+      prefer-ipv6: false
+      quota-cores: null
+      quota-count-usage-from-placement: false
+      quota-injected-file-size: null
+      quota-injected-files: null
+      quota-injected-path-size: null
+      quota-instances: null
+      quota-key-pairs: null
+      quota-metadata-items: null
+      quota-ram: null
+      quota-server-group-members: null
+      quota-server-groups: null
+      rabbit-user: nova
+      rabbit-vhost: openstack
+      ram-allocation-ratio: 0.98
+      region: RegionOne
+      scheduler-default-filters: null
+      scheduler-host-subset-size: null
+      scheduler-max-attempts: null
+      service-guard: false
+      skip-hosts-with-build-failures: false
+      spice-agent-enabled: true
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      unique-server-names: null
+      use-internal-endpoints: false
+      use-policyd-override: false
+      use-syslog: false
+      vendor-data: null
+      vendor-data-url: null
+      verbose: true
+      vip: null
+      vip_cidr: 24
+      vip_iface: eth0
+      worker-multiplier: null
+    constraints: mem=2048
+  nova-cloud-controller-mysql-router:
+    charm: mysql-router
+    channel: 8.0/edge
+    revision: 61
+    series: jammy
+    options:
+      auth_cache_refresh_interval: 2
+      auth_cache_ttl: -1
+      base-port: 3306
+      debug: false
+      max_connections: 1024
+      source: distro
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      ttl: 0.5
+      use-syslog: false
+  nova-compute:
+    charm: nova-compute
+    channel: yoga/stable
+    revision: 650
+    series: jammy
+    num_units: 1
+    to:
+    - "16"
+    options:
+      aa-profile-mode: disable
+      action-managed-upgrade: false
+      authorized-keys-path: '{homedir}/.ssh/authorized_keys'
+      block-device-allocate-retries: 300
+      block-device-allocate-retries-interval: null
+      bluestore-compression-algorithm: null
+      bluestore-compression-max-blob-size: null
+      bluestore-compression-max-blob-size-hdd: null
+      bluestore-compression-max-blob-size-ssd: null
+      bluestore-compression-min-blob-size: null
+      bluestore-compression-min-blob-size-hdd: null
+      bluestore-compression-min-blob-size-ssd: null
+      bluestore-compression-mode: null
+      bluestore-compression-required-ratio: null
+      bridge-interface: br100
+      bridge-ip: 11.0.0.1
+      bridge-netmask: 255.255.255.0
+      ceph-osd-replication-count: 3
+      ceph-pool-weight: 30
+      config-flags: null
+      cpu-allocation-ratio: null
+      cpu-dedicated-set: null
+      cpu-mode: null
+      cpu-model: null
+      cpu-model-extra-flags: null
+      cpu-shared-set: null
+      customize-failure-domain: false
+      database: nova
+      database-user: nova
+      debug: true
+      default-availability-zone: nova
+      default-ephemeral-format: ext4
+      disk-allocation-ratio: null
+      disk-cachemodes: null
+      ec-profile-crush-locality: null
+      ec-profile-device-class: null
+      ec-profile-durability-estimator: null
+      ec-profile-helper-chunks: null
+      ec-profile-k: 1
+      ec-profile-locality: null
+      ec-profile-m: 2
+      ec-profile-name: null
+      ec-profile-plugin: jerasure
+      ec-profile-scalar-mds: null
+      ec-profile-technique: null
+      ec-rbd-metadata-pool: null
+      enable-live-migration: true
+      enable-resize: true
+      enable-vtpm: false
+      encrypt: false
+      ephemeral-device: null
+      ephemeral-unmount: null
+      extra-repositories: null
+      flat-interface: eth1
+      force-raw-images: true
+      harden: null
+      hugepages: null
+      initial-cpu-allocation-ratio: null
+      initial-disk-allocation-ratio: null
+      initial-ram-allocation-ratio: null
+      inject-password: false
+      instances-path: null
+      ksm: AUTO
+      libvirt-image-backend: rbd
+      libvirt-migration-network: null
+      live-migration-completion-timeout: 800
+      live-migration-downtime: 500
+      live-migration-downtime-delay: 75
+      live-migration-downtime-steps: 10
+      live-migration-permit-auto-converge: false
+      live-migration-permit-post-copy: false
+      migration-auth-type: ssh
+      multi-host: "yes"
+      nagios_context: juju
+      nagios_servicegroups: null
+      neutron-physnets: null
+      neutron-tunnel: null
+      notification-format: unversioned
+      nova-config: /etc/nova/nova.conf
+      num-pcie-ports: null
+      openstack-origin: yoga
+      os-internal-network: null
+      pci-alias: null
+      pci-passthrough-whitelist: null
+      pool-type: replicated
+      prefer-ipv6: false
+      rabbit-user: nova
+      rabbit-vhost: openstack
+      ram-allocation-ratio: null
+      rbd-client-cache: null
+      rbd-pool: nova
+      reserved-host-disk: 0
+      reserved-host-memory: 512
+      reserved-huge-pages: null
+      restrict-ceph-pools: false
+      resume-guests-state-on-host-boot: false
+      send-notifications-to-logs: false
+      sysctl: |
+        { net.ipv4.neigh.default.gc_thresh1 : 128,
+          net.ipv4.neigh.default.gc_thresh2 : 28672,
+          net.ipv4.neigh.default.gc_thresh3 : 32768,
+          net.ipv6.neigh.default.gc_thresh1 : 128,
+          net.ipv6.neigh.default.gc_thresh2 : 28672,
+          net.ipv6.neigh.default.gc_thresh3 : 32768,
+          net.nf_conntrack_max : 1000000,
+          net.netfilter.nf_conntrack_buckets : 204800,
+          net.netfilter.nf_conntrack_max : 1000000 }
+      use-internal-endpoints: false
+      use-multipath: false
+      use-syslog: false
+      vcpu-pin-set: null
+      verbose: true
+      virt-mkfs-cmds: null
+      virt-type: kvm
+      virtio-net-rx-queue-size: null
+      virtio-net-tx-queue-size: null
+      worker-multiplier: null
+    constraints: mem=4096
+    storage:
+      ephemeral-device: loop,10240M
+  placement:
+    charm: placement
+    channel: yoga/stable
+    revision: 85
+    series: jammy
+    num_units: 1
+    to:
+    - "17"
+    options:
+      action-managed-upgrade: false
+      debug: true
+      dns-ha: false
+      haproxy-client-timeout: null
+      haproxy-connect-timeout: null
+      haproxy-queue-timeout: null
+      haproxy-server-timeout: null
+      openstack-origin: yoga
+      os-admin-hostname: null
+      os-admin-network: null
+      os-internal-hostname: null
+      os-internal-network: null
+      os-public-hostname: null
+      os-public-network: null
+      region: RegionOne
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      use-internal-endpoints: false
+      use-syslog: false
+      vip: null
+      vip_cidr: 24
+      vip_iface: eth0
+      worker-multiplier: null
+    constraints: mem=1024
+  placement-mysql-router:
+    charm: mysql-router
+    channel: 8.0/edge
+    revision: 61
+    series: jammy
+    options:
+      auth_cache_refresh_interval: 2
+      auth_cache_ttl: -1
+      base-port: 3306
+      debug: false
+      max_connections: 1024
+      source: distro
+      ssl_ca: null
+      ssl_cert: null
+      ssl_key: null
+      ttl: 0.5
+      use-syslog: false
+  prometheus:
+    charm: prometheus2
+    channel: latest/stable
+    revision: 52
+    series: jammy
+    resources:
+      core: 0
+      prometheus: 0
+    num_units: 1
+    to:
+    - "18"
+    options:
+      alert-relabel-configs: ""
+      custom-rules: ""
+      daemon-args: ""
+      enable-generic-rules: true
+      evaluation-interval: 15s
+      external-labels: ""
+      external_url: ""
+      federate-config: ""
+      label-juju-units: false
+      monitor-name: ""
+      nagios_context: juju
+      nagios_servicegroups: juju
+      prometheus_context: ""
+      prometheus_registration_authtoken: changeme
+      prometheus_registration_listen: ""
+      prometheus_registration_port: 12321
+      promreg_snap_channel: stable
+      remote-read: ""
+      remote-write: ""
+      remote-write-config: ""
+      rules-repo: ""
+      rules-repo-branch: ""
+      rules-update-notify-email: ""
+      rules-update-schedule: '*/10 * * * *'
+      rules-update-ssh-key: ""
+      rules_wait_time: 5m
+      scrape-interval: 15s
+      scrape-jobs: ""
+      scrape-timeout: 15s
+      snap_channel: 2/stable
+      snapd_refresh: ""
+      static-targets: ""
+      web-listen-port: 9090
+    constraints: mem=1024
+    storage:
+      metrics-filesystem: rootfs,1024M
+  prometheus-ceph-exporter:
+    charm: prometheus-ceph-exporter
+    channel: latest/stable
+    revision: 16
+    resources:
+      core: -1
+      dashboards: -1
+      prometheus-ceph-exporter: -1
+    num_units: 1
+    to:
+    - "25"
+    options:
+      access-network: null
+      check_timeout: 15
+      daemon_arguments: ""
+      nagios_context: juju
+      nagios_servicegroups: juju
+      snap_channel: stable
+      snapd_refresh: ""
+    constraints: arch=amd64
+  prometheus-openstack-exporter:
+    charm: prometheus-openstack-exporter
+    channel: latest/stable
+    revision: 28
+    series: jammy
+    resources:
+      core: 0
+      prometheus-openstack-exporter: 0
+    num_units: 1
+    to:
+    - "19"
+    options:
+      cache-refresh-interval: 300
+      cpu-allocation-ratio: 4
+      disk-allocation-ratio: 1
+      extra-nrpe-args: ""
+      log_level: INFO
+      min_schedulable_instances: 100
+      nagios_context: juju
+      nagios_servicegroups: juju
+      os-credentials: ""
+      port: 9183
+      ram-allocation-ratio: 1
+      schedulable-instance-size: 1, 2048, 20
+      snap_channel: stable
+      snapd_refresh: ""
+      ssl_ca: ""
+      use_nova_volumes: "True"
+      wait_time: 5m
+  rabbitmq-server:
+    charm: rabbitmq-server
+    channel: 3.9/stable
+    revision: 177
+    series: jammy
+    num_units: 1
+    to:
+    - "20"
+    options:
+      access-network: null
+      busiest_queues: 0
+      check-vhosts: null
+      cluster-network: null
+      cluster-partition-handling: ignore
+      connection-backlog: null
+      cron-timeout: 300
+      enable-auto-restarts: true
+      erl-vm-io-thread-multiplier: null
+      exclude_queues: '[]'
+      ha-bindiface: eth0
+      ha-mcastport: 5406
+      ha-vip-only: false
+      harden: null
+      key: null
+      management_plugin: true
+      max-cluster-tries: 3
+      min-cluster-size: 1
+      mirroring-queues: true
+      mnesia-table-loading-retry-limit: 10
+      mnesia-table-loading-retry-timeout: 30000
+      nagios_context: juju
+      nagios_servicegroups: ""
+      notification-ttl: 3600000
+      prefer-ipv6: false
+      queue-master-locator: min-masters
+      queue_thresholds: '[[''\*'', ''\*'', 100, 200]]'
+      source: null
+      ssl: "off"
+      ssl_ca: null
+      ssl_cert: null
+      ssl_enabled: false
+      ssl_key: null
+      ssl_port: 5671
+      stats_cron_schedule: '*/5 * * * *'
+      use-syslog: false
+      vip: null
+      vip_cidr: 24
+      vip_iface: eth0
+    constraints: mem=1024
+  telegraf:
+    charm: telegraf
+    channel: latest/stable
+    revision: 68
+    series: jammy
+    expose: true
+    options:
+      collect_intel_rdt_metrics: false
+      collect_ipmi_sensor_metrics: false
+      collect_iptables_metrics: false
+      collect_smart_metrics: false
+      collection_jitter: 5s
+      cpu_idle: 10
+      debug: false
+      disabled_plugins: ""
+      extra_options: ""
+      extra_packages: ""
+      extra_plugins: ""
+      flush_interval: 10s
+      flush_jitter: 5s
+      hostname: '{model}:{unit}'
+      inputs_config: ""
+      install_keys: |
+        - null
+      install_method: deb
+      install_sources: |
+        - ppa:telegraf-devs/ppa
+      interval: 10s
+      lead_time: 14d
+      logfile: /var/log/telegraf/telegraf.log
+      metric_buffer_limit: 10000
+      nagios_context: juju
+      nagios_servicegroups: juju
+      outputs_config: ""
+      package_status: install
+      prometheus_context: juju
+      prometheus_datasource: ""
+      prometheus_ip_range: ""
+      prometheus_output_bindaddress: ""
+      prometheus_output_port: default
+      promreg_authtoken: ""
+      promreg_url: ""
+      quiet: false
+      round_interval: true
+      snap_channel: stable
+      snapd_refresh: ""
+      socket_listener_port: "8094"
+      tags: ""
+      wait_time: 5m
+machines:
+  "0":
+    constraints: arch=amd64 mem=2048
+    series: jammy
+  "1":
+    constraints: arch=amd64 mem=8192
+  "2":
+    constraints: arch=amd64 mem=1024
+    series: jammy
+  "3":
+    constraints: arch=amd64 mem=1024
+  "4":
+    constraints: arch=amd64 mem=2048
+    series: jammy
+  "5":
+    constraints: arch=amd64 mem=1024
+    series: jammy
+  "6":
+    constraints: arch=amd64 mem=1024
+    series: jammy
+  "7":
+    constraints: arch=amd64 mem=1024
+    series: jammy
+  "8":
+    constraints: arch=amd64 mem=1024
+    series: jammy
+  "9":
+    constraints: arch=amd64 mem=1024
+  "10":
+    constraints: arch=amd64 mem=4096
+    series: jammy
+  "11":
+    constraints: arch=amd64 mem=4096
+    series: jammy
+  "12":
+    constraints: arch=amd64 mem=4096
+    series: jammy
+  "13":
+    constraints: arch=amd64 mem=2048
+    series: jammy
+  "14":
+    constraints: arch=amd64 mem=4096
+    series: jammy
+  "15":
+    constraints: arch=amd64 mem=2048
+    series: jammy
+  "16":
+    constraints: arch=amd64 mem=4096
+    series: jammy
+  "17":
+    constraints: arch=amd64 mem=1024
+    series: jammy
+  "18":
+    constraints: arch=amd64 mem=1024
+    series: jammy
+  "19":
+    constraints: arch=amd64
+    series: jammy
+  "20":
+    constraints: arch=amd64 mem=1024
+    series: jammy
+  "21":
+    constraints: arch=amd64 mem=2048
+    series: jammy
+  "22":
+    constraints: arch=amd64 mem=2048
+    series: jammy
+  "23":
+    constraints: arch=amd64 mem=2048
+    series: jammy
+  "24":
+    constraints: arch=amd64 mem=2048
+    series: jammy
+  "25":
+    constraints: arch=amd64
+relations:
+- - nova-cloud-controller:shared-db
+  - nova-cloud-controller-mysql-router:shared-db
+- - nova-cloud-controller:amqp
+  - rabbitmq-server:amqp
+- - nova-cloud-controller:image-service
+  - glance:image-service
+- - nova-cloud-controller:identity-service
+  - keystone:identity-service
+- - nova-compute:cloud-compute
+  - nova-cloud-controller:cloud-compute
+- - nova-compute:amqp
+  - rabbitmq-server:amqp
+- - nova-compute:image-service
+  - glance:image-service
+- - glance:image-service
+  - cinder:image-service
+- - glance:amqp
+  - rabbitmq-server:amqp
+- - cinder:shared-db
+  - cinder-mysql-router:shared-db
+- - cinder:amqp
+  - rabbitmq-server:amqp
+- - cinder:cinder-volume-service
+  - nova-cloud-controller:cinder-volume-service
+- - cinder:identity-service
+  - keystone:identity-service
+- - neutron-api:shared-db
+  - neutron-api-mysql-router:shared-db
+- - neutron-api:amqp
+  - rabbitmq-server:amqp
+- - neutron-api:neutron-api
+  - nova-cloud-controller:neutron-api
+- - neutron-api:identity-service
+  - keystone:identity-service
+- - glance:shared-db
+  - glance-mysql-router:shared-db
+- - glance:identity-service
+  - keystone:identity-service
+- - keystone:shared-db
+  - keystone-mysql-router:shared-db
+- - neutron-gateway:quantum-network-service
+  - nova-cloud-controller:quantum-network-service
+- - neutron-gateway:amqp
+  - rabbitmq-server:amqp
+- - neutron-api:neutron-plugin-api
+  - neutron-gateway:neutron-plugin-api
+- - neutron-api:neutron-plugin-api
+  - neutron-openvswitch:neutron-plugin-api
+- - neutron-openvswitch:neutron-plugin
+  - nova-compute:neutron-plugin
+- - neutron-openvswitch:amqp
+  - rabbitmq-server:amqp
+- - heat:shared-db
+  - heat-mysql-router:shared-db
+- - heat:identity-service
+  - keystone:identity-service
+- - heat:amqp
+  - rabbitmq-server:amqp
+- - keystone:ha
+  - keystone-hacluster:ha
+- - mysql:db-router
+  - cinder-mysql-router:db-router
+- - mysql:db-router
+  - glance-mysql-router:db-router
+- - mysql:db-router
+  - heat-mysql-router:db-router
+- - mysql:db-router
+  - keystone-mysql-router:db-router
+- - mysql:db-router
+  - neutron-api-mysql-router:db-router
+- - mysql:db-router
+  - nova-cloud-controller-mysql-router:db-router
+- - mysql:db-router
+  - placement-mysql-router:db-router
+- - placement:shared-db
+  - placement-mysql-router:shared-db
+- - placement:identity-service
+  - keystone:identity-service
+- - placement:placement
+  - nova-cloud-controller:placement
+- - graylog:beats
+  - filebeat:logstash
+- - graylog:elasticsearch
+  - elasticsearch:client
+- - graylog:mongodb
+  - mongodb:database
+- - elasticsearch:juju-info
+  - filebeat:beats-host
+- - mongodb:juju-info
+  - filebeat:beats-host
+- - prometheus:grafana-source
+  - grafana:grafana-source
+- - prometheus:target
+  - telegraf:prometheus-client
+- - prometheus-openstack-exporter:identity-credentials
+  - keystone:identity-credentials
+- - prometheus-openstack-exporter:prometheus-openstack-exporter-service
+  - prometheus:target
+- - telegraf:juju-info
+  - cinder:juju-info
+- - telegraf:juju-info
+  - glance:juju-info
+- - telegraf:juju-info
+  - keystone:juju-info
+- - telegraf:juju-info
+  - neutron-api:juju-info
+- - telegraf:juju-info
+  - nova-compute:juju-info
+- - telegraf:juju-info
+  - neutron-gateway:juju-info
+- - ceph-mon:osd
+  - ceph-osd:mon
+- - glance:ceph
+  - ceph-mon:client
+- - cinder:storage-backend
+  - cinder-ceph:storage-backend
+- - cinder-ceph:ceph
+  - ceph-mon:client
+- - nova-compute:ceph-access
+  - cinder-ceph:ceph-access
+- - nova-compute:ceph
+  - ceph-mon:client
+- - prometheus-ceph-exporter:ceph-exporter
+  - prometheus:target
+- - prometheus-ceph-exporter:ceph
+  - ceph-mon:client
+- - telegraf:juju-info
+  - ceph-mon:juju-info
+- - telegraf:juju-info
+  - ceph-osd:juju-info

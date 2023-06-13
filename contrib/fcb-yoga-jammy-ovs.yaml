@@ -1,0 +1,9 @@
+!include includes/base.yaml
+!include includes/networking/ovs.yaml
+!include includes/database/mysql.yaml
+!include includes/release/yoga.yaml
+!include includes/series/jammy.yaml
+!include includes/openstack.yaml
+!include includes/operations.yaml
+!include includes/saas.yaml
+!include includes/aggregator-openstack.yaml

@@ -1,0 +1,1554 @@
+applications:
+  aodh:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      amqp: internal-space
+      certificates: internal-space
+      identity-service: internal-space
+      internal: internal-space
+      public: public-space
+      shared-db: internal-space
+    channel: yoga/stable
+    charm: aodh
+    num_units: 3
+    options:
+      openstack-origin: distro
+      region: RegionOne
+      use-internal-endpoints: true
+    to:
+    - lxd:0
+    - lxd:3
+    - lxd:6
+  aodh-mysql-router:
+    bindings:
+      ? ''
+      : oam-space
+      db-router: internal-space
+      shared-db: internal-space
+    channel: 8.0/stable
+    charm: mysql-router
+  barbican:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      amqp: internal-space
+      certificates: internal-space
+      identity-service: internal-space
+      internal: internal-space
+      public: public-space
+      secrets: internal-space
+      shared-db: internal-space
+    channel: yoga/stable
+    charm: barbican
+    num_units: 3
+    options:
+      openstack-origin: distro
+      region: RegionOne
+      use-internal-endpoints: true
+    to:
+    - lxd:1
+    - lxd:4
+    - lxd:7
+  barbican-mysql-router:
+    bindings:
+      ? ''
+      : oam-space
+      db-router: internal-space
+      shared-db: internal-space
+    channel: 8.0/stable
+    charm: mysql-router
+  barbican-vault:
+    bindings:
+      ? ''
+      : oam-space
+      certificates: internal-space
+      secrets: internal-space
+      secrets-storage: internal-space
+    channel: yoga/stable
+    charm: barbican-vault
+  bcache-tuning:
+    bindings:
+      ? ''
+      : oam-space
+    charm: bcache-tuning
+  ceilometer:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      amqp: internal-space
+      certificates: internal-space
+      identity-credentials: internal-space
+      internal: internal-space
+      public: public-space
+      shared-db: internal-space
+    channel: yoga/stable
+    charm: ceilometer
+    num_units: 3
+    options:
+      openstack-origin: distro
+      region: RegionOne
+      use-internal-endpoints: true
+    to:
+    - lxd:2
+    - lxd:5
+    - lxd:8
+  ceilometer-agent:
+    bindings:
+      ? ''
+      : oam-space
+      amqp: internal-space
+    channel: yoga/stable
+    charm: ceilometer-agent
+    options:
+      use-internal-endpoints: true
+  ceph-dashboard:
+    bindings:
+      ? ''
+      : oam-space
+      certificates: internal-space
+    channel: quincy/stable
+    charm: ceph-dashboard
+    options:
+      grafana-api-url: https://grafana.maas:3000
+  ceph-dashboard-loadbalancer:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      internal: internal-space
+      public: public-space
+    channel: jammy/stable
+    charm: openstack-loadbalancer
+    num_units: 3
+    to:
+    - lxd:0
+    - lxd:3
+    - lxd:6
+  ceph-mon:
+    bindings:
+      ? ''
+      : oam-space
+      admin: ceph-access-space
+      client: ceph-access-space
+      cluster: ceph-replica-space
+      mds: ceph-access-space
+      osd: ceph-access-space
+      public: ceph-access-space
+      radosgw: ceph-access-space
+    channel: quincy/stable
+    charm: ceph-mon
+    num_units: 3
+    options:
+      customize-failure-domain: true
+      expected-osd-count: FCE_TEMPLATE
+      source: distro
+    to:
+    - lxd:1
+    - lxd:4
+    - lxd:7
+  ceph-osd:
+    bindings:
+      ? ''
+      : oam-space
+      cluster: ceph-replica-space
+      mon: ceph-access-space
+      public: ceph-access-space
+      secrets-storage: internal-space
+    channel: quincy/stable
+    charm: ceph-osd
+    num_units: 9
+    options:
+      aa-profile-mode: complain
+      autotune: false
+      bluestore: true
+      bluestore-compression-mode: none
+      customize-failure-domain: true
+      osd-devices: /dev/disk/by-dname/FCE_TEMPLATE
+      osd-encrypt: true
+      osd-encrypt-keymanager: vault
+      source: distro
+    to:
+    - '0'
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    - '5'
+    - '6'
+    - '7'
+    - '8'
+  ceph-radosgw:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      certificates: internal-space
+      identity-service: internal-space
+      internal: internal-space
+      mon: ceph-access-space
+      public: public-space
+    channel: quincy/stable
+    charm: ceph-radosgw
+    constraints: spaces=ceph-access-space
+    num_units: 3
+    options:
+      region: RegionOne
+      source: distro
+    to:
+    - lxd:2
+    - lxd:5
+    - lxd:8
+  cinder:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      amqp: internal-space
+      certificates: internal-space
+      identity-service: internal-space
+      internal: internal-space
+      public: public-space
+      shared-db: internal-space
+    channel: yoga/stable
+    charm: cinder
+    constraints: spaces=ceph-access-space
+    num_units: 3
+    options:
+      block-device: None
+      glance-api-version: 2
+      openstack-origin: distro
+      region: RegionOne
+      use-internal-endpoints: true
+    to:
+    - lxd:0
+    - lxd:3
+    - lxd:6
+  cinder-ceph:
+    bindings:
+      ? ''
+      : oam-space
+      ceph: ceph-access-space
+    channel: yoga/stable
+    charm: cinder-ceph
+  cinder-mysql-router:
+    bindings:
+      ? ''
+      : oam-space
+      db-router: internal-space
+      shared-db: internal-space
+    channel: 8.0/stable
+    charm: mysql-router
+  designate:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      amqp: internal-space
+      certificates: internal-space
+      coordinator-memcached: internal-space
+      dns-backend: internal-space
+      identity-service: internal-space
+      internal: internal-space
+      public: public-space
+      shared-db: internal-space
+    channel: yoga/stable
+    charm: designate
+    num_units: 3
+    options:
+      nameservers: FCE_TEMPLATE
+      openstack-origin: distro
+      region: RegionOne
+      use-internal-endpoints: true
+    to:
+    - lxd:1
+    - lxd:4
+    - lxd:7
+  designate-bind:
+    bindings:
+      ? ''
+      : oam-space
+      certificates: internal-space
+      dns-backend: internal-space
+      dns-frontend: oam-space
+    channel: yoga/stable
+    charm: designate-bind
+    num_units: 2
+    options:
+      allowed_nets: FCE_TEMPLATE
+      disable-dnssec-validation: true
+      forwarders: FCE_TEMPLATE
+      recursion: true
+      use-internal-endpoints: true
+    to:
+    - memcached/0
+    - memcached/1
+  designate-mysql-router:
+    bindings:
+      ? ''
+      : oam-space
+      db-router: internal-space
+      shared-db: internal-space
+    channel: 8.0/stable
+    charm: mysql-router
+  easyrsa:
+    bindings:
+      ? ''
+      : oam-space
+      client: internal-space
+    charm: easyrsa
+    num_units: 1
+    to:
+    - lxd:6
+  etcd:
+    bindings:
+      ? ''
+      : oam-space
+      certificates: internal-space
+      db: internal-space
+    charm: etcd
+    num_units: 3
+    options:
+      channel: 3.4/stable
+    to:
+    - lxd:2
+    - lxd:5
+    - lxd:8
+  filebeat:
+    bindings:
+      ? ''
+      : oam-space
+    charm: filebeat
+    options:
+      logpath: /var/log/*.log /var/log/*/*.log /var/log/syslog
+  glance:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      amqp: internal-space
+      ceph: ceph-access-space
+      certificates: internal-space
+      identity-service: internal-space
+      internal: internal-space
+      public: public-space
+      shared-db: internal-space
+    channel: yoga/stable
+    charm: glance
+    constraints: spaces=ceph-access-space
+    num_units: 3
+    options:
+      openstack-origin: distro
+      region: RegionOne
+      use-internal-endpoints: true
+    to:
+    - lxd:0
+    - lxd:3
+    - lxd:6
+  glance-mysql-router:
+    bindings:
+      ? ''
+      : oam-space
+      db-router: internal-space
+      shared-db: internal-space
+    channel: 8.0/stable
+    charm: mysql-router
+  glance-simplestreams-sync:
+    bindings:
+      ? ''
+      : oam-space
+      certificates: internal-space
+      identity-service: internal-space
+    channel: yoga/stable
+    charm: glance-simplestreams-sync
+    num_units: 1
+    options:
+      mirror_list: '[{ url: "http://cloud-images.ubuntu.com/releases/", name_prefix:
+        "ubuntu:released", path: "streams/v1/index.sjson", max: 1, item_filters: ["release~(bionic|focal|jammy)",
+        "arch~(x86_64|amd64)", "ftype~(disk1.img|disk.img)"] }]'
+      region: RegionOne
+    to:
+    - lxd:7
+  gnocchi:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      amqp: internal-space
+      certificates: internal-space
+      coordinator-memcached: internal-space
+      identity-service: internal-space
+      internal: internal-space
+      public: public-space
+      shared-db: internal-space
+      storage-ceph: ceph-access-space
+    channel: yoga/stable
+    charm: gnocchi
+    num_units: 3
+    options:
+      openstack-origin: distro
+      region: RegionOne
+      use-internal-endpoints: true
+    to:
+    - lxd:1
+    - lxd:4
+    - lxd:7
+  gnocchi-mysql-router:
+    bindings:
+      ? ''
+      : oam-space
+      db-router: internal-space
+      shared-db: internal-space
+    channel: 8.0/stable
+    charm: mysql-router
+  hacluster-aodh:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-barbican:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-ceilometer:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-ceph-dashboard-loadbalancer:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-ceph-radosgw:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-cinder:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-designate:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-glance:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-gnocchi:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-heat:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-keystone:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-neutron-api:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-nova-cloud-controller:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-octavia:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-openstack-dashboard:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-placement:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  hacluster-vault:
+    bindings:
+      ? ''
+      : oam-space
+    channel: 2.4/stable
+    charm: hacluster
+    options:
+      cluster_count: 3
+  heat:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      amqp: internal-space
+      certificates: internal-space
+      identity-service: internal-space
+      internal: internal-space
+      public: public-space
+      shared-db: internal-space
+    channel: yoga/stable
+    charm: heat
+    num_units: 3
+    options:
+      openstack-origin: distro
+      region: RegionOne
+      use-internal-endpoints: true
+    to:
+    - lxd:2
+    - lxd:5
+    - lxd:8
+  heat-mysql-router:
+    bindings:
+      ? ''
+      : oam-space
+      db-router: internal-space
+      shared-db: internal-space
+    channel: 8.0/stable
+    charm: mysql-router
+  homer-dashboard:
+    bindings:
+      ? ''
+      : oam-space
+      application-dashboard: public-space
+    charm: bootstack-charmers-homer-dashboard
+    num_units: 1
+    to:
+    - lxd:8
+  keystone:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      certificates: internal-space
+      identity-credentials: internal-space
+      identity-service: internal-space
+      internal: internal-space
+      public: public-space
+      shared-db: internal-space
+    channel: yoga/stable
+    charm: keystone
+    num_units: 3
+    options:
+      openstack-origin: distro
+      preferred-api-version: 3
+      token-expiration: 86400
+    to:
+    - lxd:0
+    - lxd:3
+    - lxd:6
+  keystone-ldap:
+    bindings:
+      ? ''
+      : oam-space
+      certificates: internal-space
+    channel: yoga/stable
+    charm: keystone-ldap
+    options:
+      domain-name: FCE_TEMPLATE
+      ldap-config-flags: FCE_TEMPLATE
+      ldap-password: FCE_TEMPLATE
+      ldap-server: FCE_TEMPLATE
+      ldap-suffix: FCE_TEMPLATE
+      ldap-user: FCE_TEMPLATE
+  keystone-mysql-router:
+    bindings:
+      ? ''
+      : oam-space
+      db-router: internal-space
+      shared-db: internal-space
+    channel: 8.0/stable
+    charm: mysql-router
+  landscape-client:
+    bindings:
+      ? ''
+      : oam-space
+    charm: landscape-client
+    options:
+      account-name: standalone
+      disable-unattended-upgrades: true
+      url: ''
+  lldpd:
+    bindings:
+      ? ''
+      : oam-space
+    charm: lldpd
+    options:
+      interfaces-regex: en*
+  logrotated:
+    bindings:
+      ? ''
+      : oam-space
+    charm: logrotated
+    options:
+      logrotate-retention: 60
+  memcached:
+    bindings:
+      ? ''
+      : oam-space
+      cache: internal-space
+    charm: memcached
+    num_units: 2
+    options:
+      allow-ufw-ip6-softfail: true
+    to:
+    - lxd:5
+    - lxd:8
+  mysql-innodb-cluster:
+    bindings:
+      ? ''
+      : oam-space
+      cluster: internal-space
+      db-router: internal-space
+    channel: 8.0/stable
+    charm: mysql-innodb-cluster
+    num_units: 3
+    options:
+      enable-binlogs: true
+      innodb-buffer-pool-size: 8G
+      max-connections: 4000
+      wait-timeout: 3600
+    to:
+    - lxd:1
+    - lxd:4
+    - lxd:7
+  neutron-api:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      amqp: internal-space
+      certificates: internal-space
+      identity-service: internal-space
+      internal: internal-space
+      public: public-space
+      shared-db: internal-space
+    channel: yoga/stable
+    charm: neutron-api
+    num_units: 3
+    options:
+      dns-domain: FCE_TEMPLATE
+      enable-ml2-dns: true
+      enable-ml2-port-security: true
+      flat-network-providers: ''
+      global-physnet-mtu: 9000
+      manage-neutron-plugin-legacy-mode: false
+      neutron-security-groups: true
+      openstack-origin: distro
+      path-mtu: 1558
+      physical-network-mtus: FCE_TEMPLATE
+      region: RegionOne
+      use-internal-endpoints: true
+      vlan-ranges: FCE_TEMPLATE
+    to:
+    - lxd:2
+    - lxd:5
+    - lxd:8
+  neutron-api-mysql-router:
+    bindings:
+      ? ''
+      : oam-space
+      db-router: internal-space
+      shared-db: internal-space
+    channel: 8.0/stable
+    charm: mysql-router
+  neutron-api-plugin-ovn:
+    bindings:
+      ? ''
+      : oam-space
+      certificates: internal-space
+    channel: yoga/stable
+    charm: neutron-api-plugin-ovn
+  nova-cloud-controller:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      amqp: internal-space
+      certificates: internal-space
+      cloud-compute: internal-space
+      identity-service: internal-space
+      internal: internal-space
+      memcache: internal-space
+      public: public-space
+      shared-db: internal-space
+    channel: yoga/stable
+    charm: nova-cloud-controller
+    num_units: 3
+    options:
+      console-access-protocol: spice
+      cpu-allocation-ratio: 16
+      network-manager: Neutron
+      openstack-origin: distro
+      ram-allocation-ratio: 1.0
+      region: RegionOne
+      use-internal-endpoints: true
+    to:
+    - lxd:0
+    - lxd:3
+    - lxd:6
+  nova-cloud-controller-mysql-router:
+    bindings:
+      ? ''
+      : oam-space
+      db-router: internal-space
+      shared-db: internal-space
+    channel: 8.0/stable
+    charm: mysql-router
+  nova-compute:
+    bindings:
+      ? ''
+      : oam-space
+      amqp: internal-space
+      ceph: ceph-access-space
+      cloud-compute: internal-space
+      internal: internal-space
+      migration: internal-space
+      secrets-storage: internal-space
+    channel: yoga/stable
+    charm: nova-compute
+    num_units: 9
+    options:
+      aa-profile-mode: enforce
+      cpu-mode: custom
+      cpu-model: FCE_TEMPLATE
+      customize-failure-domain: true
+      enable-live-migration: true
+      enable-resize: true
+      encrypt: true
+      ephemeral-device: /dev/disk/by-dname/FCE_TEMPLATE
+      openstack-origin: distro
+      reserved-host-memory: 16384
+      use-internal-endpoints: true
+    to:
+    - '0'
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    - '5'
+    - '6'
+    - '7'
+    - '8'
+  nrpe:
+    bindings:
+      ? ''
+      : oam-space
+    charm: nrpe
+  ntp:
+    bindings:
+      ? ''
+      : oam-space
+    charm: ntp
+    options:
+      pools: 0.ubuntu.pool.ntp.org 1.ubuntu.pool.ntp.org 2.ubuntu.pool.ntp.org 3.ubuntu.pool.ntp.org
+        ntp.ubuntu.com
+      source: ''
+      verify_ntp_servers: true
+  octavia:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      amqp: internal-space
+      certificates: internal-space
+      identity-service: internal-space
+      internal: internal-space
+      public: public-space
+      shared-db: internal-space
+    channel: yoga/stable
+    charm: octavia
+    num_units: 3
+    options:
+      lb-mgmt-controller-cacert: FCE_TEMPLATE
+      lb-mgmt-controller-cert: FCE_TEMPLATE
+      lb-mgmt-issuing-ca-key-passphrase: FCE_TEMPLATE
+      lb-mgmt-issuing-ca-private-key: FCE_TEMPLATE
+      lb-mgmt-issuing-cacert: FCE_TEMPLATE
+      loadbalancer-topology: ACTIVE_STANDBY
+      openstack-origin: distro
+      region: RegionOne
+      use-internal-endpoints: true
+    to:
+    - lxd:1
+    - lxd:4
+    - lxd:7
+  octavia-dashboard:
+    bindings:
+      ? ''
+      : oam-space
+      certificates: internal-space
+      dashboard: public-space
+    channel: yoga/stable
+    charm: octavia-dashboard
+  octavia-diskimage-retrofit:
+    bindings:
+      ? ''
+      : oam-space
+      certificates: internal-space
+      identity-credentials: internal-space
+    channel: yoga/stable
+    charm: octavia-diskimage-retrofit
+    options:
+      amp-image-tag: octavia-amphora
+      retrofit-series: focal
+      retrofit-uca-pocket: yoga
+  octavia-mysql-router:
+    bindings:
+      ? ''
+      : oam-space
+      db-router: internal-space
+      shared-db: internal-space
+    channel: 8.0/stable
+    charm: mysql-router
+  octavia-ovn-chassis:
+    bindings:
+      ? ''
+      : oam-space
+      certificates: internal-space
+      data: internal-space
+    channel: 22.03/stable
+    charm: ovn-chassis
+    options:
+      disable-mlockall: true
+      ovn-bridge-mappings: FCE_TEMPLATE
+  openstack-dashboard:
+    bindings:
+      ? ''
+      : oam-space
+      certificates: internal-space
+      dashboard-plugin: public-space
+      identity-service: internal-space
+      shared-db: internal-space
+    channel: yoga/stable
+    charm: openstack-dashboard
+    num_units: 3
+    options:
+      endpoint-type: publicURL
+      enforce-ssl: true
+      neutron-network-l3ha: true
+      neutron-network-lb: true
+      openstack-origin: distro
+      password-retrieve: true
+      secret: FCE_TEMPLATE
+      webroot: /
+    to:
+    - lxd:2
+    - lxd:5
+    - lxd:8
+  openstack-dashboard-mysql-router:
+    bindings:
+      ? ''
+      : oam-space
+      db-router: internal-space
+      shared-db: internal-space
+    channel: 8.0/stable
+    charm: mysql-router
+  openstack-service-checks:
+    bindings:
+      ? ''
+      : oam-space
+      identity-credentials: internal-space
+    charm: openstack-service-checks
+    num_units: 1
+    options:
+      s3_check_params: /
+    to:
+    - lxd:1
+  ovn-central:
+    bindings:
+      ? ''
+      : oam-space
+      certificates: internal-space
+    channel: 22.03/stable
+    charm: ovn-central
+    num_units: 3
+    options:
+      source: distro
+    to:
+    - lxd:0
+    - lxd:3
+    - lxd:6
+  ovn-chassis:
+    bindings:
+      ? ''
+      : oam-space
+      certificates: internal-space
+      data: internal-space
+    channel: 22.03/stable
+    charm: ovn-chassis
+    options:
+      bridge-interface-mappings: br-data:FCE_TEMPLATE
+      ovn-bridge-mappings: FCE_TEMPLATE
+  placement:
+    bindings:
+      ? ''
+      : oam-space
+      admin: internal-space
+      amqp: internal-space
+      certificates: internal-space
+      identity-service: internal-space
+      internal: internal-space
+      public: public-space
+      shared-db: internal-space
+    channel: yoga/stable
+    charm: placement
+    num_units: 3
+    options:
+      openstack-origin: distro
+      region: RegionOne
+      use-internal-endpoints: true
+    to:
+    - lxd:1
+    - lxd:4
+    - lxd:7
+  placement-mysql-router:
+    bindings:
+      ? ''
+      : oam-space
+      db-router: internal-space
+      shared-db: internal-space
+    channel: 8.0/stable
+    charm: mysql-router
+  prometheus-grok-exporter:
+    bindings:
+      ? ''
+      : oam-space
+    charm: prometheus-grok-exporter
+    options:
+      global-paths: /var/log/syslog
+      metrics: "\nmetrics:\n- type: counter\n  name: syslog_msgs_total\n  help: Total\
+        \ number of syslog msgs, by program (ie daemon)\n  match: '%{SYSLOGBASE}'\n\
+        \  labels:\n    program: '{{.program}}'\n"
+  prometheus-libvirt-exporter:
+    bindings:
+      ? ''
+      : oam-space
+    charm: prometheus-libvirt-exporter
+  prometheus-openstack-exporter:
+    bindings:
+      ? ''
+      : oam-space
+      identity-credentials: internal-space
+      prometheus-openstack-exporter-service: oam-space
+    charm: prometheus-openstack-exporter
+    num_units: 1
+    options:
+      cpu-allocation-ratio: 16
+      ram-allocation-ratio: 1.0
+    to:
+    - lxd:0
+  public-policy-routing:
+    bindings:
+      ? ''
+      : oam-space
+    charm: advanced-routing
+    options:
+      action-managed-update: false
+      advanced-routing-config: "[{\n    # NOTE: remove comments afterwards, result\
+        \ must be a valid JSON\n    \"type\": \"table\",\n    \"table\": \"public\"\
+        \n},{\n    \"type\": \"route\",\n    \"default_route\": true,\n    \"gateway\"\
+        : \"FCE_TEMPLATE\",  # Replace to gateway address of public network\n    \"\
+        table\": \"public\",\n    \"metric\": \"101\"\n},{\n    \"type\": \"rule\"\
+        ,\n    \"from-net\": \"FCE_TEMPLATE\", # Replace to CIDR of public network\n\
+        \    \"table\": \"public\",\n    \"priority\": \"101\"\n},{\n    \"type\"\
+        : \"rule\",\n    \"from-net\": \"FCE_TEMPLATE\", # Replace to CIDR of public\
+        \ network\n    \"to-net\": \"FCE_TEMPLATE\"    # Replace to CIDR of public\
+        \ network\n}]"
+      enable-advanced-routing: true
+  rabbitmq-server:
+    bindings:
+      ? ''
+      : oam-space
+      amqp: internal-space
+      certificates: internal-space
+      cluster: internal-space
+    channel: 3.9/stable
+    charm: rabbitmq-server
+    num_units: 3
+    options:
+      cluster-partition-handling: pause_minority
+      min-cluster-size: 3
+      queue_thresholds: '[[\*, \*, 25000, 27500]]'
+      source: distro
+    to:
+    - lxd:2
+    - lxd:5
+    - lxd:8
+  telegraf:
+    bindings:
+      ? ''
+      : oam-space
+    charm: telegraf
+    options:
+      hostname: '{host}'
+  ubuntu-advantage:
+    bindings:
+      ? ''
+      : oam-space
+    charm: ubuntu-advantage
+    options:
+      token: FCE_TEMPLATE
+  vault:
+    bindings:
+      ? ''
+      : oam-space
+      certificates: internal-space
+      etcd: internal-space
+      secrets: internal-space
+      shared-db: internal-space
+    channel: 1.8/stable
+    charm: vault
+    num_units: 3
+    to:
+    - '10'
+    - '11'
+    - '9'
+  vault-mysql-router:
+    bindings:
+      ? ''
+      : oam-space
+      db-router: internal-space
+      shared-db: internal-space
+    channel: 8.0/stable
+    charm: mysql-router
+machines:
+  '0':
+    constraints: tags=foundation-nodes zones=zone1
+  '1':
+    constraints: tags=foundation-nodes zones=zone1
+  '10':
+    constraints: tags=vault zones=zone2
+  '11':
+    constraints: tags=vault zones=zone3
+  '2':
+    constraints: tags=foundation-nodes zones=zone1
+  '3':
+    constraints: tags=foundation-nodes zones=zone2
+  '4':
+    constraints: tags=foundation-nodes zones=zone2
+  '5':
+    constraints: tags=foundation-nodes zones=zone2
+  '6':
+    constraints: tags=foundation-nodes zones=zone3
+  '7':
+    constraints: tags=foundation-nodes zones=zone3
+  '8':
+    constraints: tags=foundation-nodes zones=zone3
+  '9':
+    constraints: tags=vault zones=zone1
+saas:
+  grafana:
+    url: foundations-maas:admin/lma-maas.grafana
+  graylog:
+    url: foundations-maas:admin/lma-maas.graylog
+  landscape-server:
+    url: foundations-maas:admin/lma-maas.landscape-server
+  nagios:
+    url: foundations-maas:admin/lma-maas.nagios
+  prometheus:
+    url: foundations-maas:admin/lma-maas.prometheus
+series: jammy
+relations:
+- ['aodh-mysql-router:db-router', 'mysql-innodb-cluster:db-router']
+- ['aodh-mysql-router:shared-db', 'aodh:shared-db']
+- ['aodh:amqp', 'rabbitmq-server:amqp']
+- ['aodh:certificates', 'vault:certificates']
+- ['aodh:ha', 'hacluster-aodh:ha']
+- ['aodh:identity-service', 'keystone:identity-service']
+- ['aodh:juju-info', 'filebeat:beats-host']
+- ['aodh:juju-info', 'landscape-client:container']
+- ['aodh:juju-info', 'logrotated:juju-info']
+- ['aodh:juju-info', 'nrpe:general-info']
+- ['aodh:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['aodh:juju-info', 'public-policy-routing:juju-info']
+- ['aodh:juju-info', 'telegraf:juju-info']
+- ['aodh:juju-info', 'ubuntu-advantage:juju-info']
+- ['aodh:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['barbican-mysql-router:db-router', 'mysql-innodb-cluster:db-router']
+- ['barbican-mysql-router:shared-db', 'barbican:shared-db']
+- ['barbican-vault:certificates', 'vault:certificates']
+- ['barbican-vault:secrets-storage', 'vault:secrets']
+- ['barbican-vault:secrets', 'barbican:secrets']
+- ['barbican:amqp', 'rabbitmq-server:amqp']
+- ['barbican:certificates', 'vault:certificates']
+- ['barbican:ha', 'hacluster-barbican:ha']
+- ['barbican:identity-service', 'keystone:identity-service']
+- ['barbican:juju-info', 'filebeat:beats-host']
+- ['barbican:juju-info', 'landscape-client:container']
+- ['barbican:juju-info', 'logrotated:juju-info']
+- ['barbican:juju-info', 'nrpe:general-info']
+- ['barbican:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['barbican:juju-info', 'public-policy-routing:juju-info']
+- ['barbican:juju-info', 'telegraf:juju-info']
+- ['barbican:juju-info', 'ubuntu-advantage:juju-info']
+- ['bcache-tuning:juju-info', 'ceph-osd:juju-info']
+- ['ceilometer-agent:amqp', 'rabbitmq-server:amqp']
+- ['ceilometer-agent:ceilometer-service', 'ceilometer:ceilometer-service']
+- ['ceilometer-agent:nova-ceilometer', 'nova-compute:nova-ceilometer']
+- ['ceilometer-agent:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['ceilometer:amqp', 'rabbitmq-server:amqp']
+- ['ceilometer:certificates', 'vault:certificates']
+- ['ceilometer:ha', 'hacluster-ceilometer:ha']
+- ['ceilometer:identity-credentials', 'keystone:identity-credentials']
+- ['ceilometer:identity-notifications', 'keystone:identity-notifications']
+- ['ceilometer:juju-info', 'filebeat:beats-host']
+- ['ceilometer:juju-info', 'landscape-client:container']
+- ['ceilometer:juju-info', 'logrotated:juju-info']
+- ['ceilometer:juju-info', 'nrpe:general-info']
+- ['ceilometer:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['ceilometer:juju-info', 'public-policy-routing:juju-info']
+- ['ceilometer:juju-info', 'telegraf:juju-info']
+- ['ceilometer:juju-info', 'ubuntu-advantage:juju-info']
+- ['ceilometer:metric-service', 'gnocchi:metric-service']
+- ['ceilometer:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['ceph-dashboard-loadbalancer:ha', 'hacluster-ceph-dashboard-loadbalancer:ha']
+- ['ceph-dashboard-loadbalancer:juju-info', 'filebeat:beats-host']
+- ['ceph-dashboard-loadbalancer:juju-info', 'landscape-client:container']
+- ['ceph-dashboard-loadbalancer:juju-info', 'logrotated:juju-info']
+- ['ceph-dashboard-loadbalancer:juju-info', 'nrpe:general-info']
+- ['ceph-dashboard-loadbalancer:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['ceph-dashboard-loadbalancer:juju-info', 'public-policy-routing:juju-info']
+- ['ceph-dashboard-loadbalancer:juju-info', 'telegraf:juju-info']
+- ['ceph-dashboard-loadbalancer:juju-info', 'ubuntu-advantage:juju-info']
+- ['ceph-dashboard-loadbalancer:loadbalancer', 'ceph-dashboard:loadbalancer']
+- ['ceph-dashboard:certificates', 'vault:certificates']
+- ['ceph-dashboard:dashboard', 'ceph-mon:dashboard']
+- ['ceph-dashboard:grafana-dashboard', 'grafana:dashboards']
+- ['ceph-dashboard:prometheus', 'prometheus:website']
+- ['ceph-dashboard:radosgw-dashboard', 'ceph-radosgw:radosgw-user']
+- ['ceph-mon:client', 'cinder-ceph:ceph']
+- ['ceph-mon:client', 'glance:ceph']
+- ['ceph-mon:client', 'gnocchi:storage-ceph']
+- ['ceph-mon:client', 'nova-compute:ceph']
+- ['ceph-mon:juju-info', 'filebeat:beats-host']
+- ['ceph-mon:juju-info', 'landscape-client:container']
+- ['ceph-mon:juju-info', 'logrotated:juju-info']
+- ['ceph-mon:juju-info', 'nrpe:general-info']
+- ['ceph-mon:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['ceph-mon:juju-info', 'telegraf:juju-info']
+- ['ceph-mon:juju-info', 'ubuntu-advantage:juju-info']
+- ['ceph-mon:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['ceph-mon:osd', 'ceph-osd:mon']
+- ['ceph-mon:prometheus', 'prometheus:target']
+- ['ceph-mon:radosgw', 'ceph-radosgw:mon']
+- ['ceph-osd:juju-info', 'filebeat:beats-host']
+- ['ceph-osd:juju-info', 'landscape-client:container']
+- ['ceph-osd:juju-info', 'logrotated:juju-info']
+- ['ceph-osd:juju-info', 'nrpe:general-info']
+- ['ceph-osd:juju-info', 'ntp:juju-info']
+- ['ceph-osd:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['ceph-osd:juju-info', 'telegraf:juju-info']
+- ['ceph-osd:juju-info', 'ubuntu-advantage:juju-info']
+- ['ceph-osd:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['ceph-osd:secrets-storage', 'vault:secrets']
+- ['ceph-radosgw:certificates', 'vault:certificates']
+- ['ceph-radosgw:ha', 'hacluster-ceph-radosgw:ha']
+- ['ceph-radosgw:identity-service', 'keystone:identity-service']
+- ['ceph-radosgw:juju-info', 'filebeat:beats-host']
+- ['ceph-radosgw:juju-info', 'landscape-client:container']
+- ['ceph-radosgw:juju-info', 'logrotated:juju-info']
+- ['ceph-radosgw:juju-info', 'nrpe:general-info']
+- ['ceph-radosgw:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['ceph-radosgw:juju-info', 'public-policy-routing:juju-info']
+- ['ceph-radosgw:juju-info', 'telegraf:juju-info']
+- ['ceph-radosgw:juju-info', 'ubuntu-advantage:juju-info']
+- ['ceph-radosgw:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['cinder-ceph:ceph-access', 'nova-compute:ceph-access']
+- ['cinder-ceph:storage-backend', 'cinder:storage-backend']
+- ['cinder-mysql-router:db-router', 'mysql-innodb-cluster:db-router']
+- ['cinder-mysql-router:shared-db', 'cinder:shared-db']
+- ['cinder:amqp', 'rabbitmq-server:amqp']
+- ['cinder:certificates', 'vault:certificates']
+- ['cinder:ha', 'hacluster-cinder:ha']
+- ['cinder:identity-service', 'keystone:identity-service']
+- ['cinder:image-service', 'glance:image-service']
+- ['cinder:juju-info', 'filebeat:beats-host']
+- ['cinder:juju-info', 'landscape-client:container']
+- ['cinder:juju-info', 'logrotated:juju-info']
+- ['cinder:juju-info', 'nrpe:general-info']
+- ['cinder:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['cinder:juju-info', 'public-policy-routing:juju-info']
+- ['cinder:juju-info', 'telegraf:juju-info']
+- ['cinder:juju-info', 'ubuntu-advantage:juju-info']
+- ['cinder:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['designate-bind:certificates', 'vault:certificates']
+- ['designate-bind:dns-backend', 'designate:dns-backend']
+- ['designate-bind:juju-info', 'nrpe:general-info']
+- ['designate-bind:juju-info', 'public-policy-routing:juju-info']
+- ['designate-mysql-router:db-router', 'mysql-innodb-cluster:db-router']
+- ['designate-mysql-router:shared-db', 'designate:shared-db']
+- ['designate:amqp', 'rabbitmq-server:amqp']
+- ['designate:certificates', 'vault:certificates']
+- ['designate:coordinator-memcached', 'memcached:cache']
+- ['designate:dnsaas', 'neutron-api:external-dns']
+- ['designate:ha', 'hacluster-designate:ha']
+- ['designate:identity-service', 'keystone:identity-service']
+- ['designate:juju-info', 'filebeat:beats-host']
+- ['designate:juju-info', 'landscape-client:container']
+- ['designate:juju-info', 'logrotated:juju-info']
+- ['designate:juju-info', 'nrpe:general-info']
+- ['designate:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['designate:juju-info', 'public-policy-routing:juju-info']
+- ['designate:juju-info', 'telegraf:juju-info']
+- ['designate:juju-info', 'ubuntu-advantage:juju-info']
+- ['designate:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['easyrsa:client', 'etcd:certificates']
+- ['easyrsa:juju-info', 'filebeat:beats-host']
+- ['easyrsa:juju-info', 'landscape-client:container']
+- ['easyrsa:juju-info', 'logrotated:juju-info']
+- ['easyrsa:juju-info', 'nrpe:general-info']
+- ['easyrsa:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['easyrsa:juju-info', 'telegraf:juju-info']
+- ['easyrsa:juju-info', 'ubuntu-advantage:juju-info']
+- ['etcd:db', 'vault:etcd']
+- ['etcd:grafana', 'grafana:dashboards']
+- ['etcd:juju-info', 'filebeat:beats-host']
+- ['etcd:juju-info', 'landscape-client:container']
+- ['etcd:juju-info', 'logrotated:juju-info']
+- ['etcd:juju-info', 'nrpe:general-info']
+- ['etcd:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['etcd:juju-info', 'telegraf:juju-info']
+- ['etcd:juju-info', 'ubuntu-advantage:juju-info']
+- ['etcd:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['etcd:prometheus', 'prometheus:manual-jobs']
+- ['filebeat:beats-host', 'glance-simplestreams-sync:juju-info']
+- ['filebeat:beats-host', 'glance:juju-info']
+- ['filebeat:beats-host', 'gnocchi:juju-info']
+- ['filebeat:beats-host', 'heat:juju-info']
+- ['filebeat:beats-host', 'homer-dashboard:juju-info']
+- ['filebeat:beats-host', 'keystone:juju-info']
+- ['filebeat:beats-host', 'memcached:juju-info']
+- ['filebeat:beats-host', 'mysql-innodb-cluster:juju-info']
+- ['filebeat:beats-host', 'neutron-api:juju-info']
+- ['filebeat:beats-host', 'nova-cloud-controller:juju-info']
+- ['filebeat:beats-host', 'octavia:juju-info']
+- ['filebeat:beats-host', 'openstack-dashboard:juju-info']
+- ['filebeat:beats-host', 'openstack-service-checks:juju-info']
+- ['filebeat:beats-host', 'ovn-central:juju-info']
+- ['filebeat:beats-host', 'placement:juju-info']
+- ['filebeat:beats-host', 'prometheus-openstack-exporter:juju-info']
+- ['filebeat:beats-host', 'rabbitmq-server:juju-info']
+- ['filebeat:beats-host', 'vault:juju-info']
+- ['filebeat:logstash', 'graylog:beats']
+- ['glance-mysql-router:db-router', 'mysql-innodb-cluster:db-router']
+- ['glance-mysql-router:shared-db', 'glance:shared-db']
+- ['glance-simplestreams-sync:certificates', 'vault:certificates']
+- ['glance-simplestreams-sync:identity-service', 'keystone:identity-service']
+- ['glance-simplestreams-sync:juju-info', 'landscape-client:container']
+- ['glance-simplestreams-sync:juju-info', 'logrotated:juju-info']
+- ['glance-simplestreams-sync:juju-info', 'nrpe:general-info']
+- ['glance-simplestreams-sync:juju-info', 'octavia-diskimage-retrofit:juju-info']
+- ['glance-simplestreams-sync:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['glance-simplestreams-sync:juju-info', 'telegraf:juju-info']
+- ['glance-simplestreams-sync:juju-info', 'ubuntu-advantage:juju-info']
+- ['glance-simplestreams-sync:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['glance:amqp', 'rabbitmq-server:amqp']
+- ['glance:certificates', 'vault:certificates']
+- ['glance:ha', 'hacluster-glance:ha']
+- ['glance:identity-service', 'keystone:identity-service']
+- ['glance:image-service', 'nova-cloud-controller:image-service']
+- ['glance:image-service', 'nova-compute:image-service']
+- ['glance:juju-info', 'landscape-client:container']
+- ['glance:juju-info', 'logrotated:juju-info']
+- ['glance:juju-info', 'nrpe:general-info']
+- ['glance:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['glance:juju-info', 'public-policy-routing:juju-info']
+- ['glance:juju-info', 'telegraf:juju-info']
+- ['glance:juju-info', 'ubuntu-advantage:juju-info']
+- ['glance:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['gnocchi-mysql-router:db-router', 'mysql-innodb-cluster:db-router']
+- ['gnocchi-mysql-router:shared-db', 'gnocchi:shared-db']
+- ['gnocchi:amqp', 'rabbitmq-server:amqp']
+- ['gnocchi:certificates', 'vault:certificates']
+- ['gnocchi:coordinator-memcached', 'memcached:cache']
+- ['gnocchi:ha', 'hacluster-gnocchi:ha']
+- ['gnocchi:identity-service', 'keystone:identity-service']
+- ['gnocchi:juju-info', 'landscape-client:container']
+- ['gnocchi:juju-info', 'logrotated:juju-info']
+- ['gnocchi:juju-info', 'nrpe:general-info']
+- ['gnocchi:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['gnocchi:juju-info', 'public-policy-routing:juju-info']
+- ['gnocchi:juju-info', 'telegraf:juju-info']
+- ['gnocchi:juju-info', 'ubuntu-advantage:juju-info']
+- ['grafana:application-dashboard', 'homer-dashboard:application-dashboard']
+- ['grafana:certificates', 'vault:certificates']
+- ['grafana:dashboards', 'prometheus-grok-exporter:dashboards']
+- ['grafana:dashboards', 'prometheus-openstack-exporter:dashboards']
+- ['grafana:dashboards', 'telegraf:dashboards']
+- ['graylog:application-dashboard', 'homer-dashboard:application-dashboard']
+- ['hacluster-aodh:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-barbican:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-ceilometer:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-ceph-dashboard-loadbalancer:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-ceph-radosgw:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-cinder:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-designate:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-glance:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-gnocchi:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-heat:ha', 'heat:ha']
+- ['hacluster-heat:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-keystone:ha', 'keystone:ha']
+- ['hacluster-keystone:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-neutron-api:ha', 'neutron-api:ha']
+- ['hacluster-neutron-api:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-nova-cloud-controller:ha', 'nova-cloud-controller:ha']
+- ['hacluster-nova-cloud-controller:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-octavia:ha', 'octavia:ha']
+- ['hacluster-octavia:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-openstack-dashboard:ha', 'openstack-dashboard:ha']
+- ['hacluster-openstack-dashboard:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-placement:ha', 'placement:ha']
+- ['hacluster-placement:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['hacluster-vault:ha', 'vault:ha']
+- ['hacluster-vault:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['heat-mysql-router:db-router', 'mysql-innodb-cluster:db-router']
+- ['heat-mysql-router:shared-db', 'heat:shared-db']
+- ['heat:amqp', 'rabbitmq-server:amqp']
+- ['heat:certificates', 'vault:certificates']
+- ['heat:identity-service', 'keystone:identity-service']
+- ['heat:juju-info', 'landscape-client:container']
+- ['heat:juju-info', 'logrotated:juju-info']
+- ['heat:juju-info', 'nrpe:general-info']
+- ['heat:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['heat:juju-info', 'public-policy-routing:juju-info']
+- ['heat:juju-info', 'telegraf:juju-info']
+- ['heat:juju-info', 'ubuntu-advantage:juju-info']
+- ['heat:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['homer-dashboard:application-dashboard', 'landscape-server:application-dashboard']
+- ['homer-dashboard:application-dashboard', 'nagios:application-dashboard']
+- ['homer-dashboard:juju-info', 'landscape-client:container']
+- ['homer-dashboard:juju-info', 'logrotated:juju-info']
+- ['homer-dashboard:juju-info', 'nrpe:general-info']
+- ['homer-dashboard:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['homer-dashboard:juju-info', 'telegraf:juju-info']
+- ['homer-dashboard:juju-info', 'ubuntu-advantage:juju-info']
+- ['keystone-ldap:certificates', 'vault:certificates']
+- ['keystone-ldap:domain-backend', 'keystone:domain-backend']
+- ['keystone-mysql-router:db-router', 'mysql-innodb-cluster:db-router']
+- ['keystone-mysql-router:shared-db', 'keystone:shared-db']
+- ['keystone:certificates', 'vault:certificates']
+- ['keystone:identity-credentials', 'octavia-diskimage-retrofit:identity-credentials']
+- ['keystone:identity-credentials', 'openstack-service-checks:identity-credentials']
+- ['keystone:identity-credentials', 'prometheus-openstack-exporter:identity-credentials']
+- ['keystone:identity-notifications', 'openstack-service-checks:identity-notifications']
+- ['keystone:identity-service', 'neutron-api:identity-service']
+- ['keystone:identity-service', 'nova-cloud-controller:identity-service']
+- ['keystone:identity-service', 'octavia:identity-service']
+- ['keystone:identity-service', 'openstack-dashboard:identity-service']
+- ['keystone:identity-service', 'placement:identity-service']
+- ['keystone:juju-info', 'landscape-client:container']
+- ['keystone:juju-info', 'logrotated:juju-info']
+- ['keystone:juju-info', 'nrpe:general-info']
+- ['keystone:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['keystone:juju-info', 'public-policy-routing:juju-info']
+- ['keystone:juju-info', 'telegraf:juju-info']
+- ['keystone:juju-info', 'ubuntu-advantage:juju-info']
+- ['keystone:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['landscape-client:container', 'memcached:juju-info']
+- ['landscape-client:container', 'mysql-innodb-cluster:juju-info']
+- ['landscape-client:container', 'neutron-api:juju-info']
+- ['landscape-client:container', 'nova-cloud-controller:juju-info']
+- ['landscape-client:container', 'octavia:juju-info']
+- ['landscape-client:container', 'openstack-dashboard:juju-info']
+- ['landscape-client:container', 'openstack-service-checks:juju-info']
+- ['landscape-client:container', 'ovn-central:juju-info']
+- ['landscape-client:container', 'placement:juju-info']
+- ['landscape-client:container', 'prometheus-openstack-exporter:juju-info']
+- ['landscape-client:container', 'rabbitmq-server:juju-info']
+- ['landscape-client:container', 'vault:juju-info']
+- ['lldpd:juju-info', 'nova-compute:juju-info']
+- ['lldpd:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['logrotated:juju-info', 'memcached:juju-info']
+- ['logrotated:juju-info', 'mysql-innodb-cluster:juju-info']
+- ['logrotated:juju-info', 'neutron-api:juju-info']
+- ['logrotated:juju-info', 'nova-cloud-controller:juju-info']
+- ['logrotated:juju-info', 'octavia:juju-info']
+- ['logrotated:juju-info', 'openstack-dashboard:juju-info']
+- ['logrotated:juju-info', 'openstack-service-checks:juju-info']
+- ['logrotated:juju-info', 'ovn-central:juju-info']
+- ['logrotated:juju-info', 'placement:juju-info']
+- ['logrotated:juju-info', 'prometheus-openstack-exporter:juju-info']
+- ['logrotated:juju-info', 'rabbitmq-server:juju-info']
+- ['logrotated:juju-info', 'vault:juju-info']
+- ['memcached:cache', 'nova-cloud-controller:memcache']
+- ['memcached:juju-info', 'nrpe:general-info']
+- ['memcached:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['memcached:juju-info', 'telegraf:juju-info']
+- ['memcached:juju-info', 'ubuntu-advantage:juju-info']
+- ['memcached:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['mysql-innodb-cluster:db-router', 'neutron-api-mysql-router:db-router']
+- ['mysql-innodb-cluster:db-router', 'nova-cloud-controller-mysql-router:db-router']
+- ['mysql-innodb-cluster:db-router', 'octavia-mysql-router:db-router']
+- ['mysql-innodb-cluster:db-router', 'openstack-dashboard-mysql-router:db-router']
+- ['mysql-innodb-cluster:db-router', 'placement-mysql-router:db-router']
+- ['mysql-innodb-cluster:db-router', 'vault-mysql-router:db-router']
+- ['mysql-innodb-cluster:juju-info', 'nrpe:general-info']
+- ['mysql-innodb-cluster:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['mysql-innodb-cluster:juju-info', 'telegraf:juju-info']
+- ['mysql-innodb-cluster:juju-info', 'ubuntu-advantage:juju-info']
+- ['nagios:monitors', 'nrpe:monitors']
+- ['neutron-api-mysql-router:shared-db', 'neutron-api:shared-db']
+- ['neutron-api-plugin-ovn:certificates', 'vault:certificates']
+- ['neutron-api-plugin-ovn:neutron-plugin', 'neutron-api:neutron-plugin-api-subordinate']
+- ['neutron-api-plugin-ovn:ovsdb-cms', 'ovn-central:ovsdb-cms']
+- ['neutron-api:amqp', 'rabbitmq-server:amqp']
+- ['neutron-api:certificates', 'vault:certificates']
+- ['neutron-api:juju-info', 'nrpe:general-info']
+- ['neutron-api:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['neutron-api:juju-info', 'public-policy-routing:juju-info']
+- ['neutron-api:juju-info', 'telegraf:juju-info']
+- ['neutron-api:juju-info', 'ubuntu-advantage:juju-info']
+- ['neutron-api:neutron-api', 'nova-cloud-controller:neutron-api']
+- ['neutron-api:neutron-load-balancer', 'octavia:neutron-api']
+- ['neutron-api:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['nova-cloud-controller-mysql-router:shared-db', 'nova-cloud-controller:shared-db']
+- ['nova-cloud-controller:amqp', 'rabbitmq-server:amqp']
+- ['nova-cloud-controller:certificates', 'vault:certificates']
+- ['nova-cloud-controller:cloud-compute', 'nova-compute:cloud-compute']
+- ['nova-cloud-controller:juju-info', 'nrpe:general-info']
+- ['nova-cloud-controller:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['nova-cloud-controller:juju-info', 'public-policy-routing:juju-info']
+- ['nova-cloud-controller:juju-info', 'telegraf:juju-info']
+- ['nova-cloud-controller:juju-info', 'ubuntu-advantage:juju-info']
+- ['nova-cloud-controller:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['nova-cloud-controller:placement', 'placement:placement']
+- ['nova-compute:amqp', 'rabbitmq-server:amqp']
+- ['nova-compute:juju-info', 'nrpe:general-info']
+- ['nova-compute:juju-info', 'prometheus-libvirt-exporter:juju-info']
+- ['nova-compute:neutron-plugin', 'ovn-chassis:nova-compute']
+- ['nova-compute:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['nova-compute:secrets-storage', 'vault:secrets']
+- ['nrpe:general-info', 'octavia:juju-info']
+- ['nrpe:general-info', 'openstack-dashboard:juju-info']
+- ['nrpe:general-info', 'openstack-service-checks:juju-info']
+- ['nrpe:general-info', 'ovn-central:juju-info']
+- ['nrpe:general-info', 'placement:juju-info']
+- ['nrpe:general-info', 'prometheus-openstack-exporter:juju-info']
+- ['nrpe:general-info', 'rabbitmq-server:juju-info']
+- ['nrpe:general-info', 'vault:juju-info']
+- ['nrpe:nrpe-external-master', 'ntp:nrpe-external-master']
+- ['nrpe:nrpe-external-master', 'octavia:nrpe-external-master']
+- ['nrpe:nrpe-external-master', 'openstack-dashboard:nrpe-external-master']
+- ['nrpe:nrpe-external-master', 'openstack-service-checks:nrpe-external-master']
+- ['nrpe:nrpe-external-master', 'ovn-central:nrpe-external-master']
+- ['nrpe:nrpe-external-master', 'prometheus-grok-exporter:nrpe-external-master']
+- ['nrpe:nrpe-external-master', 'prometheus-libvirt-exporter:nrpe-external-master']
+- ['nrpe:nrpe-external-master', 'prometheus-openstack-exporter:nrpe-external-master']
+- ['nrpe:nrpe-external-master', 'rabbitmq-server:nrpe-external-master']
+- ['nrpe:nrpe-external-master', 'vault:nrpe-external-master']
+- ['ntp:juju-info', 'vault:juju-info']
+- ['octavia-dashboard:certificates', 'vault:certificates']
+- ['octavia-dashboard:dashboard', 'openstack-dashboard:dashboard-plugin']
+- ['octavia-diskimage-retrofit:certificates', 'vault:certificates']
+- ['octavia-mysql-router:shared-db', 'octavia:shared-db']
+- ['octavia-ovn-chassis:certificates', 'vault:certificates']
+- ['octavia-ovn-chassis:ovsdb-subordinate', 'octavia:ovsdb-subordinate']
+- ['octavia-ovn-chassis:ovsdb', 'ovn-central:ovsdb']
+- ['octavia:amqp', 'rabbitmq-server:amqp']
+- ['octavia:certificates', 'vault:certificates']
+- ['octavia:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['octavia:juju-info', 'public-policy-routing:juju-info']
+- ['octavia:juju-info', 'telegraf:juju-info']
+- ['octavia:juju-info', 'ubuntu-advantage:juju-info']
+- ['octavia:ovsdb-cms', 'ovn-central:ovsdb-cms']
+- ['openstack-dashboard-mysql-router:shared-db', 'openstack-dashboard:shared-db']
+- ['openstack-dashboard:certificates', 'vault:certificates']
+- ['openstack-dashboard:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['openstack-dashboard:juju-info', 'public-policy-routing:juju-info']
+- ['openstack-dashboard:juju-info', 'telegraf:juju-info']
+- ['openstack-dashboard:juju-info', 'ubuntu-advantage:juju-info']
+- ['openstack-service-checks:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['openstack-service-checks:juju-info', 'telegraf:juju-info']
+- ['openstack-service-checks:juju-info', 'ubuntu-advantage:juju-info']
+- ['ovn-central:certificates', 'vault:certificates']
+- ['ovn-central:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['ovn-central:juju-info', 'telegraf:juju-info']
+- ['ovn-central:juju-info', 'ubuntu-advantage:juju-info']
+- ['ovn-central:ovsdb', 'ovn-chassis:ovsdb']
+- ['ovn-chassis:certificates', 'vault:certificates']
+- ['placement-mysql-router:shared-db', 'placement:shared-db']
+- ['placement:amqp', 'rabbitmq-server:amqp']
+- ['placement:certificates', 'vault:certificates']
+- ['placement:juju-info', 'prometheus-grok-exporter:juju-info']
+- ['placement:juju-info', 'public-policy-routing:juju-info']
+- ['placement:juju-info', 'telegraf:juju-info']
+- ['placement:juju-info', 'ubuntu-advantage:juju-info']
+- ['prometheus-grok-exporter:juju-info', 'prometheus-openstack-exporter:juju-info']
+- ['prometheus-grok-exporter:juju-info', 'rabbitmq-server:juju-info']
+- ['prometheus-grok-exporter:juju-info', 'vault:juju-info']
+- ['prometheus-grok-exporter:prometheus-client', 'prometheus:target']
+- ['prometheus-libvirt-exporter:scrape', 'prometheus:target']
+- ['prometheus-openstack-exporter:juju-info', 'telegraf:juju-info']
+- ['prometheus-openstack-exporter:juju-info', 'ubuntu-advantage:juju-info']
+- ['prometheus-openstack-exporter:prometheus-openstack-exporter-service', 'prometheus:target']
+- ['prometheus:target', 'telegraf:prometheus-client']
+- ['rabbitmq-server:juju-info', 'telegraf:juju-info']
+- ['rabbitmq-server:juju-info', 'ubuntu-advantage:juju-info']
+- ['telegraf:juju-info', 'vault:juju-info']
+- ['ubuntu-advantage:juju-info', 'vault:juju-info']
+- ['vault-mysql-router:shared-db', 'vault:shared-db']

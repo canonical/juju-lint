@@ -1,0 +1,5 @@
+operations openstack mandatory series: &operations-openstack-mandatory-series []
+# compatability with new fields of fcb rules
+operations openstack mandatory release: &operations-openstack-mandatory-release []
+openstack loadbalancer: &openstack-loadbalancer
+  - openstack-loadbalancer
