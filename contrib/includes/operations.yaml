@@ -25,7 +25,7 @@ operations mandatory dependencies: &operations-mandatory-deps
  - postgresql
 
 operations subordinates: &operations-mandatory-subs
- - canonical-livepatch
+ - ubuntu-advantage
  - filebeat
  - ksplice
  - landscape-client
@@ -45,6 +45,7 @@ operations optional subordinates: &operations-optional-subs
  - advanced-routing
  - rsyslog-forwarder-ha
  - local-users
+ - canonical-livepatch
 
 operations kubernetes mandatory: &operations-kubernetes-mandatory-charms
  - kubernetes-service-checks

@@ -26,7 +26,7 @@ subordinates:
   where: all except landscape-server
  filebeat:
   where: all except graylog
- canonical-livepatch:
+ ubuntu-advantage:
   where: host only
  nrpe:
   where: container aware
