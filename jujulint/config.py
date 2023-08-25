@@ -96,7 +96,7 @@ class Config(Configuration):
             "-o",
             "--override-subordinate",
             dest="override.subordinate",
-            help="override lint-rules.yaml, e.g. -o canonical-livepatch:all",
+            help="override lint-rules.yaml, e.g. -o ubuntu-advantage:all",
         )
         self.parser.add_argument(
             "--logfile",

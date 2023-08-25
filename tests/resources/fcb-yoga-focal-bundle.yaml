@@ -74,11 +74,11 @@ applications:
       ? ''
       : oam-space
     charm: bcache-tuning
-  canonical-livepatch:
+  ubuntu-advantage:
     bindings:
       ? ''
       : oam-space
-    charm: canonical-livepatch
+    charm: ubuntu-advantage
     options:
       livepatch_key: FCE_TEMPLATE
   ceilometer:
@@ -1106,9 +1106,8 @@ relations:
 - ['barbican:juju-info', 'public-policy-routing:juju-info']
 - ['barbican:juju-info', 'telegraf:juju-info']
 - ['bcache-tuning:juju-info', 'ceph-osd:juju-info']
-- ['canonical-livepatch:juju-info', 'ceph-osd:juju-info']
-- ['canonical-livepatch:juju-info', 'vault:juju-info']
-- ['canonical-livepatch:nrpe-external-master', 'nrpe:nrpe-external-master']
+- ['ubuntu-advantage:juju-info', 'ceph-osd:juju-info']
+- ['ubuntu-advantage:juju-info', 'vault:juju-info']
 - ['ceilometer-agent:amqp', 'rabbitmq-server:amqp']
 - ['ceilometer-agent:ceilometer-service', 'ceilometer:ceilometer-service']
 - ['ceilometer-agent:nova-ceilometer', 'nova-compute:nova-ceilometer']

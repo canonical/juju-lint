@@ -83,7 +83,7 @@ subordinates:
   where: all except landscape-server
  filebeat:
   where: all except graylog
- canonical-livepatch:
+ ubuntu-advantage:
   where: host only
  nrpe:
   where: container aware
@@ -146,7 +146,7 @@ operations mandatory dependencies: &operations-mandatory-deps
  - postgresql
 
 operations subordinates: &operations-mandatory-subs
- - canonical-livepatch
+ - ubuntu-advantage
  - filebeat
  - ksplice
  - landscape-client
@@ -166,6 +166,7 @@ operations optional subordinates: &operations-optional-subs
  - advanced-routing
  - rsyslog-forwarder-ha
  - local-users
+ - canonical-livepatch
 
 operations charms: &operations-charms
  - *operations-kubernetes-mandatory-charms
