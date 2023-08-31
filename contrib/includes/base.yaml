@@ -27,7 +27,7 @@ subordinates:
  filebeat:
   where: all except graylog
  ubuntu-advantage:
-  where: host only
+  where: all
  nrpe:
   where: container aware
   host-suffixes: [host, physical, guest]
