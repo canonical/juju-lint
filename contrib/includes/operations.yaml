@@ -2,7 +2,6 @@ operations mandatory: &operations-mandatory-charms
  - elasticsearch
  - grafana
  - graylog
- - landscape-server
  - nagios
  - prometheus2
 
@@ -10,6 +9,7 @@ operations optional: &operations-optional-charms
  - infra-node
  - cloudstats
  - juju-lint
+ - landscape-server
 
 operations openstack mandatory base: &operations-openstack-mandatory-base
  - openstack-service-checks
