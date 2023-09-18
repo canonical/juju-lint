@@ -19,6 +19,7 @@ help:
 	@echo " make reformat - run black and isort and reformat files"
 	@echo " make unittests - run the tests defined in the unittest subdirectory"
 	@echo " make functional - run the tests defined in the functional subdirectory"
+	@echo " make functional31 - run the tests defined in the functional subdirectory with juju 3.1 requirements"
 	@echo " make test - run lint, proof, unittests and functional targets"
 	@echo " make pre-commit - run pre-commit checks on all the files"
 	@echo ""
@@ -57,8 +58,12 @@ functional: build
 	@echo "Executing functional tests using built snap"
 	@TEST_SNAP=${SNAP_FILE} tox -e func -- ${FUNC_ARGS}
 
+functional31: build
+	@echo "Executing functional tests using built snap with juju 3.1 requirements"
+	@TEST_SNAP=${SNAP_FILE} tox -e func31 -- ${FUNC_ARGS}
+
 pre-commit:
 	@tox -e pre-commit
 
 # The targets below don't depend on a file
-.PHONY: help clean dev-environment build lint reformat unittests functional test pre-commit
+.PHONY: help clean dev-environment build lint reformat unittests functional functional31 test pre-commit
