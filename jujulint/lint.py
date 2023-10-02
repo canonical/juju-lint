@@ -237,7 +237,7 @@ class Linter:
         If the input value does not match the expected format, it is returned
         without the change.
         """
-        if type(val) != str:
+        if not isinstance(val, str):
             return val
 
         try:
