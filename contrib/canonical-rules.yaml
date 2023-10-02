@@ -96,7 +96,7 @@ subordinates:
  thruk-agent:
   where: on nagios
  hw-health:
-  where: host only
+  where: metal only
  logrotated:
   where: all
  local-users:
