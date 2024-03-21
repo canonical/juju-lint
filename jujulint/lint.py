@@ -864,7 +864,8 @@ class Linter:
                         "description": "An unrecognised charm is present in the model",
                         "charm": charm,
                         "message": "Charm '{}' not recognised".format(charm),
-                    }
+                    },
+                    log_level=logging.INFO
                 )
         # Then look for charms we require
         for charm in self.lint_rules["operations mandatory"]:
