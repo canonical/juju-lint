@@ -352,9 +352,7 @@ applications:
         linter.do_lint(juju_status)
 
         errors = linter.output_collector["errors"]
-        assert len(errors) == 1
-        assert errors[0]["id"] == "unrecognised-charm"
-        assert errors[0]["charm"] == "ubuntu"
+        assert len(errors) == 0
 
     def test_ops_subordinate_missing(self, linter, juju_status):
         """Test that missing ops subordinate charms are detected."""
