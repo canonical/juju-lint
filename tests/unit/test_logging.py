@@ -1,5 +1,4 @@
 """Test for jujulint logging module."""
-
 import sys
 from unittest.mock import MagicMock, call
 
