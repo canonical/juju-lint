@@ -1,4 +1,5 @@
 """Tests for Kubernetes cloud module."""
+
 from unittest.mock import MagicMock
 
 from jujulint.k8s import Cloud, Kubernetes
