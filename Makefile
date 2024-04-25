@@ -55,12 +55,8 @@ dev-environment:
 	@tox -r -e dev-environment
 
 functional: build
-	@echo "Executing functional tests using built snap"
-	@TEST_SNAP=${SNAP_FILE} tox -e func -- ${FUNC_ARGS}
-
-functional31: build
 	@echo "Executing functional tests using built snap with juju 3.1 requirements"
-	@TEST_SNAP=${SNAP_FILE} tox -e func31 -- ${FUNC_ARGS}
+	@TEST_SNAP=${SNAP_FILE} tox -e func -- ${FUNC_ARGS}
 
 pre-commit:
 	@tox -e pre-commit
