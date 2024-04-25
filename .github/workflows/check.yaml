@@ -24,15 +24,6 @@ jobs:
     with:
       python-version: ${{ matrix.python-version }}
 
-  snap-build:
-    name: Install snap
-    needs: lint-unit
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Install snapcraft
-        run: sudo snap install snapcraft --classic
-
   func:
     uses: canonical/bootstack-actions/.github/workflows/func.yaml@v2
     needs: lint-unit
