@@ -39,6 +39,12 @@ To use a different rules file:
 
 For all other options, consult `juju-lint --help`
 
+Find it on the Snap Store!
+
+<a href="https://snapcraft.io/juju-lint" title="Get it from the Snap Store">
+    <img src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg" alt="Get it from the Snap Store" width="200" />
+</a>
+
 ### Example
 
 A typical use case is linting an openstack cloud:
