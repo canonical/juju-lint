@@ -1,4 +1,5 @@
 """Functional tests for juju-lint."""
+
 import json
 import socket
 from subprocess import PIPE, check_call, check_output, run
