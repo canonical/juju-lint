@@ -1,4 +1,5 @@
 """Pytest configuration file for juju-lint tests."""
+
 import logging
 import os
 import shutil

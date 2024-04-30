@@ -865,7 +865,7 @@ class Linter:
                         "charm": charm,
                         "message": "Charm '{}' not recognised".format(charm),
                     },
-                    log_level=logging.INFO
+                    log_level=logging.INFO,
                 )
         # Then look for charms we require
         for charm in self.lint_rules["operations mandatory"]:

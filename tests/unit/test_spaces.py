@@ -1,4 +1,5 @@
 """Tests for spaces.py module."""
+
 from unittest.mock import call
 
 import pytest

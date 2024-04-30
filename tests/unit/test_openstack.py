@@ -1,4 +1,5 @@
 """Tests for OpenStack cloud module."""
+
 from unittest.mock import MagicMock
 
 from jujulint.openstack import Cloud, OpenStack
