@@ -54,30 +54,26 @@ def test_cli_init(output_format_value, mocker):
         logging_mock.disable.assert_called_once_with(level=logging_mock.CRITICAL)
 
 
-@pytest.mark.parametrize("version", ["1.0", None])
-def test_cli_ini_version(version, mocker):
+def test_cli_version(mocker):
     """Test detection of juju-lint version on Cli init."""
-    require_rvalue = MagicMock()
-    require_rvalue.version = version
     mocker.patch.object(cli, "Config")
-
-    if version:
-        require_mock = mocker.patch.object(
-            cli.pkg_resources, "require", return_value=[require_rvalue]
-        )
-    else:
-        require_mock = mocker.patch.object(
-            cli.pkg_resources,
-            "require",
-            side_effect=cli.pkg_resources.DistributionNotFound,
-        )
-
-    expected_version = version or "unknown"
+    version_mock = mocker.patch.object(cli, "version", return_value="1.2")
 
     cli_instance = cli.Cli()
 
-    require_mock.assert_called_once_with("jujulint")
-    assert cli_instance.version == expected_version
+    version_mock.assert_called_once_with("jujulint")
+    assert cli_instance.version == "1.2"
+
+
+def test_cli_version_fallback(mocker):
+    """Test graceful fallback of juju-lint version on Cli init."""
+    mocker.patch.object(cli, "Config")
+
+    cli_instance = cli.Cli()
+
+    # detecting version fails in unit tests,
+    # so we can test that it gracefully falls back to unknown
+    assert cli_instance.version == "unknown"
 
 
 @pytest.mark.parametrize("rules_path", ["absolute", "relative", "url", None])

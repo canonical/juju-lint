@@ -88,7 +88,7 @@ def test_get_bundle_offer_side(
         }
     }
     cloud_instance.get_juju_bundle("my_controller", "my_model_1")
-    assert mock_run.called_once_with("juju export-bundle -m my_controller:my_model_1")
+    mock_run.assert_called_once_with("juju export-bundle -m my_controller:my_model_1")
     assert cloud_instance.cloud_state == expected_cloud_state
 
 
@@ -122,7 +122,7 @@ def test_get_bundle_consumer_side(
         }
     }
     cloud_instance.get_juju_bundle("my_controller", "my_model_2")
-    assert mock_run.called_once_with("juju export-bundle -m my_controller:my_model_2")
+    mock_run.assert_called_once_with("juju export-bundle -m my_controller:my_model_2")
     assert cloud_instance.cloud_state == expected_cloud_state
 
 

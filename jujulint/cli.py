@@ -22,8 +22,8 @@ import logging
 import os.path
 import sys
 import tempfile
+from importlib.metadata import PackageNotFoundError, version
 
-import pkg_resources
 import yaml
 
 from jujulint.config import Config
@@ -52,8 +52,8 @@ class Cli:
         # this will fail if not running from an installed package
         # e.g. during unit tests
         try:
-            self.version = pkg_resources.require("jujulint")[0].version
-        except pkg_resources.DistributionNotFound:
+            self.version = version("jujulint")
+        except PackageNotFoundError:
             self.version = "unknown"
 
         self.rules_files = self.validate_rules_file_args()
