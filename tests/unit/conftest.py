@@ -430,7 +430,11 @@ def parsed_yaml_status_juju34():
                 "charm-name": "nrpe",
                 "relations": {
                     "nrpe-external-master": [
-                        {"related-application": "keystone", "interface": "nrpe-external-master", "scope": "container"},
+                        {
+                            "related-application": "keystone",
+                            "interface": "nrpe-external-master",
+                            "scope": "container",
+                        },
                     ],
                 },
                 "endpoint-bindings": {
@@ -447,7 +451,11 @@ def parsed_yaml_status_juju34():
                 "charm-name": "nrpe",
                 "relations": {
                     "nrpe-external-master": [
-                        {"related-application": "elasticsearch", "interface": "nrpe-external-master", "scope": "container"},
+                        {
+                            "related-application": "elasticsearch",
+                            "interface": "nrpe-external-master",
+                            "scope": "container",
+                        },
                     ],
                     "general-info": ["ubuntu"],
                 },
@@ -464,9 +472,15 @@ def parsed_yaml_status_juju34():
                 "application-status": {"current": "active"},
                 "charm": "cs:ubuntu-18",
                 "charm-name": "ubuntu",
-                "relations": {"juju-info": [
-                    {"related-application": "nrpe-host", "interface": "juju-info", "scope": "container"},
-                ]},
+                "relations": {
+                    "juju-info": [
+                        {
+                            "related-application": "nrpe-host",
+                            "interface": "juju-info",
+                            "scope": "container",
+                        },
+                    ]
+                },
                 "endpoint-bindings": {
                     "": "external-space",
                     "certificates": "external-space",
@@ -490,7 +504,11 @@ def parsed_yaml_status_juju34():
                 "charm-name": "keystone",
                 "relations": {
                     "nrpe-external-master": [
-                        {"related-application": "nrpe-container", "interface": "nrpe-external-master", "scope": "container"},
+                        {
+                            "related-application": "nrpe-container",
+                            "interface": "nrpe-external-master",
+                            "scope": "container",
+                        },
                     ],
                 },
                 "endpoint-bindings": {
@@ -530,7 +548,11 @@ def parsed_yaml_status_juju34():
                 "charm-name": "elasticsearch",
                 "relations": {
                     "nrpe-external-master": [
-                        {"related-application": "nrpe-host", "interface": "nrpe-external-master", "scope": "container"},
+                        {
+                            "related-application": "nrpe-host",
+                            "interface": "nrpe-external-master",
+                            "scope": "container",
+                        },
                     ],
                 },
                 "endpoint-bindings": {
