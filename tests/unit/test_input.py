@@ -142,6 +142,13 @@ def test_check_app_endpoint_existence(
             {"keystone", "elasticsearch"},
         ),  # all apps with nrpe-external-master
         (
+            "juju-status-34",
+            "nrpe",
+            "*",
+            "nrpe-external-master",
+            {"keystone", "elasticsearch"},
+        ),  # all apps with nrpe-external-master
+        (
             "juju-bundle",
             "nrpe",
             "*",
@@ -156,6 +163,13 @@ def test_check_app_endpoint_existence(
             {"keystone"},
         ),  # check if keystone has nrpe-external-master
         (
+            "juju-status-34",
+            "nrpe",
+            "keystone",
+            "nrpe-external-master",
+            {"keystone"},
+        ),  # check if keystone has nrpe-external-master
+        (
             "juju-bundle",
             "nrpe",
             "keystone",
@@ -164,6 +178,13 @@ def test_check_app_endpoint_existence(
         ),  # check if keystone has nrpe-external-master
         (
             "juju-status",
+            "nrpe",
+            "ubuntu",
+            "nrpe-external-master",
+            set(),
+        ),  # check if ubuntu has nrpe-external-master
+        (
+            "juju-status-34",
             "nrpe",
             "ubuntu",
             "nrpe-external-master",
@@ -192,10 +213,13 @@ def test_filter_by_app_and_endpoint(
     "input_file_type, endpoint, expected_output",
     [
         ("juju-status", "nrpe-external-master", {"keystone", "elasticsearch"}),
+        ("juju-status-34", "nrpe-external-master", {"keystone", "elasticsearch"}),
         ("juju-bundle", "nrpe-external-master", {"keystone", "elasticsearch"}),
         ("juju-status", "general-info", {"ubuntu"}),
+        ("juju-status-34", "general-info", {"ubuntu"}),
         ("juju-bundle", "general-info", {"ubuntu"}),
         ("juju-status", "monitors", set()),
+        ("juju-status-34", "monitors", set()),
         ("juju-bundle", "monitors", set()),
     ],
 )
