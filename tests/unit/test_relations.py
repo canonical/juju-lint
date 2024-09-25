@@ -14,10 +14,15 @@ RELATIONS = [["*:nrpe-external-master", "nrpe:nrpe-external-master"]]
     "correct_relation, input_file_type",
     [
         (RELATIONS, "juju-status"),
+        (RELATIONS, "juju-status-34"),
         (RELATIONS, "juju-bundle"),
         (
             [["nrpe:nrpe-external-master", "*:nrpe-external-master"]],
             "juju-status",
+        ),  # inverting sequence doesn't change the endpoint
+        (
+            [["nrpe:nrpe-external-master", "*:nrpe-external-master"]],
+            "juju-status-34",
         ),  # inverting sequence doesn't change the endpoint
         (
             [["nrpe:nrpe-external-master", "*:nrpe-external-master"]],
@@ -26,6 +31,10 @@ RELATIONS = [["*:nrpe-external-master", "nrpe:nrpe-external-master"]]
         (
             [["nrpe:nrpe-external-master", "keystone:nrpe-external-master"]],
             "juju-status",
+        ),  # able to find specific app relation
+        (
+            [["nrpe:nrpe-external-master", "keystone:nrpe-external-master"]],
+            "juju-status-34",
         ),  # able to find specific app relation
         (
             [["nrpe:nrpe-external-master", "keystone:nrpe-external-master"]],
@@ -227,6 +236,12 @@ def test_relation_rule_unknown_charm(mocker, input_files, input_file_type):
             [["foo:juju-info", "bar:juju-info"]],
             True,
             False,
+            "juju-status-34",
+        ),  # app doesn't exist
+        (
+            [["foo:juju-info", "bar:juju-info"]],
+            True,
+            False,
             "juju-bundle",
         ),  # app doesn't exist
         (
@@ -234,6 +249,12 @@ def test_relation_rule_unknown_charm(mocker, input_files, input_file_type):
             False,
             True,
             "juju-status",
+        ),  # endpoint doesn't exist
+        (
+            [["keystone:bar", "nrpe-host:foo"]],
+            False,
+            True,
+            "juju-status-34",
         ),  # endpoint doesn't exist
         (
             [["keystone:bar", "nrpe-host:foo"]],
@@ -275,6 +296,12 @@ def test_relation_rule_unknown_app_endpoint(
             {"3": {"series": "focal"}, "2": {"series": "bionic"}},
             ["2", "3"],
             RELATIONS,
+            "juju-status-34",
+        ),
+        (
+            {"3": {"series": "focal"}, "2": {"series": "bionic"}},
+            ["2", "3"],
+            RELATIONS,
             "juju-bundle",
         ),
         # empty relations is able to run ubiquitous check
@@ -283,6 +310,12 @@ def test_relation_rule_unknown_app_endpoint(
             ["2", "3"],
             [[]],
             "juju-status",
+        ),
+        (
+            {"3": {"series": "focal"}, "2": {"series": "bionic"}},
+            ["2", "3"],
+            [[]],
+            "juju-status-34",
         ),
         (
             {"3": {"series": "focal"}, "2": {"series": "bionic"}},

@@ -244,7 +244,13 @@ class JujuStatusFile(BaseFile):
         apps_related = set()
         for app in apps:
             relations = self.applications_data.get(app, {}).get("relations", {})
-            apps_related.update(relations.get(endpoint, []))
+            endpoints = relations.get(endpoint, [])
+            # since juju 3.4, this is a dict instead of a string,
+            # so convert to a string.
+            for i in range(len(endpoints)):
+                if isinstance(endpoints[i], dict):
+                    endpoints[i] = endpoints[i]["related-application"]
+            apps_related.update(endpoints)
         return apps_related
 
     def filter_lxd_on_machine(self, machine: str) -> Set:
