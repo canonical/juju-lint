@@ -30,7 +30,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: snap_${{ env.SYSTEM_ARCH }}
-          path: ${{ steps.build.outputs.snap }}
 
       - name: Find the downloaded snap file
         run: echo "SNAP_FILE=$(find . -name "*.snap")" >> $GITHUB_ENV
