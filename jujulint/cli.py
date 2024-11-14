@@ -113,7 +113,7 @@ class Cli:
                     "{}/{}".format(self.config.config_dir(), arg)
                 )
             else:
-                self.logger.error("Cloud not locate rules file {}".format(arg))
+                self.logger.error("Could not locate rules file {}".format(arg))
                 sys.exit(1)
 
         return validated_rules_file_args
