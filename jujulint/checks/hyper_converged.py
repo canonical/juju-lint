@@ -9,7 +9,7 @@ from jujulint.model_input import JujuBundleFile, JujuStatusFile
 
 # see LP#1990885
 def check_hyper_converged(
-    input_file: Union[JujuBundleFile, JujuStatusFile]
+    input_file: Union[JujuBundleFile, JujuStatusFile],
 ) -> DefaultDict[str, DefaultDict[str, set]]:
     """Check if other services are collocated with nova/osd with masakari.
 
