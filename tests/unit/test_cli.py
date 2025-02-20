@@ -344,9 +344,7 @@ def test_cli_audit(cli_instance, success, mocker):
     mock_openstack_instance = MagicMock()
     mock_openstack_instance.refresh.return_value = success
     mock_openstack_instance.cloud_state = cloud_state
-    mock_openstack = mocker.patch.object(
-        cli, "OpenStack", return_value=mock_openstack_instance
-    )
+    mock_openstack = mocker.patch.object(cli, "OpenStack", return_value=mock_openstack_instance)
 
     mock_yaml = mocker.patch.object(cli_instance, "write_yaml")
 
@@ -369,9 +367,7 @@ def test_cli_audit(cli_instance, success, mocker):
 
     if success:
         assert cli_instance.clouds[cloud_name] == cloud_state
-        mock_yaml.assert_called_once_with(
-            cloud_state, "{}-state.yaml".format(cloud_name)
-        )
+        mock_yaml.assert_called_once_with(cloud_state, "{}-state.yaml".format(cloud_name))
         mock_openstack_instance.audit.assert_called_once()
     else:
         mock_logger.error.assert_called_once_with(
@@ -397,9 +393,7 @@ def test_cli_write_yaml(cli_instance, mocker):
     cli_instance.config = config
     cli_instance.write_yaml(data, file_name)
 
-    mock_open.assert_called_once_with(
-        "{}/{}".format(output_folder_value, file_name), "w"
-    )
+    mock_open.assert_called_once_with("{}/{}".format(output_folder_value, file_name), "w")
     yaml_mock.dump.assert_called_once_with(data, opened_file)
 
 

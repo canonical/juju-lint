@@ -32,7 +32,7 @@ Todo:
     * Parse bundle into dict
     * Add function to run command on a unit, via fabric and jump host if configured
 
-"""
+"""  # noqa: W505
 import socket
 from subprocess import CalledProcessError, check_output
 
@@ -79,9 +79,7 @@ class Cloud:
             if ssh_host:
                 self.logger.debug("SSH host: {}".format(ssh_host))
                 self.hostname = ssh_host
-                self.connection = Connection(
-                    ssh_host, config=Config(overrides=self.fabric_config)
-                )
+                self.connection = Connection(ssh_host, config=Config(overrides=self.fabric_config))
                 self.access_method = "ssh"
         elif access_method == "local":
             self.hostname = socket.getfqdn()
@@ -109,9 +107,7 @@ class Cloud:
                     return None
                 return result.stdout
             else:
-                self.logger.debug(
-                    "Running SSH command {} on {}...".format(command, self.hostname)
-                )
+                self.logger.debug("Running SSH command {} on {}...".format(command, self.hostname))
                 try:
                     result = self.connection.run(command, hide=True, warn=True)
                 except SSHException as e:
@@ -141,15 +137,13 @@ class Cloud:
                 if "controllers" in controllers[0]:
                     for controller in controllers[0]["controllers"].keys():
                         self.logger.info(
-                            "[{}] Found Juju controller: {}".format(
-                                self.name, controller
-                            )
+                            "[{}] Found Juju controller: {}".format(self.name, controller)
                         )
                         if controller not in self.cloud_state.keys():
                             self.cloud_state[controller] = {}
-                        self.cloud_state[controller]["config"] = controllers[0][
-                            "controllers"
-                        ][controller]
+                        self.cloud_state[controller]["config"] = controllers[0]["controllers"][
+                            controller
+                        ]
             return True
         self.logger.error("[{}] Could not get controller list".format(self.name))
         return False
@@ -160,9 +154,7 @@ class Cloud:
         if result:
             for controller in self.cloud_state.keys():
                 self.logger.info(
-                    "[{}] Getting models for controller: {}".format(
-                        self.name, controller
-                    )
+                    "[{}] Getting models for controller: {}".format(self.name, controller)
                 )
                 models_data = self.run_command(
                     "juju models -c {} --format yaml".format(controller)
@@ -185,14 +177,9 @@ class Cloud:
                             )
                             if "models" not in self.cloud_state[controller].keys():
                                 self.cloud_state[controller]["models"] = {}
-                            if (
-                                model_name
-                                not in self.cloud_state[controller]["models"].keys()
-                            ):
+                            if model_name not in self.cloud_state[controller]["models"].keys():
                                 self.cloud_state[controller]["models"][model_name] = {}
-                            self.cloud_state[controller]["models"][model_name][
-                                "config"
-                            ] = model
+                            self.cloud_state[controller]["models"][model_name]["config"] = model
             return True
         self.logger.error("[{}] Could not get model list".format(self.name))
         return False
@@ -210,9 +197,9 @@ class Cloud:
         )
         if len(status) > 0:
             if "model" in status[0].keys():
-                self.cloud_state[controller]["models"][model]["version"] = status[0][
-                    "model"
-                ]["version"]
+                self.cloud_state[controller]["models"][model]["version"] = status[0]["model"][
+                    "version"
+                ]
             if "machines" in status[0].keys():
                 for machine in status[0]["machines"].keys():
                     machine_data = status[0]["machines"][machine]
@@ -229,19 +216,17 @@ class Cloud:
                         self.cloud_state[controller]["models"][model]["machines"] = {}
                     if (
                         "machine_name"
-                        not in self.cloud_state[controller]["models"][model][
-                            "machines"
-                        ].keys()
+                        not in self.cloud_state[controller]["models"][model]["machines"].keys()
                     ):
                         self.cloud_state[controller]["models"][model]["machines"][
                             machine_name
                         ] = {}
-                    self.cloud_state[controller]["models"][model]["machines"][
-                        machine_name
-                    ].update(machine_data)
-                    self.cloud_state[controller]["models"][model]["machines"][
-                        machine_name
-                    ]["machine_id"] = machine
+                    self.cloud_state[controller]["models"][model]["machines"][machine_name].update(
+                        machine_data
+                    )
+                    self.cloud_state[controller]["models"][model]["machines"][machine_name][
+                        "machine_id"
+                    ] = machine
             if "applications" in status[0].keys():
                 for application in status[0]["applications"].keys():
                     application_data = status[0]["applications"][application]
@@ -250,18 +235,11 @@ class Cloud:
                             application, model, application_data
                         )
                     )
-                    if (
-                        "applications"
-                        not in self.cloud_state[controller]["models"][model]
-                    ):
-                        self.cloud_state[controller]["models"][model][
-                            "applications"
-                        ] = {}
+                    if "applications" not in self.cloud_state[controller]["models"][model]:
+                        self.cloud_state[controller]["models"][model]["applications"] = {}
                     if (
                         application
-                        not in self.cloud_state[controller]["models"][model][
-                            "applications"
-                        ].keys()
+                        not in self.cloud_state[controller]["models"][model]["applications"].keys()
                     ):
                         self.cloud_state[controller]["models"][model]["applications"][
                             application
@@ -273,9 +251,7 @@ class Cloud:
     def get_juju_bundle(self, controller, model):
         """Get an export of the juju bundle for the provided model."""
         try:
-            bundle_data = self.run_command(
-                "juju export-bundle -m {}:{}".format(controller, model)
-            )
+            bundle_data = self.run_command("juju export-bundle -m {}:{}".format(controller, model))
         except CalledProcessError as e:
             self.logger.error(e)
             self.logger.warn(
@@ -295,9 +271,7 @@ class Cloud:
             )
         )
         self.logger.debug(
-            "Juju bundle for model {} on controller {}: {}".format(
-                model, controller, bundles
-            )
+            "Juju bundle for model {} on controller {}: {}".format(model, controller, bundles)
         )
         # NOTE(gabrielcocenza) export-bundle can have an overlay when there is crm.
         for bundle in bundles:
@@ -309,13 +283,11 @@ class Cloud:
                         )
                     )
                     application_config = bundle["applications"][application]
-                    self.cloud_state[controller]["models"][model].setdefault(
-                        "applications", {}
-                    )
+                    self.cloud_state[controller]["models"][model].setdefault("applications", {})
 
-                    self.cloud_state[controller]["models"][model][
-                        "applications"
-                    ].setdefault(application, {}).update(application_config)
+                    self.cloud_state[controller]["models"][model]["applications"].setdefault(
+                        application, {}
+                    ).update(application_config)
             if "saas" in bundle:
                 for app in bundle.get("saas"):
                     # offer side doesn't show the url of the app
@@ -323,15 +295,13 @@ class Cloud:
                         self.cloud_state[controller]["models"][model].setdefault(
                             "saas", {}
                         ).update(bundle["saas"])
-                        self.cloud_state[controller]["models"][model][
-                            "saas"
-                        ].setdefault(app, {}).update(bundle["saas"][app])
+                        self.cloud_state[controller]["models"][model]["saas"].setdefault(
+                            app, {}
+                        ).update(bundle["saas"][app])
 
     def get_juju_state(self):
         """Update our view of Juju-managed application state."""
-        self.logger.info(
-            "[{}] Getting Juju state for {}".format(self.name, self.hostname)
-        )
+        self.logger.info("[{}] Getting Juju state for {}".format(self.name, self.hostname))
         result = self.get_juju_models()
         if result:
             self.logger.debug(
@@ -362,9 +332,7 @@ class Cloud:
 
     def audit(self):
         """Run cloud-type agnostic audit steps."""
-        self.logger.info(
-            "[{}] Auditing information for {}".format(self.name, self.hostname)
-        )
+        self.logger.info("[{}] Auditing information for {}".format(self.name, self.hostname))
         # run lint rules
         self.logger.debug("Running cloud-agnostic Juju audits.")
         if self.lint_rules:

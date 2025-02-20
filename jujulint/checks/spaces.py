@@ -96,9 +96,7 @@ def find_space_mismatches(parsed_yaml, debug=False):
         space1 = get_relation_space(relation.endpoint1, app_spaces)
         space2 = get_relation_space(relation.endpoint2, app_spaces)
         if space1 != space2 and all([space1 != "XModel", space2 != "XModel"]):
-            mismatch = SpaceMismatch(
-                relation.endpoint1, space1, relation.endpoint2, space2
-            )
+            mismatch = SpaceMismatch(relation.endpoint1, space1, relation.endpoint2, space2)
             mismatches.append(mismatch)
 
     if debug:
@@ -126,9 +124,7 @@ def get_application_spaces(application_list, parsed_yaml):
             app_spaces[app][""] = "alpha"
             continue
         if not bindings.get(""):
-            LOGGER.warning(
-                "Application %s does not define explicit default binding", app
-            )
+            LOGGER.warning("Application %s does not define explicit default binding", app)
         for name, value in bindings.items():
             app_spaces[app][name] = value
     return app_spaces

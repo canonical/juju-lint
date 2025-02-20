@@ -29,9 +29,7 @@ def test_get_bundle_no_apps(mock_check_out, cloud_instance):
 
 @patch("jujulint.cloud.Cloud.parse_yaml")
 @patch("jujulint.cloud.Cloud.run_command")
-def test_get_bundle_offer_side(
-    mock_run, mock_parse, cloud_instance, juju_export_bundle
-):
+def test_get_bundle_offer_side(mock_run, mock_parse, cloud_instance, juju_export_bundle):
     """Test the bundle generated in the offer side."""
     # simulate cloud_state with info that came from "get_juju_status"
     cloud_instance.cloud_state = {
@@ -94,9 +92,7 @@ def test_get_bundle_offer_side(
 
 @patch("jujulint.cloud.Cloud.parse_yaml")
 @patch("jujulint.cloud.Cloud.run_command")
-def test_get_bundle_consumer_side(
-    mock_run, mock_parse, cloud_instance, juju_export_bundle
-):
+def test_get_bundle_consumer_side(mock_run, mock_parse, cloud_instance, juju_export_bundle):
     """Test the bundle generated in the consumer side."""
     mock_parse.return_value = juju_export_bundle["my_model_2"]
     # "offers" field won't exist in the consumer side
@@ -176,16 +172,12 @@ def test_cloud_init(sudo_user, access_method, ssh_host, mocker):
 def test_run_local_command(patch_cloud_init, mocker):
     """Test running command when the cloud access method is 'local'."""
     expected_result = ".\n.."
-    check_output_mock = mocker.patch.object(
-        cloud, "check_output", return_value=expected_result
-    )
+    check_output_mock = mocker.patch.object(cloud, "check_output", return_value=expected_result)
 
     command = "ls -la"
     command_split = command.split()
 
-    cloud_instance = cloud.Cloud(
-        name="local test cloud", access_method="local", cloud_type="test"
-    )
+    cloud_instance = cloud.Cloud(name="local test cloud", access_method="local", cloud_type="test")
     result = cloud_instance.run_command(command)
 
     # command is executed locally
@@ -215,21 +207,15 @@ def test_run_remote_command(patch_cloud_init, sudo, mocker):
         cloud_type="test",
     )
 
-    mocker.patch.object(
-        cloud_instance.connection, executor_method, return_value=expected_result
-    )
+    mocker.patch.object(cloud_instance.connection, executor_method, return_value=expected_result)
 
     result = cloud_instance.run_command(command)
 
     # command was executed remotely as root
     if sudo:
-        cloud_instance.connection.sudo.assert_called_once_with(
-            command, hide=True, warn=True
-        )
+        cloud_instance.connection.sudo.assert_called_once_with(command, hide=True, warn=True)
     else:
-        cloud_instance.connection.run.assert_called_once_with(
-            command, hide=True, warn=True
-        )
+        cloud_instance.connection.run.assert_called_once_with(command, hide=True, warn=True)
     assert result == expected_result.stdout
 
 
@@ -244,9 +230,7 @@ def test_run_remote_command_fail(patch_cloud_init, sudo, mocker):
     cloud_name = "remote test cloud"
     executor_method = "sudo" if sudo else "run"
     exception = cloud.SSHException()
-    expected_message = "[{}] SSH command {} failed: {}".format(
-        cloud_name, command, exception
-    )
+    expected_message = "[{}] SSH command {} failed: {}".format(cloud_name, command, exception)
 
     cloud_instance = cloud.Cloud(
         name=cloud_name,
@@ -256,9 +240,7 @@ def test_run_remote_command_fail(patch_cloud_init, sudo, mocker):
         cloud_type="test",
     )
 
-    mocker.patch.object(
-        cloud_instance.connection, executor_method, side_effect=exception
-    )
+    mocker.patch.object(cloud_instance.connection, executor_method, side_effect=exception)
 
     # reset logger mock to wipe any previous calls
     cloud_instance.logger.reset_mock()
@@ -301,9 +283,7 @@ def test_get_juju_controllers(patch_cloud_init, success, mocker):
 
     if success:
         assert result
-        assert (
-            cloud_instance.cloud_state[controller_name]["config"] == controller_config
-        )
+        assert cloud_instance.cloud_state[controller_name]["config"] == controller_config
     else:
         assert not result
         assert controller_name not in cloud_instance.cloud_state
@@ -338,28 +318,24 @@ def test_get_juju_models(patch_cloud_init, success, mocker):
         )
         for model in [model_foo, model_bar]:
             model_name = model["short-name"]
-            model_config = cloud_instance.cloud_state[controller_name]["models"][
-                model_name
-            ]["config"]
+            model_config = cloud_instance.cloud_state[controller_name]["models"][model_name][
+                "config"
+            ]
             assert model_config == model
     else:
         assert not result
         for model in [model_foo, model_bar]:
             model_name = model["short-name"]
-            assert model_name not in cloud_instance.cloud_state.get(
-                controller_name, {}
-            ).get("models", {})
+            assert model_name not in cloud_instance.cloud_state.get(controller_name, {}).get(
+                "models", {}
+            )
 
 
 @pytest.mark.parametrize("success", [True, False])
 def test_get_juju_state(cloud_instance, success, mocker):
     """Test function "get_juju_state" that updates local juju state."""
-    controller_foo = {
-        "models": {"foo_1": "foo_1_model_data", "foo_2": "foo_2_model_data"}
-    }
-    controller_bar = {
-        "models": {"bar_1": "bar_1_model_data", "bar_2": "bar_2_model_data"}
-    }
+    controller_foo = {"models": {"foo_1": "foo_1_model_data", "foo_2": "foo_2_model_data"}}
+    controller_bar = {"models": {"bar_1": "bar_1_model_data", "bar_2": "bar_2_model_data"}}
     cloud_state = {"controller_foo": controller_foo, "controller_bar": controller_bar}
 
     expected_calls = [
@@ -411,9 +387,7 @@ def test_get_juju_status(cloud_instance, mocker):
         },
     }
 
-    run_cmd_mock = mocker.patch.object(
-        cloud_instance, "run_command", return_value=cmd_output_mock
-    )
+    run_cmd_mock = mocker.patch.object(cloud_instance, "run_command", return_value=cmd_output_mock)
     mocker.patch.object(cloud_instance, "parse_yaml", return_value=[model_status])
 
     cloud_instance.cloud_state = {controller_name: {"models": {model_name: {}}}}
@@ -493,9 +467,7 @@ def test_audit(patch_cloud_init, mocker):
 
     linter_object_mock = MagicMock()
 
-    linter_class_mock = mocker.patch.object(
-        cloud, "Linter", return_value=linter_object_mock
-    )
+    linter_class_mock = mocker.patch.object(cloud, "Linter", return_value=linter_object_mock)
 
     cloud_instance = cloud.Cloud(
         name=cloud_name,

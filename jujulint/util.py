@@ -104,9 +104,7 @@ def is_metal(machine, machine_data):
 
 def extract_charm_name(charm):
     """Extract the charm name using regex."""
-    match = re.match(
-        r"^(?:\w+:)?(?:~[\w\.-]+/)?(?:\w+/)*([a-zA-Z0-9-]+?)(?:-\d+)?$", charm
-    )
+    match = re.match(r"^(?:\w+:)?(?:~[\w\.-]+/)?(?:\w+/)*([a-zA-Z0-9-]+?)(?:-\d+)?$", charm)
     if not match:
         raise InvalidCharmNameError("charm name '{}' is invalid".format(charm))
     return match.group(1)
@@ -117,7 +115,5 @@ class DeprecateAction(argparse.Action):  # pragma: no cover
 
     def __call__(self, parser, namespace, values, option_string=None):
         """Print a deprecation warning and remove the attribute from the namespace."""
-        Logger().warn(
-            "The argument {} is deprecated and will be ignored. ".format(option_string)
-        )
+        Logger().warn("The argument {} is deprecated and will be ignored. ".format(option_string))
         delattr(namespace, self.dest)

@@ -29,9 +29,7 @@ def test_load_default_rules_file(lint_rules_yaml, manual_file):
 def test_json_output(rules_file, manual_file):
     """Test json output."""
     assert json.loads(
-        check_output(
-            f"juju-lint --format json -c {rules_file} {manual_file}".split()
-        ).decode()
+        check_output(f"juju-lint --format json -c {rules_file} {manual_file}".split()).decode()
     )
 
 
@@ -59,7 +57,9 @@ def test_bad_url_among_the_rules_file_args_causes_crash(arg, manual_file, reques
 @pytest.mark.smoke
 def test_multiple_rules_files_update_rules(rules_file, rules_file_url, manual_file):
     """Test that multiple rules files actually update the rules."""
-    error_string = "Application mysql-innodb-cluster has config for 'max-connections' which is less than"
+    error_string = (
+        "Application mysql-innodb-cluster has config for 'max-connections' which is less than"
+    )
     process = run(
         f"juju-lint -c {rules_file} {manual_file}".split(),
         universal_newlines=True,
@@ -82,9 +82,7 @@ async def test_audit_local_cloud(ops_test, local_cloud, rules_file):
     """Test running juju-lint against a live local cloud."""
     await ops_test.model.deploy("ubuntu")
     await ops_test.model.wait_for_idle()
-    returncode, stdout, stderr = await ops_test.run(
-        *f"juju-lint -c {rules_file}".split()
-    )
+    returncode, stdout, stderr = await ops_test.run(*f"juju-lint -c {rules_file}".split())
     assert (
         f"[{local_cloud}] Linting model information for {socket.getfqdn()}, "
         f"controller {ops_test.controller_name}, model {ops_test.model_name}" in stderr
@@ -100,9 +98,7 @@ async def test_output_folder(ops_test, local_cloud, rules_file, tmp_path):
     assert not all_data_yaml.exists() and not cloudstate_yaml.exists()
 
     await ops_test.model.wait_for_idle()
-    returncode, _, stderr = await ops_test.run(
-        *f"juju-lint -d {tmp_path} -c {rules_file}".split()
-    )
+    returncode, _, stderr = await ops_test.run(*f"juju-lint -d {tmp_path} -c {rules_file}".split())
 
     assert (
         f"[{local_cloud}] Linting model information for {socket.getfqdn()}, "
@@ -133,7 +129,6 @@ async def test_bad_output_folder_error(
     assert returncode != 0
     assert (
         f"[{local_cloud}] Linting model information for {socket.getfqdn()}, "
-        f"controller {ops_test.controller_name}, model {ops_test.model_name}"
-        not in stderr
+        f"controller {ops_test.controller_name}, model {ops_test.model_name}" not in stderr
     )
     assert expected_error in stderr

@@ -51,9 +51,7 @@ VALID_LOG_LEVEL = {
 }
 
 # Generic named tuple to represent the binary config operators (eq, neq, gte)
-ConfigOperator = collections.namedtuple(
-    "ConfigOperator", "name repr check error_template"
-)
+ConfigOperator = collections.namedtuple("ConfigOperator", "name repr check error_template")
 
 # TODO:
 #  - missing relations for mandatory subordinates
@@ -153,16 +151,12 @@ class Linter:
                         raw_rules_txt = response.read().decode()
                 except (HTTPError, URLError) as error:
                     self.logger.error(
-                        "Failed to fetch url: {} reason: {}".format(
-                            rules_file, error.reason
-                        )
+                        "Failed to fetch url: {} reason: {}".format(rules_file, error.reason)
                     )
                     return False
                 except TimeoutError:
                     self.logger.error(
-                        "Failed to fetch url: {} reason: TimeoutError".format(
-                            rules_file
-                        )
+                        "Failed to fetch url: {} reason: TimeoutError".format(rules_file)
                     )
                     return False
             elif os.path.isfile(rules_file):
@@ -209,9 +203,7 @@ class Linter:
                 if sub in self.model.subs_on_machines[machine]:
                     charm = self.model.app_to_charm[sub]
                     allow_multiple = (
-                        self.lint_rules["subordinates"]
-                        .get(charm, {})
-                        .get("allow-multiple", False)
+                        self.lint_rules["subordinates"].get(charm, {}).get("allow-multiple", False)
                     )
                     if not allow_multiple:
                         self.model.duelling_subs.setdefault(sub, set())
@@ -287,9 +279,7 @@ class Linter:
                     "rule": rule,
                     "actual_value": actual_value,
                     "message": custom_message
-                    or "Application {} has config for {}: {}.".format(
-                        name, rule, actual_value
-                    ),
+                    or "Application {} has config for {}: {}.".format(name, rule, actual_value),
                 },
                 log_level=log_level,
             )
@@ -500,9 +490,7 @@ class Linter:
                 {
                     "id": "config-{}-check".format(operator.name),
                     "tags": ["config", operator.name],
-                    "description": "Checks for config condition '{}'".format(
-                        operator.name
-                    ),
+                    "description": "Checks for config condition '{}'".format(operator.name),
                     "application": app_name,
                     "rule": config_key,
                     "expected_value": check_value,
@@ -523,9 +511,7 @@ class Linter:
         """Check application against provided rules."""
         rules = dict(rules)
         for rule in rules:
-            self._log_with_header(
-                "Checking {} for configuration {}".format(app_name, rule)
-            )
+            self._log_with_header("Checking {} for configuration {}".format(app_name, rule))
 
             # Handle app suffix for config checks. If the suffix is provided
             # and it does not match, then we skip the check. LP#1944406
@@ -533,9 +519,7 @@ class Linter:
             suffixes = rules[rule].pop("suffixes", [])
             if suffixes:
                 charm_name = self.model.app_to_charm[app_name]
-                target_app_names = [
-                    "{}-{}".format(charm_name, suffix) for suffix in suffixes
-                ]
+                target_app_names = ["{}-{}".format(charm_name, suffix) for suffix in suffixes]
                 target_app_names.append(charm_name)
 
                 if app_name not in target_app_names:
@@ -594,9 +578,7 @@ class Linter:
                 # process openstack config rules
                 if "openstack config" in self.lint_rules:  # pragma: no cover
                     if charm_name in self.lint_rules["openstack config"]:
-                        lint_rules.extend(
-                            self.lint_rules["openstack config"][charm_name].items()
-                        )
+                        lint_rules.extend(self.lint_rules["openstack config"][charm_name].items())
 
             if lint_rules:
                 if "options" in applications[application]:
@@ -619,9 +601,7 @@ class Linter:
             self._log_with_header("Checking for sub {}".format(required_sub))
             where = self.lint_rules["subordinates"][required_sub].get("where")
             if where is None:
-                self._log_with_header(
-                    "Where clause not defined. Skipping placement checks."
-                )
+                self._log_with_header("Where clause not defined. Skipping placement checks.")
                 continue
             for machine in self.model.subs_on_machines:
                 self._log_with_header("Checking on {}".format(machine))
@@ -629,9 +609,7 @@ class Linter:
                 apps = self.model.apps_on_machines[machine]
                 if where.startswith("on "):  # only on specific apps
                     required_on = where[3:]
-                    self._log_with_header(
-                        "Requirement {} is = from...".format(required_on)
-                    )
+                    self._log_with_header("Requirement {} is = from...".format(required_on))
                     if required_on not in apps:
                         self._log_with_header("... NOT matched")
                         continue
@@ -666,9 +644,7 @@ class Linter:
                     self._log_with_header("... and we are a metal, will fallthrough")
 
                 elif where == "all or nothing" and required_sub not in all_or_nothing:
-                    self._log_with_header(
-                        "requirement is 'all or nothing' and was 'nothing'."
-                    )
+                    self._log_with_header("requirement is 'all or nothing' and was 'nothing'.")
                     continue
                 # At this point we know we require the subordinate - we might just
                 # need to change the name we expect to see it as
@@ -679,15 +655,11 @@ class Linter:
                             "container-suffixes"
                         ]
                     else:
-                        suffixes = self.lint_rules["subordinates"][required_sub][
-                            "host-suffixes"
-                        ]
+                        suffixes = self.lint_rules["subordinates"][required_sub]["host-suffixes"]
                     self._log_with_header("-> suffixes == {}".format(suffixes))
                     exceptions = []
                     if "exceptions" in self.lint_rules["subordinates"][required_sub]:
-                        exceptions = self.lint_rules["subordinates"][required_sub][
-                            "exceptions"
-                        ]
+                        exceptions = self.lint_rules["subordinates"][required_sub]["exceptions"]
                         self._log_with_header("-> exceptions == {}".format(exceptions))
                     found = False
                     for suffix in suffixes:
@@ -707,9 +679,7 @@ class Linter:
                         for exception in exceptions:
                             if exception in apps:
                                 self._log_with_header(
-                                    "continuing as found exception: {}".format(
-                                        exception
-                                    )
+                                    "continuing as found exception: {}".format(exception)
                                 )
                                 found = True
                     if not found:
@@ -783,9 +753,7 @@ class Linter:
                         {
                             "id": "relation-exist",
                             "tags": ["relation", "exist"],
-                            "message": "Relation(s) {} should not exist.".format(
-                                relation
-                            ),
+                            "message": "Relation(s) {} should not exist.".format(relation),
                         }
                     )
 
@@ -905,9 +873,7 @@ class Linter:
                             ],
                             "description": "An Openstack ops charm is missing",
                             "charm": charm,
-                            "message": "Openstack ops charm '{}' is missing".format(
-                                charm
-                            ),
+                            "message": "Openstack ops charm '{}' is missing".format(charm),
                         }
                     )
         elif self.cloud_type == "kubernetes":
@@ -943,9 +909,7 @@ class Linter:
                             ],
                             "description": "An Kubernetes ops charm is missing",
                             "charm": charm,
-                            "message": "Kubernetes ops charm '{}' is missing".format(
-                                charm
-                            ),
+                            "message": "Kubernetes ops charm '{}' is missing".format(charm),
                         }
                     )
 
@@ -999,8 +963,7 @@ class Linter:
         space_checks = self.lint_rules.get("space checks", {})
         enforce_endpoints = space_checks.get("enforce endpoints", [])
         enforce_relations = [
-            Relation(*relation)
-            for relation in space_checks.get("enforce relations", [])
+            Relation(*relation) for relation in space_checks.get("enforce relations", [])
         ]
         ignore_endpoints = space_checks.get("ignore endpoints", [])
         ignore_relations = [
@@ -1280,9 +1243,7 @@ class Linter:
     def check_statuses(self, juju_status, applications):
         """Check all statuses in juju status output."""
         for machine_name in juju_status["machines"]:
-            self.check_status_pair(
-                machine_name, "machine", juju_status["machines"][machine_name]
-            )
+            self.check_status_pair(machine_name, "machine", juju_status["machines"][machine_name])
             for container_name in juju_status["machines"][machine_name].get(
                 "container", []
             ):  # pragma: no cover
@@ -1293,9 +1254,7 @@ class Linter:
                 )
 
         for app_name in juju_status[applications]:
-            self.check_status_pair(
-                app_name, "application", juju_status[applications][app_name]
-            )
+            self.check_status_pair(app_name, "application", juju_status[applications][app_name])
             for unit_name in juju_status[applications][app_name].get("units", []):
                 self.check_status_pair(
                     unit_name,
@@ -1312,7 +1271,7 @@ class Linter:
     # only warning about individual subordinate units if the
     # application-status for the subordinate claims to be OK.
     #
-    # for subordinate_name in juju_status[applications][app_name]["units"][unit_name].get("subordinates", []):
+    # for subordinate_name in juju_status[applications][app_name]["units"][unit_name].get("subordinates", []):  # noqa: W505
     #     check_status_pair(subordinate_name, "subordinate",
     #                       juju_status[applications][app_name]["units"][unit_name]["subordinates"][subordinate_name])
 
@@ -1329,9 +1288,7 @@ class Linter:
                     "tags": ["AZ"],
                     "description": "Checks for a valid number or AZs (currently 3)",
                     "num_azs": num_azs,
-                    "message": "Invalid number of AZs: '{}', expecting 3".format(
-                        num_azs
-                    ),
+                    "message": "Invalid number of AZs: '{}', expecting 3".format(num_azs),
                 }
             )
             return
@@ -1394,9 +1351,7 @@ class Linter:
                 parsed_yaml = self.get_main_bundle_doc(parsed_yaml_docs)
                 if parsed_yaml:
                     return self.do_lint(parsed_yaml)
-        self.logger.fubar(
-            "Failed to parse YAML from file {}".format(filename)
-        )  # pragma: no cover
+        self.logger.fubar("Failed to parse YAML from file {}".format(filename))  # pragma: no cover
 
     def do_lint(self, parsed_yaml):  # pragma: no cover
         """Lint parsed YAML."""
@@ -1429,9 +1384,7 @@ class Linter:
             if "relations" in parsed_yaml:
                 # "bindings" *should* be in exported bundles, *unless* no custom bindings exist,
                 # in which case "juju export-bundle" omits them. See LP#1949883.
-                bindings = any(
-                    "bindings" in app for app in parsed_yaml[applications].values()
-                )
+                bindings = any("bindings" in app for app in parsed_yaml[applications].values())
                 if bindings:
                     # try:
                     self.check_spaces(parsed_yaml)
@@ -1463,9 +1416,7 @@ class Linter:
 
             self.results()
         else:
-            self._log_with_header(
-                "Model contains no applications, skipping.", level=logging.WARN
-            )
+            self._log_with_header("Model contains no applications, skipping.", level=logging.WARN)
 
     def collect(self, message):
         """Collect an error and add it to the collector."""
@@ -1498,9 +1449,7 @@ class Linter:
                 try:
                     _, rel_path = line.split()
                 except ValueError:  # pragma: no cover
-                    self.logger.warn(
-                        "invalid include in rules, ignored: '{}'".format(line)
-                    )
+                    self.logger.warn("invalid include in rules, ignored: '{}'".format(line))
                     continue
 
                 include_path = os.path.join(os.path.dirname(filename), rel_path)
@@ -1516,8 +1465,6 @@ class Linter:
     def _log_with_header(self, msg, level=logging.DEBUG):
         """Log a message with the cloud/controller/model header."""
         self.logger.log(
-            "[{}] [{}/{}] {}".format(
-                self.cloud_name, self.controller_name, self.model_name, msg
-            ),
+            "[{}] [{}/{}] {}".format(self.cloud_name, self.controller_name, self.model_name, msg),
             level=level,
         )

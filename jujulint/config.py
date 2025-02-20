@@ -29,7 +29,7 @@ class Config(Configuration):
     """Helper class for holding parsed config, extending confuse's BaseConfiguraion class."""
 
     def __init__(self):
-        """Wrap the initialisation of confuse's Configuration object providing defaults for our application."""
+        """Wrap the initialisation of confuse's Configuration object providing defaults for our application."""  # noqa: W505
         super().__init__("juju-lint", __name__)
 
         self.parser = ArgumentParser(description="Sanity check one or more Juju models")

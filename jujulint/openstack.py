@@ -36,7 +36,7 @@ Todo:
     * Check nova configuration for live migration settings
     * Check Ceph for sensible priorities and placement
 
-"""
+"""  # noqa: W505
 
 from jujulint.cloud import Cloud
 
@@ -61,7 +61,5 @@ class OpenStack(Cloud):
     def audit(self):
         """Audit OpenStack cloud and run base Cloud audits."""
         # add specific OpenStack checks here
-        self.logger.info(
-            "[{}] Running OpenStack-specific audit steps.".format(self.name)
-        )
+        self.logger.info("[{}] Running OpenStack-specific audit steps.".format(self.name))
         super(OpenStack, self).audit()

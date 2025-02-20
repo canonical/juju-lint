@@ -178,9 +178,7 @@ def test_find_space_mismatches(use_cmr, mocker):
     app_list = [app_1, app_2]
     app_spaces = {app_1: {space_1: "foo"}, app_2: {space_2: "bar"}}
 
-    app_list_mock = mocker.patch.object(
-        spaces, "get_juju_applications", return_value=app_list
-    )
+    app_list_mock = mocker.patch.object(spaces, "get_juju_applications", return_value=app_list)
     app_spaces_mock = mocker.patch.object(
         spaces, "get_application_spaces", return_value=app_spaces
     )
@@ -276,9 +274,7 @@ def test_get_application_spaces(mocker):
     assert app_spaces == expected_app_spaces
     logger_mock.warning.assert_has_calls(
         [
-            call(
-                "Application %s does not define explicit default binding", app_list[1]
-            ),
+            call("Application %s does not define explicit default binding", app_list[1]),
             call("Application %s is missing explicit bindings", app_list[2]),
             call("Setting default binding of '%s' to alpha", app_list[2]),
         ]
@@ -338,7 +334,6 @@ def test_get_relation_space_cmr(mocker):
 
     assert space == "XModel"
     logger_mock.warning.assert_called_once_with(
-        "Multi-model is not supported yet. Please check "
-        "if '%s' is from another model",
+        "Multi-model is not supported yet. Please check " "if '%s' is from another model",
         app_name,
     )

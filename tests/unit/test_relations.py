@@ -77,12 +77,8 @@ def test_relation_not_exist(input_file_type, input_files):
                 "foo-endpoint": "oam-space",
             },
         }
-        input_file.applications_data["keystone"]["relations"]["foo-endpoint"] = [
-            "foo-charm"
-        ]
-        input_file.applications_data["keystone"]["endpoint-bindings"][
-            "foo-endpoint"
-        ] = "oam-space"
+        input_file.applications_data["keystone"]["relations"]["foo-endpoint"] = ["foo-charm"]
+        input_file.applications_data["keystone"]["endpoint-bindings"]["foo-endpoint"] = "oam-space"
 
     elif input_file_type == "juju-bundle":
         input_file.applications_data["foo-charm"] = {
@@ -93,9 +89,7 @@ def test_relation_not_exist(input_file_type, input_files):
                 "foo-endpoint": "oam-space",
             },
         }
-        input_file.applications_data["keystone"]["bindings"][
-            "foo-endpoint"
-        ] = "oam-space"
+        input_file.applications_data["keystone"]["bindings"]["foo-endpoint"] = "oam-space"
         input_file.relations_data.append(wrong_relation)
 
     relation_rule = relations.RelationRule(
@@ -157,9 +151,7 @@ def test_relation_not_exist_raise(input_file_type, input_files):
         ({"nrpe:nrpe-external-master": list()}, {"foo-charm"}, "juju-bundle"),
     ],
 )
-def test_missing_relation_and_exception(
-    expected_missing, exception, input_files, input_file_type
-):
+def test_missing_relation_and_exception(expected_missing, exception, input_files, input_file_type):
     """Assert that exception rule field is able to remove apps missing the relation."""
     # add a charm in apps that has the endpoint nrpe-external-master,
     # but it's not relating with nrpe.
@@ -412,9 +404,7 @@ def test_relations_rules_bootstrap(input_files, input_file_type):
         },
         {
             "charm": "elasticsearch",
-            "check": [
-                ["elasticsearch:nrpe-external-master", "nrpe-host:nrpe-external-master"]
-            ],
+            "check": [["elasticsearch:nrpe-external-master", "nrpe-host:nrpe-external-master"]],
         },
     ]
     relations_rules = relations.RelationsRulesBootStrap(
@@ -423,6 +413,5 @@ def test_relations_rules_bootstrap(input_files, input_file_type):
     ).check()
     assert len(relations_rules) == 2
     assert all(
-        isinstance(relation_rule, relations.RelationRule)
-        for relation_rule in relations_rules
+        isinstance(relation_rule, relations.RelationRule) for relation_rule in relations_rules
     )

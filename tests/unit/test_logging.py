@@ -54,9 +54,7 @@ def test_logger_init_without_handlers(setup_file_logger, mocker):
 
     # Mock StreamHandler and resulting object
     streamhandler_mock = MagicMock()
-    mocker.patch.object(
-        logging.colorlog, "StreamHandler", return_value=streamhandler_mock
-    )
+    mocker.patch.object(logging.colorlog, "StreamHandler", return_value=streamhandler_mock)
 
     set_level_mock = mocker.patch.object(logging.Logger, "set_level")
     # Mock TTYColorFormatter
@@ -95,9 +93,7 @@ def test_logger_init_without_handlers(setup_file_logger, mocker):
         # These steps need to be verified when __init__ sets up file logger as well
         get_logger_mock.assert_has_calls([call(), call("file")])
 
-        logging.logging.Formatter.assert_called_once_with(
-            logformat_string, datefmt=date_format
-        )
+        logging.logging.Formatter.assert_called_once_with(logformat_string, datefmt=date_format)
         assert not file_logger_mock.propagate
         logging.logging.FileHandler.assert_called_once_with(logfile)
         filehandler_mock.setFormatter.assert_called_once_with(file_formatter_mock)
