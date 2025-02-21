@@ -88,17 +88,13 @@ class TestLinter:
     def test_minimal_rules_json_output(self, linter, juju_status, mocker):
         """Process rules and print output in json format."""
         expected_output = "{result: dict}"
-        json_mock = mocker.patch.object(
-            lint.json, "dumps", return_value=expected_output
-        )
+        json_mock = mocker.patch.object(lint.json, "dumps", return_value=expected_output)
         print_mock = mocker.patch("builtins.print")
 
         linter.output_format = "json"
         linter.do_lint(juju_status)
 
-        json_mock.assert_called_once_with(
-            linter.output_collector, indent=2, sort_keys=True
-        )
+        json_mock.assert_called_once_with(linter.output_collector, indent=2, sort_keys=True)
         print_mock.assert_called_once_with(expected_output)
 
     def test_charm_identification(self, linter, juju_status):
@@ -187,9 +183,7 @@ class TestLinter:
     def test_juju_status_unexpected(self, linter, juju_status):
         """Test that juju and workload status is expected."""
         # inject invalid status to the application
-        juju_status["applications"]["ubuntu"]["units"]["ubuntu/0"][
-            "workload-status"
-        ].update(
+        juju_status["applications"]["ubuntu"]["units"]["ubuntu/0"]["workload-status"].update(
             {
                 "current": "executing",
                 "since": "01 Apr 2021 05:14:13Z",
@@ -210,9 +204,7 @@ class TestLinter:
         # inject a recent execution status to the unit
         since_datetime = datetime.now(timezone.utc)
 
-        juju_status["applications"]["ubuntu"]["units"]["ubuntu/0"][
-            "workload-status"
-        ].update(
+        juju_status["applications"]["ubuntu"]["units"]["ubuntu/0"]["workload-status"].update(
             {
                 "current": "executing",
                 "since": since_datetime.isoformat(),
@@ -239,9 +231,7 @@ class TestLinter:
         """Test that AZ parsing logs warning if AZ is not found."""
         # duplicate a AZ name so we have 2 AZs instead of the expected 3
         juju_status["machines"]["2"]["hardware"] = ""
-        expected_msg = (
-            "Machine 2 has no availability-zone info in hardware field; skipping."
-        )
+        expected_msg = "Machine 2 has no availability-zone info in hardware field; skipping."
         logger_mock = mocker.patch.object(linter, "_log_with_header")
 
         linter.do_lint(juju_status)
@@ -395,9 +385,7 @@ applications:
         # this check triggers on subordinates on containers that should only
         # be present in hosts
         linter.lint_rules["subordinates"]["ntp"]["where"] = "host only"
-        juju_status["applications"]["ubuntu"]["units"]["ubuntu/0"][
-            "machine"
-        ] = "0/lxd/0"
+        juju_status["applications"]["ubuntu"]["units"]["ubuntu/0"]["machine"] = "0/lxd/0"
         linter.do_lint(juju_status)
 
         errors = linter.output_collector["errors"]
@@ -408,12 +396,8 @@ applications:
 
     def test_subordinate_duplicates(self, linter, juju_status):
         """Test that subordinate charms are not duplicated."""
-        ntp0 = juju_status["applications"]["ubuntu"]["units"]["ubuntu/0"][
-            "subordinates"
-        ]["ntp/0"]
-        juju_status["applications"]["ubuntu"]["units"]["ubuntu/0"]["subordinates"][
-            "ntp/1"
-        ] = ntp0
+        ntp0 = juju_status["applications"]["ubuntu"]["units"]["ubuntu/0"]["subordinates"]["ntp/0"]
+        juju_status["applications"]["ubuntu"]["units"]["ubuntu/0"]["subordinates"]["ntp/1"] = ntp0
         linter.do_lint(juju_status)
 
         errors = linter.output_collector["errors"]
@@ -541,9 +525,7 @@ applications:
         linter.lint_rules["subordinates"]["hw-health"] = {"where": "metal only"}
 
         # Turn machine "0" into a "VM"
-        juju_status["machines"]["0"][
-            "hardware"
-        ] = "tags=virtual availability-zone=rack-1"
+        juju_status["machines"]["0"]["hardware"] = "tags=virtual availability-zone=rack-1"
         linter.do_lint(juju_status)
 
         errors = linter.output_collector["errors"]
@@ -565,9 +547,7 @@ applications:
         """Test that missing openstack mandatory ops charms are detected."""
         linter.cloud_type = "openstack"
         linter.lint_rules["openstack mandatory"] = ["ubuntu"]
-        linter.lint_rules["operations openstack mandatory"] = [
-            "openstack-service-checks"
-        ]
+        linter.lint_rules["operations openstack mandatory"] = ["openstack-service-checks"]
         linter.do_lint(juju_status)
 
         errors = linter.output_collector["errors"]
@@ -620,16 +600,12 @@ applications:
             ("", "debug", False),  # doesn't generate error, no custom message
         ],
     )
-    def test_config_eq(
-        self, linter, juju_status, custom_message, log_level, generate_error
-    ):
+    def test_config_eq(self, linter, juju_status, custom_message, log_level, generate_error):
         """Test the config condition 'eq' with custom messages and log levels."""
         linter.lint_rules["config"] = {"ubuntu": {"fake-opt": {"eq": False}}}
         juju_status["applications"]["ubuntu"]["options"] = {"fake-opt": True}
         if custom_message:
-            linter.lint_rules["config"]["ubuntu"]["fake-opt"][
-                "custom-message"
-            ] = custom_message
+            linter.lint_rules["config"]["ubuntu"]["fake-opt"]["custom-message"] = custom_message
         if log_level:
             linter.lint_rules["config"]["ubuntu"]["fake-opt"]["log-level"] = log_level
 
@@ -672,18 +648,14 @@ applications:
     def test_config_eq_suffix_match(
         self, linter, juju_status, custom_message, log_level, generate_error
     ):
-        """Test the config condition 'eq'. when suffix matches with custom messages and log levels."""
+        """Test the config condition 'eq'. when suffix matches with custom messages and log levels."""  # noqa: W505
         linter.lint_rules["config"] = {
             "ubuntu": {"fake-opt": {"eq": False, "suffixes": ["host", "physical"]}}
         }
         juju_status["applications"]["ubuntu"]["options"] = {"fake-opt": True}
-        juju_status["applications"]["ubuntu-host"] = juju_status["applications"].pop(
-            "ubuntu"
-        )
+        juju_status["applications"]["ubuntu-host"] = juju_status["applications"].pop("ubuntu")
         if custom_message:
-            linter.lint_rules["config"]["ubuntu"]["fake-opt"][
-                "custom-message"
-            ] = custom_message
+            linter.lint_rules["config"]["ubuntu"]["fake-opt"]["custom-message"] = custom_message
         if log_level:
             linter.lint_rules["config"]["ubuntu"]["fake-opt"]["log-level"] = log_level
 
@@ -735,9 +707,7 @@ applications:
         }
         juju_status["applications"]["ubuntu"]["options"] = {"fake-opt": True}
         if custom_message:
-            linter.lint_rules["config"]["ubuntu"]["fake-opt"][
-                "custom-message"
-            ] = custom_message
+            linter.lint_rules["config"]["ubuntu"]["fake-opt"]["custom-message"] = custom_message
         if log_level:
             linter.lint_rules["config"]["ubuntu"]["fake-opt"]["log-level"] = log_level
 
@@ -767,9 +737,7 @@ applications:
             "ubuntu": {"fake-opt": {"eq": False, "suffixes": ["host", "physical"]}}
         }
         juju_status["applications"]["ubuntu"]["options"] = {"fake-opt": True}
-        juju_status["applications"]["ubuntu-container"] = juju_status[
-            "applications"
-        ].pop("ubuntu")
+        juju_status["applications"]["ubuntu-container"] = juju_status["applications"].pop("ubuntu")
         linter.do_lint(juju_status)
 
         errors = linter.output_collector["errors"]
@@ -801,13 +769,9 @@ applications:
         """Test the config condition 'eq'. when no suffix all should be checked."""
         linter.lint_rules["config"] = {"ubuntu": {"fake-opt": {"eq": False}}}
         juju_status["applications"]["ubuntu"]["options"] = {"fake-opt": True}
-        juju_status["applications"]["ubuntu-host"] = juju_status["applications"].pop(
-            "ubuntu"
-        )
+        juju_status["applications"]["ubuntu-host"] = juju_status["applications"].pop("ubuntu")
         if custom_message:
-            linter.lint_rules["config"]["ubuntu"]["fake-opt"][
-                "custom-message"
-            ] = custom_message
+            linter.lint_rules["config"]["ubuntu"]["fake-opt"]["custom-message"] = custom_message
         if log_level:
             linter.lint_rules["config"]["ubuntu"]["fake-opt"]["log-level"] = log_level
 
@@ -867,9 +831,7 @@ applications:
         linter.lint_rules["config"] = {"ubuntu": {"fake-opt": {"neq": ""}}}
         juju_status["applications"]["ubuntu"]["options"] = {"fake-opt": ""}
         if custom_message:
-            linter.lint_rules["config"]["ubuntu"]["fake-opt"][
-                "custom-message"
-            ] = custom_message
+            linter.lint_rules["config"]["ubuntu"]["fake-opt"]["custom-message"] = custom_message
         if log_level:
             linter.lint_rules["config"]["ubuntu"]["fake-opt"]["log-level"] = log_level
 
@@ -913,16 +875,12 @@ applications:
             ("", "debug", False),  # doesn't generate error, no custom message
         ],
     )
-    def test_config_gte(
-        self, linter, juju_status, custom_message, log_level, generate_error
-    ):
+    def test_config_gte(self, linter, juju_status, custom_message, log_level, generate_error):
         """Test the config condition 'gte' with custom messages and log levels."""
         linter.lint_rules["config"] = {"ubuntu": {"fake-opt": {"gte": 3}}}
         juju_status["applications"]["ubuntu"]["options"] = {"fake-opt": 0}
         if custom_message:
-            linter.lint_rules["config"]["ubuntu"]["fake-opt"][
-                "custom-message"
-            ] = custom_message
+            linter.lint_rules["config"]["ubuntu"]["fake-opt"]["custom-message"] = custom_message
         if log_level:
             linter.lint_rules["config"]["ubuntu"]["fake-opt"]["log-level"] = log_level
 
@@ -974,9 +932,7 @@ applications:
         linter.lint_rules["config"] = {"ubuntu": {"fake-opt": {"isset": False}}}
         juju_status["applications"]["ubuntu"]["options"] = {"fake-opt": 0}
         if custom_message:
-            linter.lint_rules["config"]["ubuntu"]["fake-opt"][
-                "custom-message"
-            ] = custom_message
+            linter.lint_rules["config"]["ubuntu"]["fake-opt"]["custom-message"] = custom_message
         if log_level:
             linter.lint_rules["config"]["ubuntu"]["fake-opt"]["log-level"] = log_level
 
@@ -1035,9 +991,7 @@ applications:
         linter.lint_rules["config"] = {"ubuntu": {"fake-opt": {"isset": True}}}
         juju_status["applications"]["ubuntu"]["options"] = {}
         if custom_message:
-            linter.lint_rules["config"]["ubuntu"]["fake-opt"][
-                "custom-message"
-            ] = custom_message
+            linter.lint_rules["config"]["ubuntu"]["fake-opt"]["custom-message"] = custom_message
         if log_level:
             linter.lint_rules["config"]["ubuntu"]["fake-opt"]["log-level"] = log_level
 
@@ -1112,9 +1066,7 @@ applications:
             "fake-opt": "[[/, queue1, 10, 20], [\\*, \\*, 10, 20]]"
         }
         if custom_message:
-            linter.lint_rules["config"]["ubuntu"]["fake-opt"][
-                "custom-message"
-            ] = custom_message
+            linter.lint_rules["config"]["ubuntu"]["fake-opt"]["custom-message"] = custom_message
         if log_level:
             linter.lint_rules["config"]["ubuntu"]["fake-opt"]["log-level"] = log_level
 
@@ -1132,21 +1084,15 @@ applications:
             assert errors[0]["application"] == "ubuntu"
             assert errors[0]["rule"] == "fake-opt"
             assert errors[0]["expected_value"] == "\\W\\*, \\W\\*, 25000, 27500"
-            assert (
-                errors[0]["actual_value"] == "[[/, queue1, 10, 20], [\\*, \\*, 10, 20]]"
-            )
+            assert errors[0]["actual_value"] == "[[/, queue1, 10, 20], [\\*, \\*, 10, 20]]"
 
     @pytest.mark.parametrize(
         "block_device, show_error",
         [("/dev/vga", True), ("/dev/sda", True), ("/dev/foo", False)],
     )
-    def test_config_search_ephemeral_device(
-        self, linter, juju_status, block_device, show_error
-    ):
+    def test_config_search_ephemeral_device(self, linter, juju_status, block_device, show_error):
         """Test the config ephemeral-device regex pattern."""
-        custom_msg = (
-            "dev/sdX or/dev/vgX should not be used as ephemeral-devices. See lp#1999263"
-        )
+        custom_msg = "dev/sdX or/dev/vgX should not be used as ephemeral-devices. See lp#1999263"
         linter.lint_rules["config"] = {
             "ubuntu": {
                 "fake_opt": {
@@ -1171,8 +1117,7 @@ applications:
         config_key = "missing-opt"
         app_config = {}
         expected_log = (
-            "Application {} has no config for '{}', can't search the regex pattern "
-            "{}."
+            "Application {} has no config for '{}', can't search the regex pattern " "{}."
         ).format(app_name, config_key, repr(check_value))
 
         logger_mock = mocker.patch.object(linter, "_log_with_header")
@@ -1184,9 +1129,7 @@ applications:
 
     def test_check_config_generic_missing_option(self, linter, mocker):
         """Test behavior of check_config_generic() when config option is missing."""
-        operator_ = lint.ConfigOperator(
-            name="eq", repr="==", check=None, error_template=""
-        )
+        operator_ = lint.ConfigOperator(name="eq", repr="==", check=None, error_template="")
         app_name = "ubuntu"
         check_value = 0
         config_key = "missing-opt"
@@ -1211,9 +1154,9 @@ applications:
         bad_rule = "bad_rule"
         bad_check = "bad_check"
         rules = {bad_rule: {bad_check: 0}}
-        expected_log = (
-            "Application {} has unknown check operation for {}: " "{}."
-        ).format(app_name, bad_rule, bad_check)
+        expected_log = ("Application {} has unknown check operation for {}: " "{}.").format(
+            app_name, bad_rule, bad_check
+        )
 
         logger_mock = mocker.patch.object(linter, "_log_with_header")
 
@@ -1317,9 +1260,7 @@ applications:
         """Test that rules YAML coming from urlopen works as expected."""
         rules_content = b'---\nkey:\n "value"'
         mock_urlopen = mocker.patch.object(lint, "urlopen")
-        mock_urlopen.return_value.__enter__.return_value.read.return_value = (
-            rules_content
-        )
+        mock_urlopen.return_value.__enter__.return_value.read.return_value = rules_content
         linter.lint_rules = {}
         linter.rules_files = ["https://rules.yaml"]
         result = linter.read_rules()
@@ -1342,9 +1283,7 @@ applications:
         rules_one_path = tmp_path / "rules.yaml"
         rules_one_path.write_text(rules_one_content)
         mock_urlopen = mocker.patch.object(lint, "urlopen")
-        mock_urlopen.return_value.__enter__.return_value.read.return_value = (
-            rules_two_content
-        )
+        mock_urlopen.return_value.__enter__.return_value.read.return_value = rules_two_content
         linter.lint_rules = {}
         linter.rules_files = [str(rules_one_path), "https://rules.yaml"]
         result = linter.read_rules()
@@ -1493,9 +1432,7 @@ applications:
 
         # Enforce the opposite end of the relation.
         # This should also generate an error.
-        linter.lint_rules["space checks"] = {
-            "enforce endpoints": ["telegraf:prometheus-client"]
-        }
+        linter.lint_rules["space checks"] = {"enforce endpoints": ["telegraf:prometheus-client"]}
         linter.check_spaces(self.check_spaces_example_bundle)
         errors = linter.output_collector["errors"]
         assert len(errors) == 2
@@ -1537,9 +1474,7 @@ applications:
 
         # Enforce the opposite end of the relation.
         # This should also generate an error.
-        linter.lint_rules["space checks"] = {
-            "ignore endpoints": ["telegraf:prometheus-client"]
-        }
+        linter.lint_rules["space checks"] = {"ignore endpoints": ["telegraf:prometheus-client"]}
         linter.check_spaces(self.check_spaces_example_bundle)
         errors = linter.output_collector["errors"]
         assert len(errors) == 0
@@ -1636,9 +1571,7 @@ applications:
 
         linter.check_spaces(bundle)
 
-        logger_mock.warning.assert_called_once_with(
-            expected_warning, app_without_default_space
-        )
+        logger_mock.warning.assert_called_once_with(expected_warning, app_without_default_space)
 
     def test_check_spaces_multi_model_warning(self, linter, mocker):
         """Test that check_spaces shows warning if some application are from another model."""
@@ -1678,9 +1611,7 @@ applications:
             "by hand. {}".format(expected_traceback)
         )
         mocker.patch.object(linter, "_handle_space_mismatch", side_effect=RuntimeError)
-        mocker.patch.object(
-            lint.traceback, "format_exc", return_value=expected_traceback
-        )
+        mocker.patch.object(lint.traceback, "format_exc", return_value=expected_traceback)
         linter.logger = logger_mock
         linter.model.app_to_charm = self.check_spaces_example_app_charm_map
 
@@ -1702,9 +1633,7 @@ applications:
             (True, "", ""),
         ],
     )
-    def test_helper_operator_check(
-        self, expected_result, check_value, actual_value, mocker
-    ):
+    def test_helper_operator_check(self, expected_result, check_value, actual_value, mocker):
         """Test comparing values using "helper_operator_check()" function."""
         result = lint.helper_operator_eq_check(check_value, actual_value)
         assert bool(result) == expected_result
@@ -1729,9 +1658,7 @@ applications:
         assert linter.atoi(input_str) == expected_int
 
     @pytest.mark.parametrize("input_file_type", ["juju-status", "juju-bundle"])
-    def test_check_relations_no_rules(
-        self, linter, input_files, mocker, input_file_type
-    ):
+    def test_check_relations_no_rules(self, linter, input_files, mocker, input_file_type):
         """Warn message if rule file doesn't pass relations to check."""
         mock_log = mocker.patch("jujulint.lint.Linter._log_with_header")
         linter.check_relations(input_files[input_file_type])
@@ -1760,9 +1687,7 @@ applications:
         """Ensure that handle error if relation rules are in wrong format."""
         mock_log = mocker.patch("jujulint.lint.Linter._log_with_header")
         mock_message_handler = mocker.patch("jujulint.lint.Linter.message_handler")
-        linter.lint_rules["relations"] = [
-            {"charm": "ntp", "check": [["ntp", "ubuntu"]]}
-        ]
+        linter.lint_rules["relations"] = [{"charm": "ntp", "check": [["ntp", "ubuntu"]]}]
         expected_msg = (
             "Relations rules has an unexpected format: not enough "
             "values to unpack (expected 2, got 1)"
@@ -1771,14 +1696,10 @@ applications:
 
         linter.check_relations(input_files[input_file_type])
         mock_message_handler.assert_not_called()
-        mock_log.assert_has_calls(
-            [mocker.call(expected_exception.message, level=logging.ERROR)]
-        )
+        mock_log.assert_has_calls([mocker.call(expected_exception.message, level=logging.ERROR)])
 
     @pytest.mark.parametrize("input_file_type", ["juju-status", "juju-bundle"])
-    def test_check_relations_missing_relations(
-        self, linter, mocker, input_file_type, input_files
-    ):
+    def test_check_relations_missing_relations(self, linter, mocker, input_file_type, input_files):
         """Ensure that check_relation handle missing relations."""
         mock_message_handler = mocker.patch("jujulint.lint.Linter.message_handler")
         # add a relation rule that doesn't happen in the model
@@ -1808,24 +1729,18 @@ applications:
             "elasticsearch:nrpe-external-master",
         ]
         # add a relation rule that happen in the model
-        linter.lint_rules["relations"] = [
-            {"charm": "nrpe", "not-exist": [not_exist_relation]}
-        ]
+        linter.lint_rules["relations"] = [{"charm": "nrpe", "not-exist": [not_exist_relation]}]
         linter.check_relations(input_files[input_file_type])
         mock_message_handler.assert_called_with(
             {
                 "id": "relation-exist",
                 "tags": ["relation", "exist"],
-                "message": "Relation(s) {} should not exist.".format(
-                    not_exist_relation
-                ),
+                "message": "Relation(s) {} should not exist.".format(not_exist_relation),
             }
         )
 
     @pytest.mark.parametrize("input_file_type", ["juju-status", "juju-bundle"])
-    def test_check_relations_missing_machine(
-        self, linter, input_files, mocker, input_file_type
-    ):
+    def test_check_relations_missing_machine(self, linter, input_files, mocker, input_file_type):
         """Ensure that check_relation handle missing machines when ubiquitous."""
         new_machines = {"3": {"series": "focal"}, "2": {"series": "bionic"}}
         input_file = input_files[input_file_type]
@@ -1914,14 +1829,10 @@ applications:
         expected_message = message.get("message", "wrong message_handler format")
         if message and not error:
             linter.message_handler(message, log_level)
-            logger_mock.assert_has_calls(
-                [mocker.call(expected_message, level=log_level)]
-            )
+            logger_mock.assert_has_calls([mocker.call(expected_message, level=log_level)])
         else:
             linter.message_handler(message)
-            logger_mock.assert_has_calls(
-                [mocker.call(expected_message, level=logging.ERROR)]
-            )
+            logger_mock.assert_has_calls([mocker.call(expected_message, level=logging.ERROR)])
 
     @pytest.mark.parametrize(
         "input_file_type",

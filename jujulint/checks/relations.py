@@ -101,17 +101,11 @@ class RelationRule:
                 if not all([app_0, endpoint_0, app_1, endpoint_1]):
                     # means that app or endpoint was not found
                     return
-                if (
-                    app_0 == self.charm
-                    or app_0 in self.input_file.charm_to_app[self.charm]
-                ):
+                if app_0 == self.charm or app_0 in self.input_file.charm_to_app[self.charm]:
                     self.endpoint = endpoint_0
                     app_to_check = app_1
                     endpoint_to_check = endpoint_1
-                elif (
-                    app_1 == self.charm
-                    or app_1 in self.input_file.charm_to_app[self.charm]
-                ):
+                elif app_1 == self.charm or app_1 in self.input_file.charm_to_app[self.charm]:
                     self.endpoint = endpoint_1
                     app_to_check = app_0
                     endpoint_to_check = endpoint_0
@@ -165,9 +159,7 @@ class RelationRule:
                 self.endpoint,
             )
             self.missing_relations[f"{self.charm}:{self.endpoint}"] = sorted(
-                apps_with_endpoint_to_check
-                - apps_related_with_relation_rule
-                - self.exception
+                apps_with_endpoint_to_check - apps_related_with_relation_rule - self.exception
             )
 
     def relation_not_exist_check(self) -> None:

@@ -32,9 +32,7 @@ def install_package():
         logging.info(f"Installing {jujulint_test_snap}")
         assert os.path.isfile(jujulint_test_snap)
         assert (
-            check_call(
-                f"sudo snap install --dangerous --classic {jujulint_test_snap}".split()
-            )
+            check_call(f"sudo snap install --dangerous --classic {jujulint_test_snap}".split())
             == 0  # noqa
         )
         assert check_output("which juju-lint".split()).decode().strip() == os.path.join(
@@ -104,9 +102,7 @@ def rules_file_url(httpserver):
                     gte: 99999
         """
     )
-    httpserver.expect_request(endpoint).respond_with_data(
-        response_data=rules_file_content
-    )
+    httpserver.expect_request(endpoint).respond_with_data(response_data=rules_file_content)
 
     yield httpserver.url_for(endpoint)
 
@@ -119,9 +115,7 @@ def rules_file_url(httpserver):
 @pytest.fixture
 def manual_file():
     """Return the bundle file for testing."""
-    return os.path.join(
-        os.path.dirname(__file__), "../resources/fcb-yoga-focal-bundle.yaml"
-    )
+    return os.path.join(os.path.dirname(__file__), "../resources/fcb-yoga-focal-bundle.yaml")
 
 
 @pytest.fixture

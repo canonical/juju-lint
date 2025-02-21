@@ -33,7 +33,7 @@ Todo:
     * Check OpenStack integrator charm configuration
     * Check distribution of k8s workloads to workers
 
-"""
+"""  # noqa: W505
 
 from jujulint.cloud import Cloud
 
@@ -49,7 +49,5 @@ class Kubernetes(Cloud):
     def audit(self):
         """Audit OpenStack cloud and run base Cloud audits."""
         # add specific Kubernetes checks here
-        self.logger.info(
-            "[{}] Running Kubernetes-specific audit steps.".format(self.name)
-        )
+        self.logger.info("[{}] Running Kubernetes-specific audit steps.".format(self.name))
         super(Kubernetes, self).audit()

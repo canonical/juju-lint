@@ -35,9 +35,7 @@ def mocked_pkg_resources(monkeypatch):
 @pytest.fixture
 def cli_instance(monkeypatch):
     """Provide a test instance of the CLI class."""
-    monkeypatch.setattr(
-        sys, "argv", ["juju-lint", "-c", "contrib/canonical-rules.yaml"]
-    )
+    monkeypatch.setattr(sys, "argv", ["juju-lint", "-c", "contrib/canonical-rules.yaml"])
 
     from jujulint.cli import Cli
 
@@ -91,9 +89,7 @@ def cloud_instance():
     }
     cloud = Cloud(name="test_cloud", lint_rules=rules)
     # set initial cloud state
-    cloud.cloud_state = {
-        "my_controller": {"models": {"my_model_1": {}, "my_model_2": {}}}
-    }
+    cloud.cloud_state = {"my_controller": {"models": {"my_model_1": {}, "my_model_2": {}}}}
     cloud.logger = MagicMock()
     return cloud
 
@@ -236,9 +232,7 @@ def patch_cloud_init(mocker):
 @pytest.fixture
 def rules_files():
     """Get all standard rules files that comes with the snap."""
-    return [
-        str(rule.resolve()) for rule in Path("./contrib").iterdir() if rule.is_file()
-    ]
+    return [str(rule.resolve()) for rule in Path("./contrib").iterdir() if rule.is_file()]
 
 
 @pytest.fixture

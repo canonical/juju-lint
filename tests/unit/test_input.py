@@ -66,14 +66,8 @@ def test_file_inputs(input_files, input_file_type):
     }
     assert input_file.applications == expected_output["applications"]
     assert input_file.machines == expected_output["machines"][input_file_type]
-    assert (
-        input_file.apps_to_machines
-        == expected_output["apps_to_machines"][input_file_type]
-    )
-    assert (
-        input_file.machines_to_apps
-        == expected_output["machines_to_apps"][input_file_type]
-    )
+    assert input_file.apps_to_machines == expected_output["apps_to_machines"][input_file_type]
+    assert input_file.machines_to_apps == expected_output["machines_to_apps"][input_file_type]
     assert input_file.charms == expected_output["charms"]
     assert input_file.app_to_charm == expected_output["app_to_charm"]
     assert input_file.charm_to_app == expected_output["charm_to_app"]
@@ -124,9 +118,7 @@ def test_check_app_endpoint_existence(
     elif endpoint_error:
         expected_msg = f"endpoint: {endpoint} not found on {app}"
 
-    assert (
-        input_file.check_app_endpoint_existence(app_endpoint, "nrpe") == expected_output
-    )
+    assert input_file.check_app_endpoint_existence(app_endpoint, "nrpe") == expected_output
     if expected_msg:
         logger_mock.warning.assert_has_calls([mocker.call(expected_msg)])
 
@@ -204,9 +196,7 @@ def test_filter_by_app_and_endpoint(
 ):
     """Test filter_by_app_and_endpoint method behave as expected."""
     input_file = input_files[input_file_type]
-    assert (
-        input_file.filter_by_app_and_endpoint(charm, app, endpoint) == expected_output
-    )
+    assert input_file.filter_by_app_and_endpoint(charm, app, endpoint) == expected_output
 
 
 @pytest.mark.parametrize(
@@ -227,8 +217,7 @@ def test_filter_by_relation(input_file_type, endpoint, expected_output, input_fi
     """Test filter_by_relation method behave as expected."""
     input_file = input_files[input_file_type]
     assert (
-        input_file.filter_by_relation(input_file.charm_to_app["nrpe"], endpoint)
-        == expected_output
+        input_file.filter_by_relation(input_file.charm_to_app["nrpe"], endpoint) == expected_output
     )
 
 
@@ -242,9 +231,7 @@ def test_filter_by_relation(input_file_type, endpoint, expected_output, input_fi
 def test_input_handler(parsed_yaml, expected_output, request):
     """Input handler return expected objects depending on the input."""
     input_file = request.getfixturevalue(parsed_yaml)
-    assert isinstance(
-        model_input.input_handler(input_file, "applications"), expected_output
-    )
+    assert isinstance(model_input.input_handler(input_file, "applications"), expected_output)
 
 
 @pytest.mark.parametrize("input_file_type", ["juju-status", "juju-bundle"])

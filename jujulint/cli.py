@@ -109,9 +109,7 @@ class Cli:
 
             # default to relative path
             elif os.path.isfile("{}/{}".format(self.config.config_dir(), arg)):
-                validated_rules_file_args.append(
-                    "{}/{}".format(self.config.config_dir(), arg)
-                )
+                validated_rules_file_args.append("{}/{}".format(self.config.config_dir(), arg))
             else:
                 self.logger.error("Could not locate rules file {}".format(arg))
                 sys.exit(1)
@@ -200,9 +198,7 @@ class Cli:
                     cloud_name, cloud_instance.cloud_state
                 )
             )
-            self.write_yaml(
-                cloud_instance.cloud_state, "{}-state.yaml".format(cloud_name)
-            )
+            self.write_yaml(cloud_instance.cloud_state, "{}-state.yaml".format(cloud_name))
             # run audit checks
             cloud_instance.audit()
         else:

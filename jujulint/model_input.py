@@ -82,12 +82,12 @@ class BaseFile:
                 LOGGER.warning(f"{app} not found on applications.")
                 return "", ""
 
-            # NOTE(gabrielcocenza) it's not always that a bundle will contain all endpoints under "bindings".
+            # NOTE(gabrielcocenza) it's not always that a bundle will contain all endpoints under "bindings".  # noqa: W505
             # See LP#1949883 and LP#1990017
             # juju-info is represented by "" on endpoint-bindings
-            if endpoint != "juju-info" and endpoint not in self.applications_data[
-                app
-            ].get(endpoints_key, {}):
+            if endpoint != "juju-info" and endpoint not in self.applications_data[app].get(
+                endpoints_key, {}
+            ):
                 LOGGER.warning(f"endpoint: {endpoint} not found on {app}")
                 return "", ""
         return app, endpoint
@@ -116,8 +116,7 @@ class BaseFile:
             return {
                 app
                 for app in apps_to_check
-                if endpoint
-                in self.applications_data.get(app, {}).get(endpoints_key, {})
+                if endpoint in self.applications_data.get(app, {}).get(endpoints_key, {})
             }
         return (
             set([app])
@@ -151,18 +150,14 @@ class BaseFile:
 
         :raises NotImplementedError: Raise if not implemented on child classes.
         """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} missing: map_apps_to_machines"
-        )
+        raise NotImplementedError(f"{self.__class__.__name__} missing: map_apps_to_machines")
 
     def filter_by_relation(self, apps: Set, endpoint: str) -> Set:
         """Filter apps by relation to be implemented.
 
         :raises NotImplementedError: Raise if not implemented on child classes.
         """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} missing: filter_by_relation"
-        )
+        raise NotImplementedError(f"{self.__class__.__name__} missing: filter_by_relation")
 
     def sorted_machines(self, machine: str):
         """Sort machines.
@@ -180,9 +175,7 @@ class BaseFile:
         :type machine: str
         :raises NotImplementedError: Raise if not implemented on child classes.
         """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} missing: filter_lxd_on_machine"
-        )
+        raise NotImplementedError(f"{self.__class__.__name__} missing: filter_lxd_on_machine")
 
 
 @dataclass
