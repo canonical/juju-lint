@@ -1,5 +1,8 @@
 # Juju Lint
 
+> [!NOTE]
+> This charm is under maintenance mode. Only critical bug will be handled.
+
 ## Introduction
 
 This is intended to be run against a yaml or json dump of Juju status, a YAML
