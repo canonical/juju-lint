@@ -1,7 +1,8 @@
 # Juju Lint
 
-> [!NOTE]
-> This charm is under maintenance mode. Only critical bug will be handled.
+> [!CAUTION]
+> This charm is deprecated. Please use the [juju-doctor](https://github.com/canonical/juju-doctor) instead. 
+> 
 
 ## Introduction
 
